@@ -1,0 +1,20 @@
+service1:
+    url: 'http...'
+    cmd: sv restart .
+    log: True
+    if_header:
+        x-db-kaputt:
+            cmd: sv restart
+        x-amqp-kaputt:
+            cmd: sv restart
+            notify: you@abc.com
+            msg: |
+                The rabbit is angry
+                & hungry
+            log: logger.tld/xxxx
+    if_status:
+        500:
+            cmd: sv restart .
+        404:
+            cmd: sv restart .
+            msg: not found
