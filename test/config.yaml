@@ -1,5 +1,6 @@
 service1:
     seconds: 60
+    timeout: 5
     url: 'http...'
     cmd: sv restart .
     log: True
