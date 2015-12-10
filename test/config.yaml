@@ -1,5 +1,7 @@
 service1:
+
     seconds: 60
+    minutes: 1
     timeout: 5
     url: 'http...'
     cmd: sv restart .
@@ -20,3 +22,6 @@ service1:
         404:
             cmd: sv restart .
             msg: not found
+
+service 2:
+    seconds: 30
