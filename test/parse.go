@@ -6,7 +6,26 @@ import (
 	"io/ioutil"
 )
 
-type Services map[string]interface{}
+type Services map[string]Service
+
+type Service struct {
+	Seconds   int
+	Minutes   int
+	Timeout   int
+	URL       string
+	Cmd       string
+	Log       string
+	Notify    string
+	Msg       string
+	If_header map[string]Action
+	If_status map[string]Action
+}
+
+type Action struct {
+	Cmd    string
+	Notify string
+	Msg    string
+}
 
 func main() {
 	yml_file, err := ioutil.ReadFile("config.yaml")
@@ -21,6 +40,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(data)
+	fmt.Println(data["service 1"].Seconds, data["service 1"].Cmd, data)
 
 }

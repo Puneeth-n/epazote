@@ -1,11 +1,22 @@
-service1:
-
+service 1:
+    # time
     seconds: 60
     minutes: 1
     timeout: 5
+
+    # url
     url: 'http...'
+
+    # main cmd
     cmd: sv restart .
+
+    # log
     log: True
+
+    # notify
+    notify: url/email
+
+    # if header
     if_header:
         x-db-kaputt:
             cmd: sv restart
@@ -15,13 +26,15 @@ service1:
             msg: |
                 The rabbit is angry
                 & hungry
-            log: logger.tld/xxxx
+
+    # if status
     if_status:
         500:
             cmd: sv restart .
         404:
             cmd: sv restart .
             msg: not found
+            notify: url
 
 service 2:
     seconds: 30
