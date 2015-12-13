@@ -9,22 +9,24 @@ import (
 type Services map[string]Service
 
 type Service struct {
-	Seconds   int
-	Minutes   int
-	Timeout   int
-	URL       string
-	Cmd       string
-	Log       string
-	Notify    string
-	Msg       string
-	If_header map[string]Action
-	If_status map[string]Action
+	URL                     string
+	Timeout                 int
+	Seconds, Minutes, Hours int
+	Expect                  Expect
+	Log                     string
+	If_header, If_status    map[string]Action
 }
 
 type Action struct {
 	Cmd    string
 	Notify string
 	Msg    string
+}
+
+type Expect struct {
+	Status int
+	Header map[string]string
+	Action Action
 }
 
 func main() {
@@ -40,6 +42,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(data["service 1"].Seconds, data["service 1"].Cmd, data)
-
+	fmt.Println(data["service 1"], "\n", data["service 1"].Seconds)
 }

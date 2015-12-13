@@ -6,19 +6,23 @@ service 1:
     # check every
     seconds: 60
     minutes: 1
+    hours: 1
 
     expect:
         status: 200
         header:
             content-type: application/json; charset=UTF-8
             request-id: 'regex'
-        cmd: sv restart .
+        # when_fail
+        action:
+            cmd: sv restart .
+            notify: url/email
+            msg: |
+                line 1
+                line 2
 
     # log
     log: True
-
-    # notify
-    notify: url/email
 
     # if header
     if_header:
