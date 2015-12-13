@@ -42,5 +42,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(data["service 1"], "\n", data["service 1"].Seconds, data["service 2"])
+	fmt.Println(data["service 1"], "\n", data["service 1"].Seconds, data)
 }
