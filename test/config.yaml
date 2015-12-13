@@ -8,13 +8,15 @@ service 1:
     minutes: 1
     hours: 1
 
-    expect:
+    if_not:
         status: 200
         header:
             content-type: application/json; charset=UTF-8
             request-id: 'regex'
+        body: regex
+
         # when_fail
-        action:
+        do:
             cmd: sv restart .
             notify: url/email
             msg: |
@@ -23,6 +25,15 @@ service 1:
 
     # log
     log: True
+
+    # if status
+    if_status:
+        500:
+            cmd: sv restart .
+        404:
+            cmd: sv restart .
+            msg: not found
+            notify: url
 
     # if header
     if_header:
@@ -35,14 +46,10 @@ service 1:
                 The rabbit is angry
                 & hungry
 
-    # if status
-    if_status:
-        500:
-            cmd: sv restart .
-        404:
-            cmd: sv restart .
-            msg: not found
-            notify: url
+    if_body:
+        contains this thing:
+            cmd: sv restart boddddyyyy
+
 
 service 2:
     seconds: 30
