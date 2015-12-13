@@ -1,0 +1,44 @@
+service 1:
+    # url
+    url: 'http...'
+    timeout: 5
+
+    # check every
+    seconds: 60
+    minutes: 1
+
+    expect:
+        status: 200
+        header:
+            content-type: application/json; charset=UTF-8
+            request-id: 'regex'
+        cmd: sv restart .
+
+    # log
+    log: True
+
+    # notify
+    notify: url/email
+
+    # if header
+    if_header:
+        x-db-kaputt:
+            cmd: sv restart
+        x-amqp-kaputt:
+            cmd: sv restart
+            notify: you@abc.com
+            msg: |
+                The rabbit is angry
+                & hungry
+
+    # if status
+    if_status:
+        500:
+            cmd: sv restart .
+        404:
+            cmd: sv restart .
+            msg: not found
+            notify: url
+
+service 2:
+    seconds: 30
