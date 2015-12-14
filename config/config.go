@@ -1,8 +1,6 @@
-package main
+package config
 
 import (
-	"fmt"
-	"github.com/kr/pretty"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -48,24 +46,18 @@ type Action struct {
 	Msg    string
 }
 
-func main() {
-	yml_file, err := ioutil.ReadFile("config.yaml")
+func GetConfig(file string) (*Epazote, error) {
 
+	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var data Epazote
 
 	if err := yaml.Unmarshal(yml_file, &data); err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	fmt.Printf("%# v", pretty.Formatter(data.Services))
-
-	//	fmt.Println(data["service 1"].Expect.IfNot)
-
-	//for k, v := range data["service 1"].Expect.Header {
-	//	fmt.Println(k, v)
-	//}
+	return &data, nil
 }
