@@ -29,8 +29,10 @@ func main() {
 		fmt.Printf("%# v", pretty.Formatter(epazote))
 	}
 
-	fmt.Printf("%# v", epazote.Config.SMTP)
+	//	fmt.Printf("%# v", epazote.Config.SMTP)
 
 	// 	SendEmail(epazote.Config.SMTP)
+	//	Get("http://localhost:8080")
+	Get("http://httpbin.org/get")
 
 }
