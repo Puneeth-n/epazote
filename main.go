@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/kr/pretty"
-	"github.com/nbari/epazote/config"
 	"os"
 )
 
@@ -21,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	epazote, err := config.GetConfig(*f)
+	epazote, err := GetConfig(*f)
 	if err != nil {
 		panic(err)
 	}

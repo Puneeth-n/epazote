@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/nbari/epazote/config"
 	"log"
 	"net/smtp"
 	"os"
@@ -13,7 +12,7 @@ import (
 
 const CRLF = "\r\n"
 
-func SendEmail(e config.Email) {
+func SendEmail(e Email) {
 	// auth Set up authentication information.
 	auth := smtp.PlainAuth("",
 		e.Username,
