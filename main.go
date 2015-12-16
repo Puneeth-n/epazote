@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/kr/pretty"
+	"log"
 	"os"
 )
 
@@ -16,8 +16,7 @@ func main() {
 	flag.Parse()
 
 	if _, err := os.Stat(*f); os.IsNotExist(err) {
-		fmt.Printf("Cannot read file: %s, use -h for more info.\n\n", *f)
-		os.Exit(1)
+		log.Fatalf("Cannot read file: %s, use -h for more info.\n\n", *f)
 	}
 
 	epazote, err := GetConfig(*f)
@@ -26,13 +25,12 @@ func main() {
 	}
 
 	if *v {
-		fmt.Printf("%# v", pretty.Formatter(epazote))
+		log.Printf("%# v", pretty.Formatter(epazote))
 	}
 
 	//	fmt.Printf("%# v", epazote.Config.SMTP)
 
 	// 	SendEmail(epazote.Config.SMTP)
-	//	Get("http://localhost:8080")
-	Get("http://httpbin.org/get")
+	HTTPGet("http://httpbin.org/get")
 
 }

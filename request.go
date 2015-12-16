@@ -1,32 +1,37 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
-func Get(s string) {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", s, nil)
-	if err != nil {
-		log.Fatalln(err)
+func HTTPGet(s string) {
+	timeout := time.Duration(5 * time.Second)
+	client := &http.Client{
+		Timeout: timeout,
 	}
 
+	req, _ := http.NewRequest("GET", s, nil)
 	req.Header.Set("User-Agent", "epazote")
+	req.Header.Add("Range", "bytes=0-1023")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		//timeout check here
+		log.Fatalln("timeout-----", err)
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	chunk := io.LimitReader(resp.Body, 0)
+	//chunk := io.LimitReader(resp.Body, 1<<20)
+	body, err := ioutil.ReadAll(chunk)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	log.Println(string(body))
+	log.Println(string(body), len(body), resp)
 
 }
