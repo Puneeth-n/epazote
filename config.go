@@ -1,10 +1,8 @@
 package epazote
 
 import (
-	"errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 )
 
 type Epazote struct {
@@ -14,6 +12,7 @@ type Epazote struct {
 
 type Config struct {
 	SMTP Email `yaml:"smtp"`
+	HTTP Http  `yaml:"http"`
 }
 
 type Email struct {
@@ -25,14 +24,19 @@ type Email struct {
 	Headers  map[string]string
 }
 
+type Http struct {
+	Host string
+	Port int
+}
+
 type Service struct {
-	URL                     string
-	Timeout                 int
-	Seconds, Minutes, Hours int
-	Log                     string
-	Expect                  Expect
-	IfStatus                map[string]Action `yaml:"if_status`
-	IfHeader                map[string]Action `yaml:"if_header"`
+	URL                            string
+	Timeout                        int
+	Every, Seconds, Minutes, Hours int
+	Log                            string
+	Expect                         Expect
+	IfStatus                       map[string]Action `yaml:"if_status`
+	IfHeader                       map[string]Action `yaml:"if_header"`
 }
 
 type Expect struct {
@@ -55,19 +59,11 @@ func NewEpazote(file string) (*Epazote, error) {
 		return nil, err
 	}
 
-	var data Epazote
+	var ez Epazote
 
-	if err := yaml.Unmarshal(yml_file, &data); err != nil {
+	if err := yaml.Unmarshal(yml_file, &ez); err != nil {
 		return nil, err
 	}
 
-	return &data, nil
-}
-
-func (ez *Epazote) CheckConfig() error {
-
-	log.Printf("%# v", ez)
-	return errors.New("path cannot be empty")
-
-	return nil
+	return &ez, nil
 }

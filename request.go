@@ -24,8 +24,8 @@ func HTTPGet(s string) {
 	}
 
 	defer resp.Body.Close()
-	chunk := io.LimitReader(resp.Body, 0)
-	//chunk := io.LimitReader(resp.Body, 1<<20)
+	//chunk := io.LimitReader(resp.Body, 0)
+	chunk := io.LimitReader(resp.Body, 1<<20)
 	body, err := ioutil.ReadAll(chunk)
 	if err != nil {
 		log.Fatalln(err)

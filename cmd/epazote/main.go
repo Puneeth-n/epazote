@@ -5,6 +5,7 @@ import (
 	"github.com/kr/pretty"
 	ez "github.com/nbari/epazote"
 	"log"
+	"net/url"
 	"os"
 )
 
@@ -20,23 +21,34 @@ func main() {
 		log.Fatalf("Cannot read file: %s, use -h for more info.\n\n", *f)
 	}
 
-	cfg, err := ez.NewEpazote(*f)
+	c, err := ez.NewEpazote(*f)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if *v {
-		log.Printf("%# v", pretty.Formatter(cfg))
-	}
+		log.Printf("%# v", pretty.Formatter(c))
 
-	err = cfg.CheckConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+		for k, v := range c.Services {
+			log.Println("Service name: ", k)
+			log.Println("URL:", v.URL)
+			v.Every = 60
+			if v.Seconds > 0 {
+				v.Every = v.Seconds
+			} else if v.Minutes > 0 {
+				v.Every = 60 * v.Minutes
+			} else if v.Hours > 0 {
+				v.Every = 3600 * v.Hours
+			}
 
-	//	fmt.Printf("%# v", epazote.Config.SMTP)
+			log.Printf("check every %d seconds", v.Every)
+
+			// to a get to URL just to check if is recheable
+			//			v.URL
+
+		}
+	}
 
 	// 	SendEmail(epazote.Config.SMTP)
-	ez.HTTPGet("http://httpbin.org/get")
-
+	//	ez.HTTPGet("http://httpbin.org/get")
 }
