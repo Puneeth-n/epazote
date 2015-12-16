@@ -1,8 +1,10 @@
 package epazote
 
 import (
+	"errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 )
 
 type Epazote struct {
@@ -46,7 +48,7 @@ type Action struct {
 	Msg    string
 }
 
-func GetConfig(file string) (*Epazote, error) {
+func NewEpazote(file string) (*Epazote, error) {
 
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -60,4 +62,12 @@ func GetConfig(file string) (*Epazote, error) {
 	}
 
 	return &data, nil
+}
+
+func (ez *Epazote) CheckConfig() error {
+
+	log.Printf("%# v", ez)
+	return errors.New("path cannot be empty")
+
+	return nil
 }

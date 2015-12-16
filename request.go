@@ -16,7 +16,6 @@ func HTTPGet(s string) {
 
 	req, _ := http.NewRequest("GET", s, nil)
 	req.Header.Set("User-Agent", "epazote")
-	req.Header.Add("Range", "bytes=0-1023")
 
 	resp, err := client.Do(req)
 	if err != nil {

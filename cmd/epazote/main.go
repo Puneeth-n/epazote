@@ -12,7 +12,7 @@ func main() {
 
 	// f config file name
 	var f = flag.String("f", "epazote.yml", "Epazote configuration file.")
-	var v = flag.Bool("v", false, "verbose, print configuration file.")
+	var v = flag.Bool("v", false, "verbose mode")
 
 	flag.Parse()
 
@@ -20,13 +20,18 @@ func main() {
 		log.Fatalf("Cannot read file: %s, use -h for more info.\n\n", *f)
 	}
 
-	epazote, err := ez.GetConfig(*f)
+	cfg, err := ez.NewEpazote(*f)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	if *v {
-		log.Printf("%# v", pretty.Formatter(epazote))
+		log.Printf("%# v", pretty.Formatter(cfg))
+	}
+
+	err = cfg.CheckConfig()
+	if err != nil {
+		log.Fatalln(err)
 	}
 
 	//	fmt.Printf("%# v", epazote.Config.SMTP)

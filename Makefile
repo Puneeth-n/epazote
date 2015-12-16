@@ -3,7 +3,7 @@
 GO ?= go
 BIN_NAME=epazote
 
-all: build test
+all: clean build
 
 get:
 	${GO} get
