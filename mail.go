@@ -1,4 +1,4 @@
-package main
+package epazote
 
 import (
 	"encoding/base64"

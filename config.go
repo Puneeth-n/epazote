@@ -1,4 +1,4 @@
-package main
+package epazote
 
 import (
 	"gopkg.in/yaml.v2"
