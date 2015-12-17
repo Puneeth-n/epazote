@@ -2,18 +2,24 @@ package main
 
 import (
 	"flag"
-	"github.com/kr/pretty"
+	"fmt"
 	ez "github.com/nbari/epazote"
 	"log"
-	"net/url"
+	"net/http"
 	"os"
 )
 
-func main() {
+type HttpResponse struct {
+	resp *http.Response
+	err  error
+}
 
+const CRLF = "\r\n"
+
+func main() {
 	// f config file name
 	var f = flag.String("f", "epazote.yml", "Epazote configuration file.")
-	var v = flag.Bool("v", false, "verbose mode")
+	var c = flag.Bool("c", false, "Continue on errors.")
 
 	flag.Parse()
 
@@ -21,34 +27,58 @@ func main() {
 		log.Fatalf("Cannot read file: %s, use -h for more info.\n\n", *f)
 	}
 
-	c, err := ez.NewEpazote(*f)
+	cfg, err := ez.NewEpazote(*f)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if *v {
-		log.Printf("%# v", pretty.Formatter(c))
+	// # ----------------------------------------------------------------------------
+	if *c {
+	}
 
-		for k, v := range c.Services {
-			log.Println("Service name: ", k)
-			log.Println("URL:", v.URL)
-			v.Every = 60
-			if v.Seconds > 0 {
-				v.Every = v.Seconds
-			} else if v.Minutes > 0 {
-				v.Every = 60 * v.Minutes
-			} else if v.Hours > 0 {
-				v.Every = 3600 * v.Hours
+	ch := make(chan *HttpResponse, len(cfg.Services)) //buffered
+
+	// check services before starting
+	for k, v := range cfg.Services {
+		go func(s ez.Service) {
+			fmt.Printf("Checking URL for service: %s\n", k)
+			resp, err := ez.Get(v)
+			if err != nil {
+				ch <- &HttpResponse{nil, err}
 			}
+			defer resp.Body.Close()
+			ch <- &HttpResponse{resp, err}
+		}(v)
 
-			log.Printf("check every %d seconds", v.Every)
-
-			// to a get to URL just to check if is recheable
-			//			v.URL
-
+		for {
+			select {
+			case r := <-ch:
+				fmt.Printf("%s was fetched\n", r.resp)
+			}
 		}
 	}
 
-	// 	SendEmail(epazote.Config.SMTP)
-	//	ez.HTTPGet("http://httpbin.org/get")
+	//every := 60
+	//if v.Seconds > 0 {
+	//every = v.Seconds
+	//} else if v.Minutes > 0 {
+	//every = 60 * v.Minutes
+	//} else if v.Hours > 0 {
+	//every = 3600 * v.Hours
+	//}
+	//// test service
+	//resp, err := ez.Get(v)
+	//if err != nil {
+	//log.Fatalf(ez.Red(fmt.Sprintf("Verify URL: %s for service: %s, error: %s", v.URL, k, err)))
+	//}
+
+	//log.Println(resp.StatusCode)
+
+	//}
+
+	//log.Printf("Supervising: %d services", len(cfg.Services))
+
 }
+
+// 	SendEmail(epazote.Config.SMTP)
+//ez.Get("http://httpbin.org/get")

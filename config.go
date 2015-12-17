@@ -30,13 +30,13 @@ type Http struct {
 }
 
 type Service struct {
-	URL                            string
-	Timeout                        int
-	Every, Seconds, Minutes, Hours int
-	Log                            string
-	Expect                         Expect
-	IfStatus                       map[string]Action `yaml:"if_status`
-	IfHeader                       map[string]Action `yaml:"if_header"`
+	URL                     string
+	Timeout                 int
+	Seconds, Minutes, Hours int
+	Log                     string
+	Expect                  Expect
+	IfStatus                map[string]Action `yaml:"if_status`
+	IfHeader                map[string]Action `yaml:"if_header"`
 }
 
 type Expect struct {
