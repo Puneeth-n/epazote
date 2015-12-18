@@ -4,6 +4,7 @@ import (
 	"flag"
 	ez "github.com/nbari/epazote"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -36,8 +37,12 @@ func main() {
 		}
 	}
 
+	// create a new supervisor
+	s := ez.NewSupervisor()
+
 	// add services to supervisor
 	for k, v := range cfg.Services {
+		// how often to check for the service
 		every := 60
 		if v.Seconds > 0 {
 			every = v.Seconds
@@ -46,9 +51,11 @@ func main() {
 		} else if v.Hours > 0 {
 			every = 3600 * v.Hours
 		}
-		ez.Supervice(k, v, every)
+		s.AddService(k, v, every)
 	}
 
 	log.Printf(ez.Green("Epazote %s   on %d services."), herb, len(cfg.Services))
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
