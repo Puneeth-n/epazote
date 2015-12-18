@@ -2,19 +2,18 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	//	"fmt"
 	ez "github.com/nbari/epazote"
 	"log"
-	"net/http"
 	"os"
 )
 
-type HttpResponse struct {
-	resp *http.Response
-	err  error
+type ServiceStatus struct {
+	err     error
+	service string
 }
 
-const CRLF = "\r\n"
+const herb = "\U0001f33f"
 
 func main() {
 	// f config file name
@@ -32,53 +31,46 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// # ----------------------------------------------------------------------------
-	if *c {
+	// check services before starting
+	ch := make(chan ServiceStatus, len(cfg.Services))
+
+	for k, v := range cfg.Services {
+		go func(name string, s ez.Service) {
+			resp, err := ez.Get(s)
+			if err != nil {
+				ch <- ServiceStatus{err, name}
+				return
+			}
+			resp.Body.Close()
+			ch <- ServiceStatus{nil, name}
+		}(k, v)
 	}
 
-	ch := make(chan *HttpResponse, len(cfg.Services)) //buffered
-
-	// check services before starting
-	for k, v := range cfg.Services {
-		go func(s ez.Service) {
-			fmt.Printf("Checking URL for service: %s\n", k)
-			resp, err := ez.Get(v)
-			if err != nil {
-				ch <- &HttpResponse{nil, err}
+	for i := 0; i < len(cfg.Services); i++ {
+		x := <-ch
+		if x.err != nil {
+			if !*c {
+				log.Fatalf("%s - Verify URL: %q", ez.Red(x.service), x.err)
 			}
-			defer resp.Body.Close()
-			ch <- &HttpResponse{resp, err}
-		}(v)
-
-		for {
-			select {
-			case r := <-ch:
-				fmt.Printf("%s was fetched\n", r.resp)
-			}
+			log.Printf("%s - Verify URL: %q", ez.Red(x.service), x.err)
 		}
 	}
 
-	//every := 60
-	//if v.Seconds > 0 {
-	//every = v.Seconds
-	//} else if v.Minutes > 0 {
-	//every = 60 * v.Minutes
-	//} else if v.Hours > 0 {
-	//every = 3600 * v.Hours
-	//}
-	//// test service
-	//resp, err := ez.Get(v)
-	//if err != nil {
-	//log.Fatalf(ez.Red(fmt.Sprintf("Verify URL: %s for service: %s, error: %s", v.URL, k, err)))
-	//}
+	// add services to supervisor
+	for k, v := range cfg.Services {
+		every := 60
+		if v.Seconds > 0 {
+			every = v.Seconds
+		} else if v.Minutes > 0 {
+			every = 60 * v.Minutes
+		} else if v.Hours > 0 {
+			every = 3600 * v.Hours
+		}
+		ez.Supervice(k, v, every)
+	}
 
-	//log.Println(resp.StatusCode)
-
-	//}
-
-	//log.Printf("Supervising: %d services", len(cfg.Services))
+	log.Printf(ez.Green("Epazote %s   supervising %d services."), herb, len(cfg.Services))
 
 }
 
 // 	SendEmail(epazote.Config.SMTP)
-//ez.Get("http://httpbin.org/get")

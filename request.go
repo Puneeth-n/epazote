@@ -6,9 +6,9 @@ import (
 )
 
 func Get(s Service) (*http.Response, error) {
-	// timeout in seconds
+	// timeout in seconds defaults to 5
 	if s.Timeout == 0 {
-		s.Timeout = 7
+		s.Timeout = 5
 	}
 	timeout := time.Duration(s.Timeout) * time.Second
 	client := &http.Client{
@@ -27,8 +27,6 @@ func Get(s Service) (*http.Response, error) {
 
 	return resp, nil
 }
-
-//defer resp.Body.Close()
 
 //// don't read full body
 //html := io.LimitReader(resp.Body, 0)
