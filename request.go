@@ -5,18 +5,43 @@ import (
 	"time"
 )
 
-func Get(s Service) (*http.Response, error) {
-	// timeout in seconds defaults to 5
-	if s.Timeout == 0 {
-		s.Timeout = 5
+type ServiceHttpResponse struct {
+	Err     error
+	Service string
+}
+
+func AsyncGet(services map[string]Service) <-chan ServiceHttpResponse {
+	ch := make(chan ServiceHttpResponse, len(services))
+
+	for k, v := range services {
+		go func(name string, url string) {
+			resp, err := Get(url)
+			if err != nil {
+				ch <- ServiceHttpResponse{err, name}
+				return
+			}
+			resp.Body.Close()
+			ch <- ServiceHttpResponse{nil, name}
+		}(k, v.URL)
 	}
-	timeout := time.Duration(s.Timeout) * time.Second
+
+	return ch
+}
+
+func Get(url string, timeout ...int) (*http.Response, error) {
+	// timeout in seconds defaults to 5
+	var t int = 5
+
+	if len(timeout) > 0 {
+		t = timeout[0]
+	}
+
 	client := &http.Client{
-		Timeout: timeout,
+		Timeout: time.Duration(t) * time.Second,
 	}
 
 	// create a new request
-	req, _ := http.NewRequest("GET", s.URL, nil)
+	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "epazote")
 
 	// try to connect
