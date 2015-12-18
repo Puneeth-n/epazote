@@ -4,7 +4,6 @@ import (
 	"flag"
 	ez "github.com/nbari/epazote"
 	"log"
-	"net/http"
 	"os"
 )
 
@@ -56,6 +55,6 @@ func main() {
 
 	log.Printf(ez.Green("Epazote %s   on %d services."), herb, len(cfg.Services))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
-
+	// block forever
+	select {}
 }
