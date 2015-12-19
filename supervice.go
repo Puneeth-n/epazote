@@ -6,7 +6,6 @@ import (
 )
 
 type scheduler struct {
-	name string
 	t    <-chan time.Time
 	quit chan struct{}
 	f    func()
