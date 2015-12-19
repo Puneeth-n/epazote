@@ -5,6 +5,8 @@ import (
 	ez "github.com/nbari/epazote"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const herb = "\U0001f33f"
@@ -53,8 +55,14 @@ func main() {
 		s.AddService(k, v, every)
 	}
 
-	log.Printf(ez.Green("Epazote %s   on %d services."), herb, len(cfg.Services))
+	log.Printf(ez.Green("Epazote %s   on %d services [pid: %d]."), herb, len(cfg.Services), os.Getpid())
 
-	// block forever
-	select {}
+	block := make(chan os.Signal, 1)
+	signal.Notify(block, os.Interrupt, os.Kill, syscall.SIGTERM)
+	signalType := <-block
+	signal.Stop(block)
+	log.Printf("%q signal received.", signalType)
+	s.Stop()
+	log.Printf("Exiting.")
+	os.Exit(0)
 }

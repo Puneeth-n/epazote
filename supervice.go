@@ -6,6 +6,7 @@ import (
 )
 
 type scheduler struct {
+	name string
 	t    <-chan time.Time
 	quit chan struct{}
 	f    func()
@@ -27,7 +28,7 @@ func (s *Supervisor) AddService(name string, service Service, every int) {
 	scheduler := scheduler{
 		t:    time.NewTicker(e).C,
 		quit: make(chan struct{}),
-		f:    func() { log.Println(name) },
+		f:    func() { s.Supervice(service) },
 	}
 
 	// add service
@@ -41,8 +42,17 @@ func (s *Supervisor) AddService(name string, service Service, every int) {
 			case <-scheduler.quit:
 				return
 			}
-
 		}
 	}()
+}
 
+func (s *Supervisor) Supervice(service Service) {
+	log.Println(service, service.URL)
+}
+
+func (s *Supervisor) Stop() {
+	for k, v := range s.services {
+		close(v.quit)
+		log.Printf("Stoping: %s", k)
+	}
 }
