@@ -3,33 +3,36 @@ package scheduler
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 )
 
-type scheduler struct {
-	name string
+type Scheduler struct {
 	t    <-chan time.Time
 	quit chan struct{}
 	f    func()
 }
 
-type Scheduler struct {
-	schedulers map[string]scheduler
+type Schedulers struct {
+	schedulers map[string]Scheduler
+	sync.Mutex
 }
 
 // NewScheduler returns a new scheduler
-func NewScheduler() *Scheduler {
-	return &Scheduler{
-		schedulers: make(map[string]scheduler),
+func NewScheduler() *Schedulers {
+	return &Schedulers{
+		schedulers: make(map[string]Scheduler),
 	}
 }
 
 // AddScheduler calls a function every X seconds.
-func (s *Scheduler) AddScheduler(name string, interval int, f func()) {
+func (s *Schedulers) AddScheduler(name string, interval int, f func()) {
+	s.Lock()
+	defer s.Unlock()
+
 	e := time.Duration(interval) * time.Second
 
-	scheduler := scheduler{
-		name: name,
+	scheduler := Scheduler{
 		t:    time.NewTicker(e).C,
 		quit: make(chan struct{}),
 		f:    f,
@@ -51,7 +54,10 @@ func (s *Scheduler) AddScheduler(name string, interval int, f func()) {
 }
 
 // Stop ends a specified scheduler.
-func (s *Scheduler) Stop(name string) error {
+func (s *Schedulers) Stop(name string) error {
+	s.Lock()
+	defer s.Unlock()
+
 	scheduler, ok := s.schedulers[name]
 
 	if !ok {
@@ -63,7 +69,10 @@ func (s *Scheduler) Stop(name string) error {
 }
 
 // StopAll ends all schedulers.
-func (s *Scheduler) StopAll() {
+func (s *Schedulers) StopAll() {
+	s.Lock()
+	defer s.Unlock()
+
 	for k, v := range s.schedulers {
 		close(v.quit)
 		log.Printf("Stoping: %s", k)
