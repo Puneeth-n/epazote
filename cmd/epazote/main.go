@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	ez "github.com/nbari/epazote"
+	"github.com/nbari/epazote/scheduler"
 	"log"
 	"os"
 	"os/signal"
@@ -50,12 +51,11 @@ func main() {
 		}
 	}
 
-	// create a new supervisor
-	s := ez.NewSupervisor()
-
 	if len(cfg.Config.Scan.Paths) == 0 && len(cfg.Services) == 0 {
 		log.Fatalln(ez.Red("No services to supervise or paths to scan."))
 	}
+
+	sk := scheduler.NewScheduler()
 
 	// add services to supervisor
 	for k, v := range cfg.Services {
@@ -68,7 +68,7 @@ func main() {
 		} else if v.Hours > 0 {
 			every = 3600 * v.Hours
 		}
-		s.AddService(k, v, every)
+		sk.AddScheduler(k, every, ez.Supervice(v))
 	}
 
 	if len(cfg.Config.Scan.Paths) > 0 {
@@ -83,7 +83,7 @@ func main() {
 	signalType := <-block
 	signal.Stop(block)
 	log.Printf("%q signal received.", signalType)
-	s.Stop()
+	sk.StopAll()
 	log.Printf("Exiting.")
 	os.Exit(0)
 }
