@@ -13,6 +13,7 @@ type Epazote struct {
 type Config struct {
 	SMTP Email `yaml:"smtp"`
 	HTTP Http  `yaml:"http"`
+	Scan Scan  `yaml:"scan"`
 }
 
 type Email struct {
@@ -27,6 +28,11 @@ type Email struct {
 type Http struct {
 	Host string
 	Port int
+}
+
+type Scan struct {
+	Paths                   []string
+	Seconds, Minutes, Hours int
 }
 
 type Service struct {
