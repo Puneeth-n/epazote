@@ -26,8 +26,8 @@ type Email struct {
 }
 
 type Http struct {
-	Host string
-	Port int
+	Host     string
+	pathPort int
 }
 
 type Scan struct {

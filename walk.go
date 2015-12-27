@@ -17,3 +17,9 @@ func Search(root string) error {
 	err := filepath.Walk(root, find)
 	return err
 }
+
+func Scandir(path string) func() {
+	return func() {
+		fmt.Println(path)
+	}
+}

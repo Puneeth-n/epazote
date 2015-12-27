@@ -14,7 +14,6 @@ import (
 const herb = "\U0001f33f"
 
 func main() {
-
 	// f config file name
 	var f = flag.String("f", "epazote.yml", "Epazote configuration file.")
 	var c = flag.Bool("c", false, "Continue on errors.")
@@ -55,11 +54,13 @@ func main() {
 		log.Fatalln(ez.Red("No services to supervise or paths to scan."))
 	}
 
+	// create a Scheduler
 	sk := scheduler.NewScheduler()
 
 	// add services to supervisor
 	for k, v := range cfg.Services {
 		// how often to check for the service
+		// default 1 minute
 		every := 60
 		if v.Seconds > 0 {
 			every = v.Seconds
@@ -72,6 +73,19 @@ func main() {
 	}
 
 	if len(cfg.Config.Scan.Paths) > 0 {
+		// default 5 minutes
+		every := 300
+		if cfg.Config.Scan.Seconds > 0 {
+			every = cfg.Config.Scan.Seconds
+		} else if cfg.Config.Scan.Minutes > 0 {
+			every = 60 * cfg.Config.Scan.Minutes
+		} else if cfg.Config.Scan.Hours > 0 {
+			every = 3600 * cfg.Config.Scan.Hours
+		}
+		for _, v := range cfg.Config.Scan.Paths {
+			// how often to scan
+			sk.AddScheduler(v, every, ez.Scandir(v))
+		}
 		log.Printf(ez.Green("Epazote %s   on %d services, scan paths: %s [pid: %d]."), herb, len(cfg.Services), strings.Join(cfg.Config.Scan.Paths, ","), os.Getpid())
 	} else {
 		log.Printf(ez.Green("Epazote %s   on %d services [pid: %d]."), herb, len(cfg.Services), os.Getpid())

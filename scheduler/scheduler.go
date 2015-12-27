@@ -38,6 +38,11 @@ func (s *Schedulers) AddScheduler(name string, interval int, f func()) {
 		f:    f,
 	}
 
+	// stop scheduler if exist
+	if sk, ok := s.schedulers[name]; ok {
+		close(sk.quit)
+	}
+
 	// add service
 	s.schedulers[name] = scheduler
 
@@ -58,13 +63,13 @@ func (s *Schedulers) Stop(name string) error {
 	s.Lock()
 	defer s.Unlock()
 
-	scheduler, ok := s.schedulers[name]
+	sk, ok := s.schedulers[name]
 
 	if !ok {
 		return fmt.Errorf("Scheduler: %s, does not exist.", name)
 	}
 
-	close(scheduler.quit)
+	close(sk.quit)
 	return nil
 }
 
