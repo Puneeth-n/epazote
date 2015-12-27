@@ -38,6 +38,7 @@ func main() {
 		}
 	}
 
+	// verify URL, we can't supervice unreachable services
 	ch := ez.AsyncGet(cfg.Services)
 	for i := 0; i < len(cfg.Services); i++ {
 		x := <-ch
@@ -52,6 +53,10 @@ func main() {
 	// create a new supervisor
 	s := ez.NewSupervisor()
 
+	if len(cfg.Config.Scan.Paths) == 0 && len(cfg.Services) == 0 {
+		log.Fatalln(ez.Red("No services to supervise or paths to scan."))
+	}
+
 	// add services to supervisor
 	for k, v := range cfg.Services {
 		// how often to check for the service
@@ -64,10 +69,6 @@ func main() {
 			every = 3600 * v.Hours
 		}
 		s.AddService(k, v, every)
-	}
-
-	if len(cfg.Config.Scan.Paths) == 0 && len(cfg.Services) == 0 {
-		log.Fatalln(ez.Red("No services to supervise or paths to scan."))
 	}
 
 	if len(cfg.Config.Scan.Paths) > 0 {
