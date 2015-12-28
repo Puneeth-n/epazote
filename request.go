@@ -17,6 +17,7 @@ type ServiceHttpResponse struct {
 	Service string
 }
 
+// AsyncGet used as a URL validation method
 func AsyncGet(services map[string]Service) <-chan ServiceHttpResponse {
 	ch := make(chan ServiceHttpResponse, len(services))
 
@@ -35,6 +36,7 @@ func AsyncGet(services map[string]Service) <-chan ServiceHttpResponse {
 	return ch
 }
 
+// Get creates a new http request
 func Get(url string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
