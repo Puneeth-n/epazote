@@ -59,7 +59,7 @@ type Action struct {
 	Msg    string
 }
 
-func NewEpazote(file string) (*Epazote, error) {
+func New(file string) (*Epazote, error) {
 
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -87,7 +87,18 @@ func ParseScan(file string) error {
 		return err
 	}
 
+	if len(s) == 0 {
+		log.Println("No services found.")
+		return nil
+	}
+
+	// add services to supervisor
 	for k, v := range s {
+		if !IsURL(v.URL) {
+			log.Printf("[%s] %s - Verify URL: %q", Red(file), k, v.URL)
+			continue
+		}
+
 		// how often to check for the service
 		every := 60
 		if v.Seconds > 0 {
@@ -97,6 +108,11 @@ func ParseScan(file string) error {
 		} else if v.Hours > 0 {
 			every = 3600 * v.Hours
 		}
+		log.Println(every)
+	}
+	sk := GetScheduler()
+	for k, v := range sk.Schedulers {
+		log.Println(Red(k), v)
 	}
 
 	return nil

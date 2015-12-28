@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	ez "github.com/nbari/epazote"
-	"github.com/nbari/epazote/scheduler"
 	"log"
 	"os"
 	"os/signal"
@@ -25,7 +24,7 @@ func main() {
 		log.Fatalf("Cannot read file: %s, use -h for more info.\n\n", *f)
 	}
 
-	cfg, err := ez.NewEpazote(*f)
+	cfg, err := ez.New(*f)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -61,7 +60,7 @@ func main() {
 	}
 
 	// create a Scheduler
-	sk := scheduler.NewScheduler()
+	sk := ez.GetScheduler()
 
 	// add services to supervisor
 	for k, v := range cfg.Services {

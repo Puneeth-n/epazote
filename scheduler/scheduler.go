@@ -14,14 +14,14 @@ type Scheduler struct {
 }
 
 type Schedulers struct {
-	schedulers map[string]Scheduler
+	Schedulers map[string]Scheduler
 	sync.Mutex
 }
 
 // NewScheduler returns a new scheduler
-func NewScheduler() *Schedulers {
+func New() *Schedulers {
 	return &Schedulers{
-		schedulers: make(map[string]Scheduler),
+		Schedulers: make(map[string]Scheduler),
 	}
 }
 
@@ -39,12 +39,12 @@ func (s *Schedulers) AddScheduler(name string, interval int, f func()) {
 	}
 
 	// stop scheduler if exist
-	if sk, ok := s.schedulers[name]; ok {
+	if sk, ok := s.Schedulers[name]; ok {
 		close(sk.quit)
 	}
 
 	// add service
-	s.schedulers[name] = scheduler
+	s.Schedulers[name] = scheduler
 
 	go func() {
 		for {
@@ -63,7 +63,7 @@ func (s *Schedulers) Stop(name string) error {
 	s.Lock()
 	defer s.Unlock()
 
-	sk, ok := s.schedulers[name]
+	sk, ok := s.Schedulers[name]
 
 	if !ok {
 		return fmt.Errorf("Scheduler: %s, does not exist.", name)
@@ -78,7 +78,7 @@ func (s *Schedulers) StopAll() {
 	s.Lock()
 	defer s.Unlock()
 
-	for k, v := range s.schedulers {
+	for k, v := range s.Schedulers {
 		close(v.quit)
 		log.Printf("Stoping: %s", k)
 	}
