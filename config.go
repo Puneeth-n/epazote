@@ -88,7 +88,7 @@ func ParseScan(file string) error {
 	}
 
 	if len(s) == 0 {
-		log.Println("No services found.")
+		log.Printf("[%s] No services found.", Red(file))
 		return nil
 	}
 
