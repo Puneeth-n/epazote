@@ -1,7 +1,6 @@
 package epazote
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -20,16 +19,12 @@ func (self Scandir) Scan(dir string) func() {
 
 // search walk through defined paths
 func (self Scandir) search(root string) {
-	err := filepath.Walk(root, self.find)
-	if err != nil {
-		log.Println(err)
+	find := func(path string, f os.FileInfo, err error) error {
+		if f.Name() == "epazote.yml" {
+			return ParseScan(path)
+		}
+		return nil
 	}
-}
 
-// find update supervisor if epazote.yml found
-func (self Scandir) find(path string, f os.FileInfo, err error) error {
-	if f.Name() == "epazote.yml" {
-		return ParseScan(path)
-	}
-	return nil
+	filepath.Walk(root, find)
 }
