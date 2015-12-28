@@ -74,6 +74,8 @@ func main() {
 		} else if v.Hours > 0 {
 			every = 3600 * v.Hours
 		}
+
+		// schedule service
 		sk.AddScheduler(k, every, ez.Supervice(v))
 	}
 

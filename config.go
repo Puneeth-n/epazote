@@ -92,7 +92,10 @@ func ParseScan(file string) error {
 		return nil
 	}
 
-	// add services to supervisor
+	// get a Scheduler
+	sk := GetScheduler()
+
+	// add/update services to supervisor
 	for k, v := range s {
 		if !IsURL(v.URL) {
 			log.Printf("[%s] %s - Verify URL: %q", Red(file), k, v.URL)
@@ -108,11 +111,9 @@ func ParseScan(file string) error {
 		} else if v.Hours > 0 {
 			every = 3600 * v.Hours
 		}
-		log.Println(every)
-	}
-	sk := GetScheduler()
-	for k, v := range sk.Schedulers {
-		log.Println(Red(k), v)
+
+		// schedule service
+		sk.AddScheduler(k, every, Supervice(v))
 	}
 
 	return nil
