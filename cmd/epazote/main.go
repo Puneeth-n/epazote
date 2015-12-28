@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
@@ -29,11 +30,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// scan check config
+	// scan check config and clean paths
 	if len(cfg.Config.Scan.Paths) > 0 {
-		for _, d := range cfg.Config.Scan.Paths {
-			if _, err := os.Stat(d); os.IsNotExist(err) {
-				log.Fatalf("Verify that directory: %s, exists and is readable.", d)
+		for k, d := range cfg.Config.Scan.Paths {
+			if r, err := filepath.EvalSymlinks(d); err != nil {
+				log.Fatalln(err)
+			} else {
+				if _, err := os.Stat(r); os.IsNotExist(err) {
+					log.Fatalf("Verify that directory: %s, exists and is readable.", r)
+				}
+				cfg.Config.Scan.Paths[k] = r
 			}
 		}
 	}
@@ -82,9 +88,11 @@ func main() {
 		} else if cfg.Config.Scan.Hours > 0 {
 			every = 3600 * cfg.Config.Scan.Hours
 		}
+
+		// set how often to scan
+		s := new(ez.Scandir)
 		for _, v := range cfg.Config.Scan.Paths {
-			// how often to scan
-			sk.AddScheduler(v, every, ez.Scandir(v))
+			sk.AddScheduler(v, every, s.Scan(v))
 		}
 		log.Printf(ez.Green("Epazote %s   on %d services, scan paths: %s [pid: %d]."), herb, len(cfg.Services), strings.Join(cfg.Config.Scan.Paths, ","), os.Getpid())
 	} else {
