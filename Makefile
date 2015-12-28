@@ -1,4 +1,4 @@
-.PHONY: all get test clean build
+.PHONY: all get test clean build cover
 
 GO ?= go
 BIN_NAME=epazote
@@ -16,3 +16,8 @@ clean:
 
 test: get
 	${GO} test -v
+
+cover:
+	${GO} test -cover && \
+	${GO} test -coverprofile=coverage.out  && \
+	${GO} tool cover -html=coverage.out
