@@ -6,7 +6,10 @@ import (
 	"path/filepath"
 )
 
-type Scandir struct{}
+type (
+	Services map[string]Service
+	Scandir  struct{}
+)
 
 func (self Scandir) Scan(dir string) func() {
 	return func() {
@@ -14,17 +17,16 @@ func (self Scandir) Scan(dir string) func() {
 	}
 }
 
-func (self Scandir) search(root string) error {
+func (self Scandir) search(root string) {
 	err := filepath.Walk(root, self.find)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
-	return nil
 }
 
 func (self Scandir) find(path string, f os.FileInfo, err error) error {
 	if f.Name() == "epazote.yml" {
-		log.Printf("Visited: %s - %s\n", path, f.Name())
+		return ParseScan(path)
 	}
 	return nil
 }

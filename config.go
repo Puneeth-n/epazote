@@ -3,6 +3,7 @@ package epazote
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 )
 
 type Epazote struct {
@@ -72,4 +73,31 @@ func NewEpazote(file string) (*Epazote, error) {
 	}
 
 	return &ez, nil
+}
+
+func ParseScan(file string) error {
+	yml_file, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	var s Services
+
+	if err := yaml.Unmarshal(yml_file, &s); err != nil {
+		return err
+	}
+
+	for k, v := range s {
+		// how often to check for the service
+		every := 60
+		if v.Seconds > 0 {
+			every = v.Seconds
+		} else if v.Minutes > 0 {
+			every = 60 * v.Minutes
+		} else if v.Hours > 0 {
+			every = 3600 * v.Hours
+		}
+	}
+
+	return nil
 }
