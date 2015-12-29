@@ -5,10 +5,7 @@ import (
 	"path/filepath"
 )
 
-type (
-	Services map[string]Service
-	Scandir  struct{}
-)
+type Scandir struct{}
 
 // Scan return func() to work with the scheduler
 func (self Scandir) Scan(dir string) func() {
@@ -18,13 +15,23 @@ func (self Scandir) Scan(dir string) func() {
 }
 
 // search walk through defined paths
-func (self Scandir) search(root string) {
+func (self Scandir) search(root string) error {
 	find := func(path string, f os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if f.Name() == "epazote.yml" {
 			return ParseScan(path)
 		}
 		return nil
 	}
 
-	filepath.Walk(root, find)
+	// Walk over root using find func
+	err := filepath.Walk(root, find)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -36,6 +36,8 @@ type Scan struct {
 	Seconds, Minutes, Hours int
 }
 
+type Services map[string]Service
+
 type Service struct {
 	URL                     string
 	Timeout                 int
