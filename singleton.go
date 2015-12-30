@@ -5,10 +5,10 @@ import (
 	"sync"
 )
 
-var instance *sk.Schedulers
+var instance *sk.Scheduler
 var once sync.Once
 
-func GetScheduler() *sk.Schedulers {
+func GetScheduler() *sk.Scheduler {
 	once.Do(func() {
 		instance = sk.New()
 	})

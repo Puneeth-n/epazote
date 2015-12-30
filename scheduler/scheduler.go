@@ -7,32 +7,32 @@ import (
 	"time"
 )
 
-type Scheduler struct {
+type scheduler struct {
 	t    <-chan time.Time
 	quit chan struct{}
 	f    func()
 }
 
-type Schedulers struct {
-	Schedulers map[string]Scheduler
+type Scheduler struct {
+	Schedulers map[string]scheduler
 	sync.Mutex
 }
 
 // NewScheduler returns a new scheduler
-func New() *Schedulers {
-	return &Schedulers{
-		Schedulers: make(map[string]Scheduler),
+func New() *Scheduler {
+	return &Scheduler{
+		Schedulers: make(map[string]scheduler),
 	}
 }
 
 // AddScheduler calls a function every X seconds.
-func (s *Schedulers) AddScheduler(name string, interval int, f func()) {
+func (s *Scheduler) AddScheduler(name string, interval int, f func()) {
 	s.Lock()
 	defer s.Unlock()
 
 	e := time.Duration(interval) * time.Second
 
-	scheduler := Scheduler{
+	scheduler := scheduler{
 		t:    time.NewTicker(e).C,
 		quit: make(chan struct{}),
 		f:    f,
@@ -59,7 +59,7 @@ func (s *Schedulers) AddScheduler(name string, interval int, f func()) {
 }
 
 // Stop ends a specified scheduler.
-func (s *Schedulers) Stop(name string) error {
+func (s *Scheduler) Stop(name string) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -74,7 +74,7 @@ func (s *Schedulers) Stop(name string) error {
 }
 
 // StopAll ends all schedulers.
-func (s *Schedulers) StopAll() {
+func (s *Scheduler) StopAll() {
 	s.Lock()
 	defer s.Unlock()
 

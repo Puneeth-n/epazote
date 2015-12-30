@@ -2,16 +2,20 @@ package epazote
 
 import (
 	"fmt"
+	"github.com/nbari/epazote/scheduler"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
+
+const herb = "\U0001f33f"
 
 type Epazote struct {
 	Config   Config
-	Services map[string]Service
+	Services Services
 }
 
 type Config struct {
@@ -34,21 +38,25 @@ type Http struct {
 	pathPort int
 }
 
-type Scan struct {
-	Paths                   []string
+type Every struct {
 	Seconds, Minutes, Hours int
+}
+
+type Scan struct {
+	Paths []string
+	Every
 }
 
 type Services map[string]Service
 
 type Service struct {
-	URL                     string
-	Timeout                 int
-	Seconds, Minutes, Hours int
-	Log                     string
-	Expect                  Expect
-	IfStatus                map[string]Action `yaml:"if_status`
-	IfHeader                map[string]Action `yaml:"if_header"`
+	URL     string
+	Timeout int
+	Every
+	Log      string
+	Expect   Expect
+	IfStatus map[string]Action `yaml:"if_status`
+	IfHeader map[string]Action `yaml:"if_header"`
 }
 
 type Expect struct {
@@ -110,6 +118,47 @@ func (self *Epazote) VerifyUrls() error {
 	return nil
 }
 
+// PathOrServices check if at least one path or service is set
+func (self *Epazote) PathsOrServices() error {
+	if len(self.Config.Scan.Paths) == 0 && len(self.Services) == 0 {
+		return fmt.Errorf("%s", Red("No services to supervices or paths to scan."))
+	}
+	return nil
+}
+
+// Start Add services to scheduler
+func (self *Epazote) Start(sk *scheduler.Scheduler) string {
+	for k, v := range self.Services {
+		// schedule service
+		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
+	}
+
+	if len(self.Config.Scan.Paths) > 0 {
+		s := new(Scandir)
+		for _, v := range self.Config.Scan.Paths {
+			sk.AddScheduler(v, GetInterval(300, self.Config.Scan.Every), s.Scan(v))
+		}
+	}
+
+	return fmt.Sprintf("Epazote %s   on %d services, scan paths: %s", herb, len(self.Services), strings.Join(self.Config.Scan.Paths, ","))
+}
+
+// GetInterval return the check interval in seconds
+func GetInterval(d int, s Every) int {
+	// default to 60 seconds
+	every := d
+
+	if s.Seconds > 0 {
+		every = s.Seconds
+	} else if s.Minutes > 0 {
+		every = 60 * s.Minutes
+	} else if s.Hours > 0 {
+		every = 3600 * s.Hours
+	}
+
+	return every
+}
+
 func ParseScan(file string) error {
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -137,18 +186,8 @@ func ParseScan(file string) error {
 			continue
 		}
 
-		// how often to check for the service
-		every := 60
-		if v.Seconds > 0 {
-			every = v.Seconds
-		} else if v.Minutes > 0 {
-			every = 60 * v.Minutes
-		} else if v.Hours > 0 {
-			every = 3600 * v.Hours
-		}
-
 		// schedule service
-		sk.AddScheduler(k, every, Supervice(v))
+		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
 	}
 
 	return nil
