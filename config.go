@@ -1,9 +1,12 @@
 package epazote
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 )
 
 type Epazote struct {
@@ -75,6 +78,36 @@ func New(file string) (*Epazote, error) {
 	}
 
 	return &ez, nil
+}
+
+// CheckPaths verify that directories exist and are readable
+func (self *Epazote) CheckPaths() error {
+	if len(self.Config.Scan.Paths) > 0 {
+		for k, d := range self.Config.Scan.Paths {
+			if r, err := filepath.EvalSymlinks(d); err != nil {
+				return err
+			} else {
+				if _, err := os.Stat(r); os.IsNotExist(err) {
+					return fmt.Errorf("Verify that directory: %s, exists and is readable.", r)
+				}
+				self.Config.Scan.Paths[k] = r
+			}
+		}
+		return nil
+	}
+	return nil
+}
+
+// VerifyUrls, we can't supervice unreachable services
+func (self *Epazote) VerifyUrls() error {
+	ch := AsyncGet(self.Services)
+	for i := 0; i < len(self.Services); i++ {
+		x := <-ch
+		if x.Err != nil {
+			return fmt.Errorf("%s - Verify URL: %q", Red(x.Service), x.Err)
+		}
+	}
+	return nil
 }
 
 func ParseScan(file string) error {

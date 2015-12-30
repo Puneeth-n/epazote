@@ -18,10 +18,10 @@ type ServiceHttpResponse struct {
 }
 
 // AsyncGet used as a URL validation method
-func AsyncGet(services map[string]Service) <-chan ServiceHttpResponse {
-	ch := make(chan ServiceHttpResponse, len(services))
+func AsyncGet(s Services) <-chan ServiceHttpResponse {
+	ch := make(chan ServiceHttpResponse, len(s))
 
-	for k, v := range services {
+	for k, v := range s {
 		go func(name string, url string) {
 			resp, err := Get(url)
 			if err != nil {

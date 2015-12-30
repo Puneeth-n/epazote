@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"syscall"
 )
@@ -30,29 +29,18 @@ func main() {
 	}
 
 	// scan check config and clean paths
-	if len(cfg.Config.Scan.Paths) > 0 {
-		for k, d := range cfg.Config.Scan.Paths {
-			if r, err := filepath.EvalSymlinks(d); err != nil {
-				log.Fatalln(err)
-			} else {
-				if _, err := os.Stat(r); os.IsNotExist(err) {
-					log.Fatalf("Verify that directory: %s, exists and is readable.", r)
-				}
-				cfg.Config.Scan.Paths[k] = r
-			}
-		}
+	err = cfg.CheckPaths()
+	if err != nil {
+		log.Fatalln(err)
 	}
 
 	// verify URL, we can't supervice unreachable services
-	ch := ez.AsyncGet(cfg.Services)
-	for i := 0; i < len(cfg.Services); i++ {
-		x := <-ch
-		if x.Err != nil {
-			if !*c {
-				log.Fatalf("%s - Verify URL: %q", ez.Red(x.Service), x.Err)
-			}
-			log.Printf("%s - Verify URL: %q", ez.Red(x.Service), x.Err)
+	err = cfg.VerifyUrls()
+	if err != nil {
+		if !*c {
+			log.Fatalln(err)
 		}
+		log.Println(err)
 	}
 
 	if len(cfg.Config.Scan.Paths) == 0 && len(cfg.Services) == 0 {
