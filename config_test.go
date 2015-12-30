@@ -25,6 +25,38 @@ func TestConfigNew(t *testing.T) {
 	}
 }
 
+func TestConfigGetIntervalDefault(t *testing.T) {
+	e := Every{}
+	i := GetInterval(0, e)
+	if i != 60 {
+		t.Error("Expected 60")
+	}
+}
+
+func TestConfigGetIntervalSeconds(t *testing.T) {
+	e := Every{1, 0, 0}
+	i := GetInterval(30, e)
+	if i != 1 {
+		t.Error("Expected 1")
+	}
+}
+
+func TestConfigGetIntervalMinutes(t *testing.T) {
+	e := Every{0, 1, 0}
+	i := GetInterval(30, e)
+	if i != 60 {
+		t.Error("Expected 60")
+	}
+}
+
+func TestConfigGetIntervalHours(t *testing.T) {
+	e := Every{0, 0, 1}
+	i := GetInterval(30, e)
+	if i != 3600 {
+		t.Error("Expected 3600")
+	}
+}
+
 func TestParseScanBadFile(t *testing.T) {
 	err := ParseScan("test/no-exist.yml")
 	if err == nil {

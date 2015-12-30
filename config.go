@@ -146,6 +146,9 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 // GetInterval return the check interval in seconds
 func GetInterval(d int, s Every) int {
 	// default to 60 seconds
+	if d == 0 {
+		d = 60
+	}
 	every := d
 
 	if s.Seconds > 0 {
