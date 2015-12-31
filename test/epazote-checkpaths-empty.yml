@@ -1,0 +1,4 @@
+config:
+    scan:
+        every:
+            seconds: 30

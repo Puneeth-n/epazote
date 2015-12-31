@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +23,20 @@ func (self Scandir) search(root string) error {
 		}
 
 		if f.Name() == "epazote.yml" {
-			//			return ParseScan(path)
+			srv, err := ParseScan(path)
+			if err != nil {
+				return err
+			}
+			// get a Scheduler
+			sk := GetScheduler()
+			for k, v := range srv {
+				if !IsURL(v.URL) {
+					log.Printf("[%s] %s - Verify URL: %q", Red(path), k, v.URL)
+					continue
+				}
+				// schedule service
+				sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
+			}
 		}
 		return nil
 	}

@@ -5,7 +5,6 @@ import (
 	"github.com/nbari/epazote/scheduler"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	//	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -92,12 +91,12 @@ func New(file string) (*Epazote, error) {
 func (self *Epazote) CheckPaths() error {
 	if len(self.Config.Scan.Paths) > 0 {
 		for k, d := range self.Config.Scan.Paths {
+			if _, err := os.Stat(d); os.IsNotExist(err) {
+				return fmt.Errorf("Verify that directory: %s, exists and is readable.", d)
+			}
 			if r, err := filepath.EvalSymlinks(d); err != nil {
 				return err
 			} else {
-				if _, err := os.Stat(r); os.IsNotExist(err) {
-					return fmt.Errorf("Verify that directory: %s, exists and is readable.", r)
-				}
 				self.Config.Scan.Paths[k] = r
 			}
 		}
@@ -180,19 +179,4 @@ func ParseScan(file string) (Services, error) {
 	}
 
 	return s, nil
-}
-
-func UpdateScheduler(s Service) {
-	// get a Scheduler
-	//	sk := GetScheduler()
-
-	// add/update services to supervisor
-	if !IsURL(s.URL) {
-		//		log.Printf("[%s] %s - Verify URL: %q", Red(file), k, v.URL)
-		//		continue
-	}
-
-	// schedule service
-	//	sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
-
 }

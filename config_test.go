@@ -102,3 +102,42 @@ func TestParseScanEvery(t *testing.T) {
 		t.Error("Expecting 2 got:", s["service 3"].Every.Hours)
 	}
 }
+
+func TestCheckPathsNe(t *testing.T) {
+	cfg, err := New("test/epazote-checkpaths-ne.yml")
+	if err != nil {
+		t.Error(err, cfg)
+	}
+
+	// scan check config and clean paths
+	err = cfg.CheckPaths()
+	if err == nil {
+		t.Error("Expecting: Verify that directory: nonexist, exists and is readable.")
+	}
+}
+
+func TestCheckPaths(t *testing.T) {
+	cfg, err := New("test/epazote-checkpaths.yml")
+	if err != nil {
+		t.Error(err, cfg)
+	}
+
+	// scan check config and clean paths
+	err = cfg.CheckPaths()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCheckPathsEmpty(t *testing.T) {
+	cfg, err := New("test/epazote-checkpaths-empty.yml")
+	if err != nil {
+		t.Error(err, cfg)
+	}
+
+	// scan check config and clean paths
+	err = cfg.CheckPaths()
+	if err != nil {
+		t.Error(err)
+	}
+}
