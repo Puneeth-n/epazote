@@ -2,8 +2,18 @@ package epazote
 
 import (
 	"log"
-	//	"os/exec"
+	"os/exec"
+	"strings"
 )
+
+// Exec
+func Exec(cmd string) {
+	if len(cmd) > 0 {
+		args := strings.Fields(cmd)
+		out, err := exec.Command(args[0], args[1:]...).Output()
+		log.Println(out, err)
+	}
+}
 
 // Supervice check services
 func Supervice(s Service) func() {
@@ -19,11 +29,9 @@ func Supervice(s Service) func() {
 		}
 
 		res, err := Get(s.URL, s.Timeout)
-		if err != nil {
-			log.Println(err)
+		if err == nil {
+			Exec(s.Expect.IfNot.Cmd)
 		}
-
 		log.Println(get_body, res)
-
 	}
 }
