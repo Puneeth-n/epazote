@@ -2,10 +2,22 @@ package epazote
 
 import (
 	"log"
+	//	"os/exec"
 )
 
-func Supervice(service Service) func() {
+// Supervice check services
+func Supervice(s Service) func() {
 	return func() {
-		log.Println(service.Every, service.URL, service.Expect.Body)
+		get_body := false
+		switch t := s.Expect.Body.(type) {
+		case nil:
+			log.Println(t)
+		default:
+			log.Println(t)
+			get_body = true
+		}
+
+		log.Println(get_body)
+
 	}
 }
