@@ -22,7 +22,7 @@ func (self Scandir) search(root string) error {
 		}
 
 		if f.Name() == "epazote.yml" {
-			return ParseScan(path)
+			//			return ParseScan(path)
 		}
 		return nil
 	}

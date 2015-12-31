@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	//	"fmt"
 	"testing"
 )
 
@@ -58,36 +59,46 @@ func TestConfigGetIntervalHours(t *testing.T) {
 }
 
 func TestParseScanBadFile(t *testing.T) {
-	err := ParseScan("test/no-exist.yml")
+	_, err := ParseScan("test/no-exist.yml")
 	if err == nil {
 		t.Error(err)
 	}
 }
 
 func TestParseScanBadYaml(t *testing.T) {
-	err := ParseScan("test/bad.yml")
+	_, err := ParseScan("test/bad.yml")
 	if err == nil {
 		t.Error(err)
 	}
 }
 
 func TestParseScanEmpty(t *testing.T) {
-	err := ParseScan("test/empty.yml")
-	if err != nil {
+	_, err := ParseScan("test/empty.yml")
+	if err == nil {
 		t.Error(err)
 	}
 }
 
 func TestParseScanBadUrl(t *testing.T) {
-	err := ParseScan("test/bad-url.yml")
+	_, err := ParseScan("test/bad-url.yml")
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestParseScanEvery(t *testing.T) {
-	err := ParseScan("test/every.yml")
+	s, err := ParseScan("test/every.yml")
+
 	if err != nil {
 		t.Error(err)
+	}
+
+	switch {
+	case s["service 1"].Every.Seconds != 30:
+		t.Error("Expecting 60 got: ", s["service 1"].Every.Minutes)
+	case s["service 2"].Every.Minutes != 1:
+		t.Error("Expecting 1 got:", s["service 2"].Every.Minutes)
+	case s["service 3"].Every.Hours != 2:
+		t.Error("Expecting 2 got:", s["service 3"].Every.Hours)
 	}
 }

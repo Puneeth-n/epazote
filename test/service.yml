@@ -3,6 +3,7 @@ service 1:
     timeout: 5
 
     # check every (only use 1)
-    seconds: 60
-    minutes: 1
-    hours: 1
+    every:
+        seconds: 30
+        minutes: 1
+        hours: 1

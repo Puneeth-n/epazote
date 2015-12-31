@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	ez "github.com/nbari/epazote"
 	"log"
 	"os"
@@ -24,6 +25,8 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	fmt.Printf("%# v", cfg)
 
 	// scan check config and clean paths
 	err = cfg.CheckPaths()

@@ -5,7 +5,7 @@ import (
 	"github.com/nbari/epazote/scheduler"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
+	//	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,7 +55,7 @@ type Service struct {
 	Every
 	Log      string
 	Expect   Expect
-	IfStatus map[string]Action `yaml:"if_status`
+	IfStatus map[string]Action `yaml:"if_status"`
 	IfHeader map[string]Action `yaml:"if_header"`
 }
 
@@ -144,54 +144,55 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 }
 
 // GetInterval return the check interval in seconds
-func GetInterval(d int, s Every) int {
+func GetInterval(d int, e Every) int {
 	// default to 60 seconds
-	if d == 0 {
+	if d < 1 {
 		d = 60
 	}
 	every := d
 
-	if s.Seconds > 0 {
-		every = s.Seconds
-	} else if s.Minutes > 0 {
-		every = 60 * s.Minutes
-	} else if s.Hours > 0 {
-		every = 3600 * s.Hours
+	if e.Seconds > 0 {
+		return e.Seconds
+	} else if e.Minutes > 0 {
+		return 60 * e.Minutes
+	} else if e.Hours > 0 {
+		return 3600 * e.Hours
 	}
 
 	return every
 }
 
-func ParseScan(file string) error {
+func ParseScan(file string) (Services, error) {
+
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var s Services
 
 	if err := yaml.Unmarshal(yml_file, &s); err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(s) == 0 {
-		log.Printf("[%s] No services found.", Red(file))
-		return nil
+		return nil, fmt.Errorf("[%s] No services found.", Red(file))
 	}
 
+	return s, nil
+}
+
+func UpdateScheduler(s Service) {
 	// get a Scheduler
-	sk := GetScheduler()
+	//	sk := GetScheduler()
 
 	// add/update services to supervisor
-	for k, v := range s {
-		if !IsURL(v.URL) {
-			log.Printf("[%s] %s - Verify URL: %q", Red(file), k, v.URL)
-			continue
-		}
-
-		// schedule service
-		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
+	if !IsURL(s.URL) {
+		//		log.Printf("[%s] %s - Verify URL: %q", Red(file), k, v.URL)
+		//		continue
 	}
 
-	return nil
+	// schedule service
+	//	sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
+
 }

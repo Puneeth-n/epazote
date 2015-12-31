@@ -1,11 +1,14 @@
 service 1:
     url: http://httpbin.org/status/402
-    seconds: 60
+    every:
+        seconds: 30
 
 service 2:
     url: http://httpbin.org/status/402
-    minutes: 1
+    every:
+        minutes: 1
 
 service 3:
     url: http://httpbin.org/status/402
-    hours: 1
+    every:
+        hours: 2

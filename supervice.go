@@ -6,6 +6,6 @@ import (
 
 func Supervice(service Service) func() {
 	return func() {
-		log.Println(service.Every.Seconds, service.URL)
+		log.Println(service.Every, service.URL)
 	}
 }
