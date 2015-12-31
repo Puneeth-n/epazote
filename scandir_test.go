@@ -37,8 +37,8 @@ func TestScanSearch(t *testing.T) {
 }
 
 func TestScanParseScanErr(t *testing.T) {
-	dir := "./test-scan"
-	prefix := "scan-"
+	dir := "./"
+	prefix := "test-scan-"
 
 	d, err := ioutil.TempDir(dir, prefix)
 

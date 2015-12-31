@@ -12,8 +12,7 @@ build: get
 	${GO} build -o ${BIN_NAME} cmd/epazote/main.go
 
 clean:
-	@rm -f ${BIN_NAME} && \
-	rm -f *.out
+	@rm -f ${BIN_NAME} *.out
 
 test: get
 	${GO} test -v

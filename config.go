@@ -72,7 +72,6 @@ type Action struct {
 }
 
 func New(file string) (*Epazote, error) {
-
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
@@ -162,7 +161,6 @@ func GetInterval(d int, e Every) int {
 }
 
 func ParseScan(file string) (Services, error) {
-
 	yml_file, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
