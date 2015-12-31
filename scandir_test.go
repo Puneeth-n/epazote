@@ -1,6 +1,9 @@
 package epazote
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -34,8 +37,24 @@ func TestScanSearch(t *testing.T) {
 }
 
 func TestScanParseScanErr(t *testing.T) {
+	dir := "./test-scan"
+	prefix := "scan-"
+
+	d, err := ioutil.TempDir(dir, prefix)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer os.RemoveAll(d)
+
+	f := []byte(`epazote
+    - bad`)
+
+	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
+
 	s := new(Scandir)
-	err := s.search("test-scan")
+	err = s.search(d)
 	if err == nil {
 		t.Error(err)
 	}

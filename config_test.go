@@ -1,7 +1,6 @@
 package epazote
 
 import (
-	//	"fmt"
 	"testing"
 )
 
@@ -179,11 +178,8 @@ func TestCheckVerifyBadUrls(t *testing.T) {
 }
 
 func TestPathsOrServicesEmpty(t *testing.T) {
-	cfg, err := New("test/empty.yml")
-	if err != nil {
-		t.Error(err)
-	}
-	err = cfg.PathsOrServices()
+	e := &Epazote{}
+	err := e.PathsOrServices()
 	if err == nil {
 		t.Error(err)
 	}
