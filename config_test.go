@@ -141,3 +141,39 @@ func TestCheckPathsEmpty(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestCheckVerifyUrlsOk(t *testing.T) {
+	cfg, err := New("test/every.yml")
+	if err != nil {
+		t.Error(err, cfg)
+	}
+
+	// scan check config and clean paths
+	err = cfg.CheckPaths()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = cfg.VerifyUrls()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCheckVerifyBadUrls(t *testing.T) {
+	cfg, err := New("test/epazote.yml")
+	if err != nil {
+		t.Error(err, cfg)
+	}
+
+	// scan check config and clean paths
+	err = cfg.CheckPaths()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = cfg.VerifyUrls()
+	if err == nil {
+		t.Error(err)
+	}
+}
