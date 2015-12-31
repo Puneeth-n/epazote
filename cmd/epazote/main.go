@@ -28,7 +28,6 @@ func main() {
 	}
 
 	fmt.Printf("%# v", pretty.Formatter(cfg))
-	return
 
 	if cfg == nil {
 		log.Fatalln("Check config file sintax.")

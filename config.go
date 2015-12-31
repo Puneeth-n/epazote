@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -61,7 +62,7 @@ type Service struct {
 type Expect struct {
 	Status int
 	Header map[string]string
-	Body   string
+	Body   interface{}
 	IfNot  Action `yaml:"if_not"`
 }
 
@@ -127,6 +128,9 @@ func (self *Epazote) PathsOrServices() error {
 // Start Add services to scheduler
 func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 	for k, v := range self.Services {
+		// rxBody
+		RxBody(&v)
+
 		// schedule service
 		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
 	}
@@ -177,4 +181,25 @@ func ParseScan(file string) (Services, error) {
 	}
 
 	return s, nil
+}
+
+func RxBody(s *Service) error {
+	switch t := s.Expect.Body.(type) {
+	case string:
+		body := t
+		var regex string
+
+		// fix regex
+		if !strings.HasPrefix(body, "^") {
+			regex = fmt.Sprintf("^%s$", body)
+		}
+
+		r, err := regexp.Compile(regex)
+		if err != nil {
+			return err
+		}
+
+		s.Expect.Body = *r
+	}
+	return nil
 }
