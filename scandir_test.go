@@ -32,3 +32,11 @@ func TestScanSearch(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestScanParseScanErr(t *testing.T) {
+	s := new(Scandir)
+	err := s.search("test-scan")
+	if err == nil {
+		t.Error(err)
+	}
+}
