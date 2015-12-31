@@ -18,10 +18,9 @@ services:
         timeout: 5
 
         # check every (only use 1)
-        every:
-            seconds: 60
-            minutes: 1
-            hours: 1
+        seconds: 60
+        minutes: 1
+        hours: 1
 
         expect:
             status: 200
@@ -62,5 +61,4 @@ services:
                     & hungry
 
     service 2:
-        every:
-            seconds: 30
+        seconds: 30

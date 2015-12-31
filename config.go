@@ -43,15 +43,15 @@ type Every struct {
 
 type Scan struct {
 	Paths []string
-	Every
+	Every `yaml:",inline"`
 }
 
 type Services map[string]Service
 
 type Service struct {
-	URL     string
-	Timeout int
-	Every
+	URL      string
+	Timeout  int
+	Every    `yaml:",inline"`
 	Log      string
 	Expect   Expect
 	IfStatus map[string]Action `yaml:"if_status"`
