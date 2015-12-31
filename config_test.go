@@ -177,3 +177,25 @@ func TestCheckVerifyBadUrls(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestPathsOrServicesEmpty(t *testing.T) {
+	cfg, err := New("test/empty.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.PathsOrServices()
+	if err == nil {
+		t.Error(err)
+	}
+}
+
+func TestPathsOrServices(t *testing.T) {
+	cfg, err := New("test/epazote.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.PathsOrServices()
+	if err != nil {
+		t.Error(err)
+	}
+}
