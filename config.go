@@ -55,7 +55,7 @@ type Service struct {
 	Every    `yaml:",inline"`
 	Log      string
 	Expect   Expect
-	IfStatus map[string]Action `yaml:"if_status"`
+	IfStatus map[int]Action    `yaml:"if_status"`
 	IfHeader map[string]Action `yaml:"if_header"`
 }
 
