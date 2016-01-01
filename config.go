@@ -130,8 +130,8 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 	for k, v := range self.Services {
 		// rxBody
 		if body, ok := v.Expect.Body.(string); ok {
-			r := regexp.MustCompile(body)
-			v.Expect.Body = *r
+			re := regexp.MustCompile(body)
+			v.Expect.Body = *re
 		}
 
 		// schedule service

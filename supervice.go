@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Do(a Action) {
+func (s *Service) Do(a Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
@@ -24,7 +24,7 @@ func Supervice(s Service) func() {
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
 		if err != nil {
-			Do(s.Expect.IfNot)
+			s.Do(s.Expect.IfNot)
 		}
 
 		defer res.Body.Close()
@@ -32,7 +32,7 @@ func Supervice(s Service) func() {
 		// if_status
 		if len(s.IfStatus) > 0 {
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				Do(a)
+				s.Do(a)
 			}
 			return
 		}
@@ -41,7 +41,7 @@ func Supervice(s Service) func() {
 		if len(s.IfHeader) > 0 {
 			for k, v := range s.IfHeader {
 				if res.Header.Get(k) != "" {
-					Do(v)
+					s.Do(v)
 				}
 			}
 			return
@@ -49,7 +49,7 @@ func Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			Do(s.Expect.IfNot)
+			s.Do(s.Expect.IfNot)
 			return
 		}
 
@@ -57,7 +57,7 @@ func Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					Do(s.Expect.IfNot)
+					s.Do(s.Expect.IfNot)
 				}
 			}
 			return
@@ -70,7 +70,7 @@ func Supervice(s Service) func() {
 				log.Println(err)
 			}
 			if re.FindString(string(body)) == "" {
-				Do(s.Expect.IfNot)
+				s.Do(s.Expect.IfNot)
 			}
 			return
 		}

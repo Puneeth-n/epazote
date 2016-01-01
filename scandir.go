@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 type Scandir struct{}
@@ -34,6 +35,17 @@ func (self Scandir) search(root string) error {
 					log.Printf("[%s] %s - Verify URL: %q", Red(path), k, v.URL)
 					continue
 				}
+
+				// rxBody
+				if body, ok := v.Expect.Body.(string); ok {
+					re, err := regexp.Compile(body)
+					if err != nil {
+						log.Printf("[%s] %s - Verify Body: %q - %q", Red(path), k, body, err)
+						continue
+					}
+					v.Expect.Body = *re
+				}
+
 				// schedule service
 				sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
 			}

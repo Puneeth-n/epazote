@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"github.com/kr/pretty"
+	//	"fmt"
+	//	"github.com/kr/pretty"
 	ez "github.com/nbari/epazote"
 	"log"
 	"os"
@@ -27,7 +27,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	fmt.Printf("%# v", pretty.Formatter(cfg))
+	// fmt.Printf("%# v", pretty.Formatter(cfg))
 
 	if cfg == nil {
 		log.Fatalln("Check config file sintax.")
