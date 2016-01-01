@@ -13,9 +13,9 @@ func (s *Service) Do(a Action) {
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).Output()
-		log.Println(string(out), err)
+		log.Println(strings.TrimSpace(string(out)), err)
 	}
-	log.Println(cmd)
+	log.Println("aqui: ", cmd)
 }
 
 // Supervice check services

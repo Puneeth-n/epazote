@@ -36,6 +36,11 @@ func (self Scandir) search(root string) error {
 					continue
 				}
 
+				// Status
+				if v.Expect.Status < 1 {
+					v.Expect.Status = 200
+				}
+
 				// rxBody
 				if body, ok := v.Expect.Body.(string); ok {
 					re, err := regexp.Compile(body)

@@ -128,6 +128,11 @@ func (self *Epazote) PathsOrServices() error {
 // Start Add services to scheduler
 func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 	for k, v := range self.Services {
+		// Status
+		if v.Expect.Status < 1 {
+			v.Expect.Status = 200
+		}
+
 		// rxBody
 		if body, ok := v.Expect.Body.(string); ok {
 			re := regexp.MustCompile(body)
