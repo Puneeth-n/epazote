@@ -13,7 +13,7 @@ func Do(a Action) {
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).Output()
-		log.Println(out, err)
+		log.Println(string(out), err)
 	}
 	log.Println(cmd)
 }
@@ -75,7 +75,7 @@ func Supervice(s Service) func() {
 			return
 		}
 
-		log.Printf("Check conf for service with url: %s", Red(s.URL))
+		log.Printf("Check conf/body regex for service with url: %s", Red(s.URL))
 		return
 	}
 }

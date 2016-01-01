@@ -129,7 +129,10 @@ func (self *Epazote) PathsOrServices() error {
 func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 	for k, v := range self.Services {
 		// rxBody
-		RxBody(&v)
+		if body, ok := v.Expect.Body.(string); ok {
+			r := regexp.MustCompile(body)
+			v.Expect.Body = *r
+		}
 
 		// schedule service
 		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
@@ -151,6 +154,7 @@ func GetInterval(d int, e Every) int {
 	if d < 1 {
 		d = 60
 	}
+
 	every := d
 
 	if e.Seconds > 0 {
@@ -181,15 +185,4 @@ func ParseScan(file string) (Services, error) {
 	}
 
 	return s, nil
-}
-
-func RxBody(s *Service) error {
-	if body, ok := s.Expect.Body.(string); ok {
-		r, err := regexp.Compile(body)
-		if err != nil {
-			return err
-		}
-		s.Expect.Body = *r
-	}
-	return nil
 }
