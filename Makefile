@@ -6,7 +6,7 @@ BIN_NAME=epazote
 all: clean build
 
 get:
-	${GO} get -u
+	${GO} get
 
 build: get
 	${GO} build -o ${BIN_NAME} cmd/epazote/main.go
