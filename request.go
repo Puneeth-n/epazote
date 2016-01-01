@@ -23,12 +23,12 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 
 	for k, v := range s {
 		go func(name string, url string) {
-			resp, err := Get(url)
+			res, err := Get(url)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
 			}
-			resp.Body.Close()
+			res.Body.Close()
 			ch <- ServiceHttpResponse{nil, name}
 		}(k, v.URL)
 	}
@@ -54,12 +54,12 @@ func Get(url string, timeout ...int) (*http.Response, error) {
 	req.Header.Set("User-Agent", "epazote")
 
 	// try to connect
-	resp, err := client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	return res, nil
 }
 
 // IsURL https://github.com/asaskevich/govalidator/blob/master/validator.go#L44
@@ -82,14 +82,3 @@ func IsURL(str string) bool {
 
 //// don't read full body
 //html := io.LimitReader(resp.Body, 0)
-
-//if len(s.Expect.Body) > 0 {
-//// read full body
-//html = resp.Body
-//}
-
-//// read the body
-//body, err := ioutil.ReadAll(html)
-//if err != nil {
-//return err
-//}

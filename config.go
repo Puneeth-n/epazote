@@ -184,21 +184,11 @@ func ParseScan(file string) (Services, error) {
 }
 
 func RxBody(s *Service) error {
-	switch t := s.Expect.Body.(type) {
-	case string:
-		body := t
-		var regex string
-
-		// fix regex
-		if !strings.HasPrefix(body, "^") {
-			regex = fmt.Sprintf("^%s$", body)
-		}
-
-		r, err := regexp.Compile(regex)
+	if body, ok := s.Expect.Body.(string); ok {
+		r, err := regexp.Compile(body)
 		if err != nil {
 			return err
 		}
-
 		s.Expect.Body = *r
 	}
 	return nil
