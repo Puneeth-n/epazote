@@ -15,7 +15,7 @@ func Do(a Action) {
 		out, err := exec.Command(args[0], args[1:]...).Output()
 		log.Println(out, err)
 	}
-
+	log.Println(cmd)
 }
 
 // Supervice check services
@@ -60,20 +60,22 @@ func Supervice(s Service) func() {
 					Do(s.Expect.IfNot)
 				}
 			}
+			return
 		}
 
 		// Body
-		if r, ok := s.Expect.Body.(*regexp.Regexp); ok {
-			log.Printf("%# v", r)
+		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
 			body, err := ioutil.ReadAll(res.Body)
 			if err != nil {
-				log.Println(err, body)
+				log.Println(err)
 			}
-			if r.FindString(string(body)) == "" {
+			if re.FindString(string(body)) == "" {
 				Do(s.Expect.IfNot)
 			}
+			return
 		}
 
-		log.Printf("%# v", s)
+		log.Printf("Check conf for service with url: %s", Red(s.URL))
+		return
 	}
 }
