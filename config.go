@@ -5,10 +5,12 @@ import (
 	"github.com/nbari/epazote/scheduler"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 const herb = "\U0001f33f"
@@ -16,6 +18,7 @@ const herb = "\U0001f33f"
 type Epazote struct {
 	Config   Config
 	Services Services
+	start    time.Time
 }
 
 type Config struct {
@@ -126,7 +129,7 @@ func (self *Epazote) PathsOrServices() error {
 }
 
 // Start Add services to scheduler
-func (self *Epazote) Start(sk *scheduler.Scheduler) string {
+func (self *Epazote) Start(sk *scheduler.Scheduler) {
 	for k, v := range self.Services {
 		// Status
 		if v.Expect.Status < 1 {
@@ -150,7 +153,11 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) string {
 		}
 	}
 
-	return fmt.Sprintf("Epazote %s   on %d services, scan paths: %s", herb, len(self.Services), strings.Join(self.Config.Scan.Paths, ","))
+	log.Printf("Epazote %s   on %d services, scan paths: %s [pid: %d]", herb, len(self.Services), strings.Join(self.Config.Scan.Paths, ","), os.Getpid())
+
+	// stop until signal received
+	self.start = time.Now()
+	self.ProcessSignal()
 }
 
 // GetInterval return the check interval in seconds

@@ -2,13 +2,9 @@ package main
 
 import (
 	"flag"
-	//	"fmt"
-	//	"github.com/kr/pretty"
 	ez "github.com/nbari/epazote"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
@@ -26,8 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	// fmt.Printf("%# v", pretty.Formatter(cfg))
 
 	if cfg == nil {
 		log.Fatalln("Check config file sintax.")
@@ -57,18 +51,5 @@ func main() {
 	// create a Scheduler
 	sk := ez.GetScheduler()
 
-	log.Printf("%s [pid: %d]", cfg.Start(sk), os.Getpid())
-
-	// exit on signal
-	block := make(chan os.Signal, 1)
-	signal.Notify(block, os.Interrupt, os.Kill, syscall.SIGTERM)
-	signalType := <-block
-	signal.Stop(block)
-
-	log.Printf("%q signal received.", signalType)
-
-	sk.StopAll()
-
-	log.Printf("Exiting.")
-	os.Exit(0)
+	cfg.Start(sk)
 }
