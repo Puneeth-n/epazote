@@ -9,10 +9,15 @@ get:
 	${GO} get
 
 build: get
+ifdef DEBUG
+	${GO} get -u github.com/mailgun/godebug
+	${GOPATH}/bin/godebug build -o ${BIN_NAME}.debug cmd/epazote/main.go
+else
 	${GO} build -o ${BIN_NAME} cmd/epazote/main.go
+endif
 
 clean:
-	@rm -f ${BIN_NAME} *.out
+	@rm -f ${BIN_NAME} ${BIN_NAME}.debug *.out
 
 test: get
 	${GO} test -v
