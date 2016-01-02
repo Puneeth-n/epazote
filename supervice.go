@@ -12,22 +12,31 @@ func (s *Service) Do(a Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
+		log.Println(cmd, args)
 		out, err := exec.Command(args[0], args[1:]...).Output()
-		log.Println(strings.TrimSpace(string(out)), err)
+		if err != nil {
+			log.Printf("cmd error for service with URL: %s - %q:", Red(s.URL), err)
+		}
+		log.Printf("cmd output: %q", strings.TrimSpace(string(out)))
 	}
-	log.Println("aqui: ", cmd)
+	return
 }
 
 // Supervice check services
 func Supervice(s Service) func() {
 	return func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Verify service options with URL: %s - %q", Red(s.URL), r)
+			}
+		}()
+
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
 		if err != nil {
 			s.Do(s.Expect.IfNot)
+			return
 		}
-
-		defer res.Body.Close()
 
 		// if_status
 		if len(s.IfStatus) > 0 {
@@ -59,15 +68,17 @@ func Supervice(s Service) func() {
 				if res.Header.Get(k) != v {
 					s.Do(s.Expect.IfNot)
 				}
+				return
 			}
-			return
 		}
 
 		// Body
 		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
 			body, err := ioutil.ReadAll(res.Body)
+			res.Body.Close()
 			if err != nil {
-				log.Println(err)
+				log.Printf("Could not read Body for service with URL: %s - %q:", Red(s.URL), err)
+				return
 			}
 			if re.FindString(string(body)) == "" {
 				s.Do(s.Expect.IfNot)
@@ -75,7 +86,7 @@ func Supervice(s Service) func() {
 			return
 		}
 
-		log.Printf("Check conf/body regex for service with url: %s", Red(s.URL))
+		log.Printf("Check service with URL: %q", Red(s.URL))
 		return
 	}
 }
