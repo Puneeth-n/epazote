@@ -10,6 +10,7 @@ get:
 
 build: get
 ifdef DEBUG
+# make build DEBUG=true
 	${GO} get -u github.com/mailgun/godebug
 	${GOPATH}/bin/godebug build -o ${BIN_NAME}.debug cmd/epazote/main.go
 else
