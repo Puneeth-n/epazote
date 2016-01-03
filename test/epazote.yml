@@ -1,0 +1,64 @@
+config:
+    smtp:
+        username: username
+        password: password
+        host: smtp server
+        port: 587
+        tls: true
+        headers:
+            from: from@email
+            to: team@email
+            subject: >
+                [%s - %s], Service, Status
+
+services:
+    service 1:
+        # url
+        url: 'http...'
+        timeout: 5
+
+        # check every (only use 1)
+        seconds: 60
+        minutes: 1
+        hours: 1
+
+        expect:
+            status: 200
+            header:
+                content-type: application/json; charset=UTF-8
+                request-id: 'regex'
+            body: regex
+
+            # when_fail
+            if_not:
+                cmd: sv restart .
+                notify: url/email
+                msg: |
+                    line 1
+                    line 2
+
+        # log
+        log: True
+
+        # if status
+        if_status:
+            500:
+                cmd: sv restart .
+            404:
+                cmd: sv restart .
+                msg: not found
+                notify: url
+
+        # if header
+        if_header:
+            x-db-kaputt:
+                cmd: sv restart
+            x-amqp-kaputt:
+                cmd: sv restart
+                notify: you@abc.com
+                msg: |
+                    The rabbit is angry
+                    & hungry
+
+    service 2:
+        seconds: 30
