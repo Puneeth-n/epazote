@@ -12,7 +12,6 @@ func (s *Service) Do(a Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
-		log.Println(cmd, args)
 		out, err := exec.Command(args[0], args[1:]...).Output()
 		if err != nil {
 			log.Printf("cmd error for service with URL: %s - %q:", Red(s.URL), err)
