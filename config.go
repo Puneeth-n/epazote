@@ -7,9 +7,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -157,7 +160,43 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 
 	// stop until signal received
 	self.start = time.Now()
-	self.ProcessSignal()
+
+	// loop forever
+	block := make(chan os.Signal)
+
+	signal.Notify(block, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGUSR1, syscall.SIGUSR2)
+
+	for {
+		signalType := <-block
+		switch signalType {
+		case syscall.SIGUSR1, syscall.SIGUSR2:
+			y, err := yaml.Marshal(&self)
+			if err != nil {
+				log.Printf("error: %v", err)
+			}
+			l := `
+    Gorutines: %d",
+    Alloc : %v
+    Total Alloc: %v
+    Lookups: %v
+    Sys: %v
+    Started on: %v
+    Uptime: %v`
+
+			runtime.NumGoroutine()
+			s := new(runtime.MemStats)
+			runtime.ReadMemStats(s)
+
+			log.Printf("Config dump:\n%s---"+l, y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, self.start.Format(time.RFC3339), time.Since(self.start))
+
+		default:
+			signal.Stop(block)
+			log.Printf("%q signal received.", signalType)
+			sk.StopAll()
+			log.Println("Exiting.")
+			os.Exit(0)
+		}
+	}
 }
 
 // GetInterval return the check interval in seconds
