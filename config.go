@@ -21,7 +21,6 @@ const herb = "\U0001f33f"
 type Epazote struct {
 	Config   Config
 	Services Services
-	start    time.Time
 }
 
 type Config struct {
@@ -159,7 +158,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 	log.Printf("Epazote %s   on %d services, scan paths: %s [pid: %d]", herb, len(self.Services), strings.Join(self.Config.Scan.Paths, ","), os.Getpid())
 
 	// stop until signal received
-	self.start = time.Now()
+	start := time.Now()
 
 	// loop forever
 	block := make(chan os.Signal)
@@ -175,11 +174,13 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 				log.Printf("error: %v", err)
 			}
 			l := `
-    Gorutines: %d",
-    Alloc : %v
-    Total Alloc: %v
-    Lookups: %v
-    Sys: %v
+    Gorutines: %d"
+    Alloc : %d
+    Total Alloc: %d
+    Sys: %d
+    Lookups: %d
+    Mallocs: %d
+    Frees: %d
     Started on: %v
     Uptime: %v`
 
@@ -187,7 +188,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 			s := new(runtime.MemStats)
 			runtime.ReadMemStats(s)
 
-			log.Printf("Config dump:\n%s---"+l, y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, self.start.Format(time.RFC3339), time.Since(self.start))
+			log.Printf("Config dump:\n%s---"+l, y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, s.Mallocs, s.Frees, start.Format(time.RFC3339), time.Since(start))
 
 		default:
 			signal.Stop(block)
