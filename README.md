@@ -59,7 +59,7 @@ language or syntax, and simplifying the setup.
 
 ## The config file.
 
-This is the structure of the config file:
+This is an example/structure of the config file:
 
 ```yaml
 config:
