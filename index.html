@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/epazote/gh-pages/epazote.png" alt="epazote"></h1>
+      <h1 class="project-name">Epazote</h1>
       <h2 class="project-tagline">Microservices  supervisor</h2>
       <a href="https://github.com/nbari/epazote" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/epazote/zipball/master" class="btn">Download .zip</a>
@@ -19,12 +19,45 @@
     </section>
 
     <section class="main-content">
-      <h1>
-<a id="epazote" class="anchor" href="#epazote" aria-hidden="true"><span class="octicon octicon-link"></span></a>epazote</h1>
+      <p><a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a></p>
 
-<p>Microservices  supervisor</p>
+<h1>
+<a id="epazote-" class="anchor" href="#epazote-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Epazote <g-emoji alias="herb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f33f.png">🌿</g-emoji>
+</h1>
 
-<p>TODO</p>
+<p>Microservices supervisor</p>
+
+<h2>
+<a id="why-" class="anchor" href="#why-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why ?</h2>
+
+<p>There are good supervisors,
+<a href="https://cr.yp.to/daemontools.html">daemontools</a>,
+<a href="http://smarden.org/runit/">runit</a>" just to mention some, on must cases is just
+a matter of uploading code to the server, create a run script and you are all
+set, your code will start up and live forever, so far so good, but let's face
+it, "stuff happens" and here is where Epazote comes into action.</p>
+
+<h2>
+<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span class="octicon octicon-link"></span></a>The problem to solve.</h2>
+
+<p>Once your code/application is up and running, it can become idle and
+unresponsive,your supervisor will not notice this, since in most of the cases is
+just responsible for keeping your app process up and running no matter how it is
+behaving, therefore exist the need to monitor the status of the application and
+based on the responses take actions.</p>
+
+<h2>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works.</h2>
+
+<p>In its basic way of operation, Epazote periodically checks the services endpoints
+"<a href="https://en.wikipedia.org/wiki/Uniform_Resource_Locator">URLs</a>"
+by doing an HTTP GET Request, based on the response Status code, Headers or
+either the body, it executes a command.</p>
+
+<p>In most scenarios, is desired to apply a command directly to the application in
+cause, like a signal (<code>kill -HUP</code>), or either a restar (<code>sv restart app</code>),
+therefore in this case Epazote and the application should be running on the same
+server.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/nbari/epazote">Epazote</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
@@ -34,6 +67,6 @@
 
     </section>
 
-
+  
   </body>
 </html>
