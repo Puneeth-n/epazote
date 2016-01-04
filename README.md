@@ -35,3 +35,6 @@ In most scenarios, is desired to apply a command directly to the application in
 cause, like a signal (``kill -HUP``), or either a restart (``sv restart app``),
 therefore in this case Epazote and the application should be running on the same
 server.
+
+Epazote can also work in a standalone mode by only monitoring and sending alerts
+if desired.
