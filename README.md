@@ -57,7 +57,7 @@ infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.
 
-# The config file.
+## The config file.
 
 This is the structure of the config file:
 
