@@ -10,12 +10,14 @@ There are good supervisors,
 [runit](http://smarden.org/runit/) just to mention some, on most cases is just
 a matter of uploading code to the server, create a run script and you are all
 set, your code will start up and live forever, so far so good, but let's face
-it, "stuff happens" and here is where **Epazote** comes into action.
+it, "stuff happens", suddenly the site or application can stop responding
+request, display unwanted content, etc. here is where **Epazote** comes into
+action.
 
 ## The problem to solve.
-Once your code/application is up and running, it can become idle and
+Once your site/application is up and running, it can become idle and
 unresponsive, your supervisor will not notice this, since in most of the cases
-is just responsible for keeping your app process up and running no matter how it
+is just responsible for keeping your App process up and running no matter how it
 is behaving, therefore exist the need to monitor the status of the application
 and based on the responses take actions.
 
@@ -41,3 +43,5 @@ server.
 
 **Epazote** can also work in a standalone mode by only monitoring and sending alerts
 if desired.
+
+## How to use it.
