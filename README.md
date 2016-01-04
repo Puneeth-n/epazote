@@ -51,7 +51,7 @@ or download a pre-compiled binary matching your operating system.
 > To compile from source, after downloading the sources use ``make`` to build the binary
 
 **Epazote** was designed with simplicity in mind, as an easy tool for
-[DevOps](https://en.wikipedia.org/wiki/DevOps) and as complement to
+[DevOps](https://en.wikipedia.org/wiki/DevOps) and as a complement to
 infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 [SaltStack](http://saltstack.com/), because of this [YAML](http://www.yaml.org/)
 is used for the configuration files, avoiding with this, the learn of a new
