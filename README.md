@@ -44,7 +44,7 @@ server.
 **Epazote** can also work in a standalone mode by only monitoring and sending alerts
 if desired.
 
-## How to use it.
+# How to use it.
 First you need to install **Epazote**, either you can compile it from [source](https://github.com/nbari/epazote)
 or download a pre-compiled binary matching your operating system.
 
@@ -56,3 +56,75 @@ infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 [SaltStack](http://saltstack.com/), because of this [YAML](http://www.yaml.org/)
 is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.
+
+# The config file.
+
+This is the structure of the config file:
+
+```yaml
+config:
+    smtp:
+        username: smtp@domain.tld
+        password: password
+        host: smtp.domain.tld
+        port: 587
+        tls: true
+        headers:
+            from: epazote@domain.tld
+            to: team@domain.tld ops@domain.tld etc@domain.tld
+            subject: [%s -%s], Service, Status
+    http:
+        host: http://domain.tld/post/here
+    scan:
+        paths:
+            - /arena/home/sites
+            - /home/apps
+        minutes: 5
+
+services:
+    my service 1:
+        url: http://myservice.domain.tld/_healthcheck_
+        timeout: 5
+        seconds: 60
+        log: True
+        expect:
+            status: 200
+            header:
+                content-type: application/json; charset=UTF-8
+            body: find this string on my site
+        if_not:
+            cmd: sv restart /services/my_service_1
+            notify: team@domain.tld
+            msg: |
+                line 1 bla bla
+                line 2
+        if_status:
+            500:
+                cmd: reboot
+            404:
+                cmd: sv restart /services/cache
+                msg: restarting cache
+                notify: team@domain.tld x@domain.tld
+        if_header:
+            x-db-kapputt:
+                cmd: svc restart /services/db
+            x-amqp-kapputt:
+                cmd: restart abc
+                notify: bunny@domain.tld
+                msg: |
+                    The rabbit is angry
+                    & hungry
+
+    other service:
+        url: http://other-service.domain.tld/ping
+        minutes: 3
+
+    redirect service:
+        url: http://test.domain.tld/
+        hour: 1
+        expect:
+            status: 302
+        if_not:
+            cmd: service restart abc
+            notify: abc@domain.tld
+```
