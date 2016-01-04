@@ -28,7 +28,9 @@ and automatically apply them upon request.
 ## How it works.
 In its basic way of operation, **Epazote** periodically checks the services endpoints
 "[URLs](https://en.wikipedia.org/wiki/Uniform_Resource_Locator)"
-by doing an [HTTP GET Request](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods), based on the response Status code, Headers or
+by doing an [HTTP GET Request](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods),
+based on the response [Status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes),
+[Headers](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields) or
 either the body, it executes a command.
 
 In most scenarios, is desired to apply a command directly to the application in
