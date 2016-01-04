@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Epazote <img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f33f.png" alt="epazote"></h1>
+      <h1 class="project-name">Epazote</h1>
       <h2 class="project-tagline">Microservices  supervisor</h2>
       <a href="https://github.com/nbari/epazote" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/epazote/zipball/master" class="btn">Download .zip</a>
@@ -19,7 +19,8 @@
     </section>
 
     <section class="main-content">
-      <p><a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a></p>
+      <p><a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a>
+<a href="https://travis-ci.org/nbari/epazote"><img src="https://travis-ci.org/nbari/epazote.svg?branch=develop" alt="Build Status"></a></p>
 
 <h1>
 <a id="epazote-" class="anchor" href="#epazote-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Epazote <g-emoji alias="herb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f33f.png">🌿</g-emoji>
@@ -32,7 +33,7 @@
 
 <p>There are good supervisors,
 <a href="https://cr.yp.to/daemontools.html">daemontools</a>,
-<a href="http://smarden.org/runit/">runit</a>" just to mention some, on must cases is just
+<a href="http://smarden.org/runit/">runit</a> just to mention some, on must cases is just
 a matter of uploading code to the server, create a run script and you are all
 set, your code will start up and live forever, so far so good, but let's face
 it, "stuff happens" and here is where Epazote comes into action.</p>
@@ -41,10 +42,16 @@ it, "stuff happens" and here is where Epazote comes into action.</p>
 <a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span class="octicon octicon-link"></span></a>The problem to solve.</h2>
 
 <p>Once your code/application is up and running, it can become idle and
-unresponsive,your supervisor will not notice this, since in most of the cases is
-just responsible for keeping your app process up and running no matter how it is
-behaving, therefore exist the need to monitor the status of the application and
-based on the responses take actions.</p>
+unresponsive, your supervisor will not notice this, since in most of the cases
+is just responsible for keeping your app process up and running no matter how it
+is behaving, therefore exist the need to monitor the status of the application
+and based on the responses take actions.</p>
+
+<p>When doing Continuous Deployment "<a href="https://en.wikipedia.org/wiki/Continuous_delivery">CD</a>"
+if the ping, healthcheck, status, etc; endpoints change, it imply making changes
+in order to properly monitor the application, this creates a dependency or extra
+task apart from the CD process, therefore exist the need to detect any changes
+and automatically apply them upon request.</p>
 
 <h2>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works.</h2>
@@ -55,9 +62,12 @@ by doing an HTTP GET Request, based on the response Status code, Headers or
 either the body, it executes a command.</p>
 
 <p>In most scenarios, is desired to apply a command directly to the application in
-cause, like a signal (<code>kill -HUP</code>), or either a restar (<code>sv restart app</code>),
+cause, like a signal (<code>kill -HUP</code>), or either a restart (<code>sv restart app</code>),
 therefore in this case Epazote and the application should be running on the same
 server.</p>
+
+<p>Epazote can also work in a standalone mode by only monitoring and sending alerts
+if desired.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/nbari/epazote">Epazote</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
@@ -67,6 +77,6 @@ server.</p>
 
     </section>
 
-
+  
   </body>
 </html>
