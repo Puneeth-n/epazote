@@ -7,7 +7,7 @@ Microservices supervisor
 ## Why ?
 There are good supervisors,
 [daemontools](https://cr.yp.to/daemontools.html),
-[runit](http://smarden.org/runit/) just to mention some, on must cases is just
+[runit](http://smarden.org/runit/) just to mention some, on most cases is just
 a matter of uploading code to the server, create a run script and you are all
 set, your code will start up and live forever, so far so good, but let's face
 it, "stuff happens" and here is where Epazote comes into action.
