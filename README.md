@@ -45,3 +45,13 @@ server.
 if desired.
 
 ## How to use it.
+First you need to install **Epazote**, either you can compile it from [source](https://github.com/nbari/epazote)
+or download a pre-compiled binary matching your operating system.
+
+> To compile from source, after downloading the sources use ``make`` to build the binary
+
+**Epazote** was designed with simplicity in mind, and as complement to
+infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
+[SaltStack](http://saltstack.com/), because of this [YAML](http://www.yaml.org/)
+is used for the configuration files, avoiding with this the learn of a new
+language or syntax, and simplifying the setup.
