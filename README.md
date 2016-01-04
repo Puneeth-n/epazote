@@ -31,7 +31,8 @@ In its basic way of operation, **Epazote** periodically checks the services endp
 by doing an [HTTP GET Request](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods),
 based on the response [Status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes),
 [Headers](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields) or
-either the body, it executes a command.
+either the
+[body](https://en.wikipedia.org/wiki/HTTP_message_body), it executes a command.
 
 In most scenarios, is desired to apply a command directly to the application in
 cause, like a signal (``kill -HUP``), or either a restart (``sv restart app``),
