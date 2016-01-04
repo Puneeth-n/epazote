@@ -106,14 +106,14 @@ services:
                 msg: restarting cache
                 notify: team@domain.tld x@domain.tld
         if_header:
-            x-db-kapputt:
-                cmd: svc restart /services/db
             x-amqp-kapputt:
                 cmd: restart abc
                 notify: bunny@domain.tld
                 msg: |
                     The rabbit is angry
                     & hungry
+            x-db-kapputt:
+                cmd: svc restart /services/db
 
     other service:
         url: http://other-service.domain.tld/ping
