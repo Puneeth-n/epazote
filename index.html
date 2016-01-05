@@ -36,38 +36,142 @@
 <a href="http://smarden.org/runit/">runit</a> just to mention some, on most cases is just
 a matter of uploading code to the server, create a run script and you are all
 set, your code will start up and live forever, so far so good, but let's face
-it, "stuff happens" and here is where Epazote comes into action.</p>
+it, "stuff happens", suddenly the site or application can stop responding
+request, display unwanted content, etc. here is where <strong>Epazote</strong> comes into
+action.</p>
 
 <h2>
-<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span class="octicon octicon-link"></span></a>The problem to solve.</h2>
+<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span class="octicon octicon-link"></span></a>The problem to solve</h2>
 
-<p>Once your code/application is up and running, it can become idle and
+<p>Once your site/application is up and running, it can become idle and
 unresponsive, your supervisor will not notice this, since in most of the cases
-is just responsible for keeping your app process up and running no matter how it
-is behaving, therefore exist the need to monitor the status of the application
+is just responsible for keeping your App process up and running no matter how it
+is behaving, therefore exists the need to monitor the status of the application
 and based on the responses take actions.</p>
 
 <p>When doing Continuous Deployment "<a href="https://en.wikipedia.org/wiki/Continuous_delivery">CD</a>"
-if the ping, healthcheck, status, etc; endpoints change, it imply making changes
+if the ping, healthcheck, status, etc; endpoints change, it implies making changes
 in order to properly monitor the application, this creates a dependency or extra
-task apart from the CD process, therefore exist the need to detect any changes
+task apart from the CD process, therefore exists the need to detect any changes
 and automatically apply them upon request.</p>
 
 <h2>
-<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works.</h2>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works</h2>
 
-<p>In its basic way of operation, Epazote periodically checks the services endpoints
+<p>In its basic way of operation, <strong>Epazote</strong> periodically checks the services endpoints
 "<a href="https://en.wikipedia.org/wiki/Uniform_Resource_Locator">URLs</a>"
-by doing an HTTP GET Request, based on the response Status code, Headers or
-either the body, it executes a command.</p>
+by doing an <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods">HTTP GET Request</a>,
+based on the response <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">Status code</a>,
+<a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields">Headers</a> or
+either the
+<a href="https://en.wikipedia.org/wiki/HTTP_message_body">body</a>, it executes a command.</p>
 
 <p>In most scenarios, is desired to apply a command directly to the application in
 cause, like a signal (<code>kill -HUP</code>), or either a restart (<code>sv restart app</code>),
-therefore in this case Epazote and the application should be running on the same
+therefore in this case <strong>Epazote</strong> and the application should be running on the same
 server.</p>
 
-<p>Epazote can also work in a standalone mode by only monitoring and sending alerts
+<p><strong>Epazote</strong> can also work in a standalone mode by only monitoring and sending alerts
 if desired.</p>
+
+<h1>
+<a id="how-to-use-it" class="anchor" href="#how-to-use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use it</h1>
+
+<p>First you need to install <strong>Epazote</strong>, either you can compile it from <a href="https://github.com/nbari/epazote">source</a>
+or download a pre-compiled binary matching your operating system.</p>
+
+<blockquote>
+<p>To compile from source, after downloading the sources use <code>make</code> to build the binary</p>
+</blockquote>
+
+<p><strong>Epazote</strong> was designed with simplicity in mind, as an easy tool for
+<a href="https://en.wikipedia.org/wiki/DevOps">DevOps</a> and as a complement to
+infrastructure orchestration tools like <a href="http://www.ansible.com/">Ansible</a> and
+<a href="http://saltstack.com/">SaltStack</a>, because of this <a href="http://www.yaml.org/">YAML</a>
+is used for the configuration files, avoiding with this, the learn of a new
+language or syntax, and simplifying the setup.</p>
+
+<h2>
+<a id="the-configuration-file" class="anchor" href="#the-configuration-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>The configuration file</h2>
+
+<p>The configuration file (<a href="https://en.wikipedia.org/wiki/YAML">YAML formated</a>)
+consists of two parts, a <strong>config</strong> and a <strong>services</strong> (Key-value pairs).</p>
+
+<p>The <strong>config</strong> section is composed of three blocks:</p>
+
+<pre><code>- post (Url to post the logs)
+- smtp (Email settings for sending notification)
+- scan (Paths used to find the file 'epazote.yml')
+</code></pre>
+
+<p>Example:</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">config:</span></span>
+    <span class="pl-s"><span class="pl-ent">post:</span> <span class="pl-s">http://domain.tld/get/json/</span></span>
+    <span class="pl-s"><span class="pl-ent">smtp:</span></span>
+        <span class="pl-s"><span class="pl-ent">username:</span> <span class="pl-s">smtp@domain.tld</span></span>
+        <span class="pl-s"><span class="pl-ent">password:</span> <span class="pl-s">password</span></span>
+        <span class="pl-s"><span class="pl-ent">host:</span> <span class="pl-s">smtp.domain.tld</span></span>
+        <span class="pl-c1"><span class="pl-ent">port:</span> 587</span>
+        <span class="pl-s"><span class="pl-ent">tls:</span> <span class="pl-s">true</span></span>
+        <span class="pl-s"><span class="pl-ent">headers:</span></span>
+            <span class="pl-s"><span class="pl-ent">from:</span> <span class="pl-s">epazote@domain.tld</span></span>
+            <span class="pl-s"><span class="pl-ent">to:</span> <span class="pl-s">team@domain.tld ops@domain.tld etc@domain.tld</span></span>
+            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s">[%s -%s], Service, Status</span></span>
+    <span class="pl-s"><span class="pl-ent">scan:</span></span>
+        <span class="pl-s"><span class="pl-ent">paths:</span></span>
+            <span class="pl-s">- <span class="pl-s">/arena/home/sites</span></span>
+            <span class="pl-s">- <span class="pl-s">/home/apps</span></span>
+        <span class="pl-c1"><span class="pl-ent">minutes:</span> 5</span></pre></div>
+
+<p>TODO....</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">services:</span></span>
+    <span class="pl-s"><span class="pl-ent">my service 1:</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://myservice.domain.tld/_healthcheck_</span></span>
+        <span class="pl-c1"><span class="pl-ent">timeout:</span> 5</span>
+        <span class="pl-c1"><span class="pl-ent">seconds:</span> 60</span>
+        <span class="pl-s"><span class="pl-ent">log:</span> <span class="pl-s">True</span></span>
+        <span class="pl-s"><span class="pl-ent">expect:</span></span>
+            <span class="pl-c1"><span class="pl-ent">status:</span> 200</span>
+            <span class="pl-s"><span class="pl-ent">header:</span></span>
+                <span class="pl-s"><span class="pl-ent">content-type:</span> <span class="pl-s">application/json; charset=UTF-8</span></span>
+            <span class="pl-s"><span class="pl-ent">body:</span> <span class="pl-s">find this string on my site</span></span>
+        <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">sv restart /services/my_service_1</span></span>
+            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">team@domain.tld</span></span>
+<span class="pl-s">            <span class="pl-ent">msg:</span> |</span>
+<span class="pl-s">                line 1 bla bla</span>
+<span class="pl-s">                line 2</span>
+<span class="pl-s"></span>        <span class="pl-s"><span class="pl-ent">if_status:</span></span>
+            <span class="pl-s"><span class="pl-ent">500:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">reboot</span></span>
+            <span class="pl-s"><span class="pl-ent">404:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">sv restart /services/cache</span></span>
+                <span class="pl-s"><span class="pl-ent">msg:</span> <span class="pl-s">restarting cache</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">team@domain.tld x@domain.tld</span></span>
+        <span class="pl-s"><span class="pl-ent">if_header:</span></span>
+            <span class="pl-s"><span class="pl-ent">x-amqp-kapputt:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">restart abc</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">bunny@domain.tld</span></span>
+<span class="pl-s">                <span class="pl-ent">msg:</span> |</span>
+<span class="pl-s">                    The rabbit is angry</span>
+<span class="pl-s">                    &amp; hungry</span>
+<span class="pl-s"></span>            <span class="pl-s"><span class="pl-ent">x-db-kapputt:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">svc restart /services/db</span></span>
+
+    <span class="pl-s"><span class="pl-ent">other service:</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://other-service.domain.tld/ping</span></span>
+        <span class="pl-c1"><span class="pl-ent">minutes:</span> 3</span>
+
+    <span class="pl-s"><span class="pl-ent">redirect service:</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://test.domain.tld/</span></span>
+        <span class="pl-c1"><span class="pl-ent">hour:</span> 1</span>
+        <span class="pl-s"><span class="pl-ent">expect:</span></span>
+            <span class="pl-c1"><span class="pl-ent">status:</span> 302</span>
+        <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
+            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">abc@domain.tld</span></span></pre></div>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/nbari/epazote">Epazote</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
