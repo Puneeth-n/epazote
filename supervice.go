@@ -8,21 +8,22 @@ import (
 	"strings"
 )
 
-func (s *Service) Do(a Action) {
+func (self *Service) Do(a *Action) error {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).Output()
 		if err != nil {
-			log.Printf("cmd error for service with URL: %s - %q:", Red(s.URL), err)
+			return err
+			// log.Printf("cmd error for service with URL: %s - %q:", Red(self.URL), err)
 		}
 		log.Printf("cmd output: %q", strings.TrimSpace(string(out)))
 	}
-	return
+	return nil
 }
 
 // Supervice check services
-func Supervice(s Service) func() {
+func (self *Epazote) Supervice(s *Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -33,14 +34,14 @@ func Supervice(s Service) func() {
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
 		if err != nil {
-			s.Do(s.Expect.IfNot)
+			s.Do(&s.Expect.IfNot)
 			return
 		}
 
 		// if_status
 		if len(s.IfStatus) > 0 {
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				s.Do(a)
+				s.Do(&a)
 			}
 			return
 		}
@@ -49,7 +50,7 @@ func Supervice(s Service) func() {
 		if len(s.IfHeader) > 0 {
 			for k, v := range s.IfHeader {
 				if res.Header.Get(k) != "" {
-					s.Do(v)
+					s.Do(&v)
 				}
 			}
 			return
@@ -57,7 +58,7 @@ func Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			s.Do(s.Expect.IfNot)
+			s.Do(&s.Expect.IfNot)
 			return
 		}
 
@@ -65,7 +66,7 @@ func Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					s.Do(s.Expect.IfNot)
+					s.Do(&s.Expect.IfNot)
 				}
 				return
 			}
@@ -80,7 +81,7 @@ func Supervice(s Service) func() {
 				return
 			}
 			if re.FindString(string(body)) == "" {
-				s.Do(s.Expect.IfNot)
+				s.Do(&s.Expect.IfNot)
 			}
 			return
 		}

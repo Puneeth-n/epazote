@@ -143,7 +143,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 		}
 
 		// schedule service
-		sk.AddScheduler(k, GetInterval(60, v.Every), Supervice(v))
+		sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(&v))
 	}
 
 	if len(self.Config.Scan.Paths) > 0 {
