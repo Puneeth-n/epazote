@@ -90,6 +90,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			log.Println("alles ok")
 			return
 		}
+
 		log.Printf("Check service with URL: %s -%s", Red(s.URL), s.Expect.Status)
 		return
 	}
