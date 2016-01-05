@@ -14,7 +14,7 @@ it, "stuff happens", suddenly the site or application can stop responding
 request, display unwanted content, etc. here is where **Epazote** comes into
 action.
 
-## The problem to solve.
+## The problem to solve
 Once your site/application is up and running, it can become idle and
 unresponsive, your supervisor will not notice this, since in most of the cases
 is just responsible for keeping your App process up and running no matter how it
@@ -27,7 +27,7 @@ in order to properly monitor the application, this creates a dependency or extra
 task apart from the CD process, therefore exists the need to detect any changes
 and automatically apply them upon request.
 
-## How it works.
+## How it works
 In its basic way of operation, **Epazote** periodically checks the services endpoints
 "[URLs](https://en.wikipedia.org/wiki/Uniform_Resource_Locator)"
 by doing an [HTTP GET Request](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods),
@@ -44,7 +44,7 @@ server.
 **Epazote** can also work in a standalone mode by only monitoring and sending alerts
 if desired.
 
-# How to use it.
+# How to use it
 First you need to install **Epazote**, either you can compile it from [source](https://github.com/nbari/epazote)
 or download a pre-compiled binary matching your operating system.
 
@@ -57,12 +57,22 @@ infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.
 
-## The config file.
+## The configuration file
 
-This is an example/structure of the config file:
+The configuration file ([YAML formated](https://en.wikipedia.org/wiki/YAML))
+consists of two parts, a **config** and a **services** (Key-value pairs).
+
+The **config** section is composed of three blocks:
+
+    - post (Url to post the logs)
+    - smtp (Email settings for sending notification)
+    - scan (Paths used to find the file 'epazote.yml')
+
+Example:
 
 ```yaml
 config:
+    post: http://domain.tld/get/json/
     smtp:
         username: smtp@domain.tld
         password: password
@@ -73,14 +83,15 @@ config:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
             subject: [%s -%s], Service, Status
-    http:
-        host: http://domain.tld/post/here
     scan:
         paths:
             - /arena/home/sites
             - /home/apps
         minutes: 5
+```
 
+
+```yaml
 services:
     my service 1:
         url: http://myservice.domain.tld/_healthcheck_
