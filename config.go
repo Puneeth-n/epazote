@@ -178,6 +178,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
     Lookups: %d
     Mallocs: %d
     Frees: %d
+    Seconds in GC: %d
     Started on: %v
     Uptime: %v`
 
@@ -185,7 +186,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 			s := new(runtime.MemStats)
 			runtime.ReadMemStats(s)
 
-			log.Printf("Config dump:\n%s---"+l, y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, s.Mallocs, s.Frees, start.Format(time.RFC3339), time.Since(start))
+			log.Printf("Config dump:\n%s---"+l, y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, s.Mallocs, s.Frees, s.PauseTotalNs/1000000000, start.Format(time.RFC3339), time.Since(start))
 
 		default:
 			signal.Stop(block)
