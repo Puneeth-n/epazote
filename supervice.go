@@ -8,18 +8,17 @@ import (
 	"strings"
 )
 
-func (self *Service) Do(a *Action) error {
+func (self *Epazote) Do(s *Service, a *Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).Output()
 		if err != nil {
-			return err
-			// log.Printf("cmd error for service with URL: %s - %q:", Red(self.URL), err)
+			log.Printf("cmd error for service with URL: %s - %q:", Red(s.URL), err)
 		}
 		log.Printf("cmd output: %q", strings.TrimSpace(string(out)))
 	}
-	return nil
+	return
 }
 
 // Supervice check services
@@ -34,14 +33,14 @@ func (self *Epazote) Supervice(s Service) func() {
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
 		if err != nil {
-			s.Do(&s.Expect.IfNot)
+			self.Do(&s, &s.Expect.IfNot)
 			return
 		}
 
 		// if_status
 		if len(s.IfStatus) > 0 {
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				s.Do(&a)
+				self.Do(&s, &a)
 			}
 			return
 		}
@@ -50,7 +49,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.IfHeader) > 0 {
 			for k, v := range s.IfHeader {
 				if res.Header.Get(k) != "" {
-					s.Do(&v)
+					self.Do(&s, &v)
 				}
 			}
 			return
@@ -58,7 +57,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			s.Do(&s.Expect.IfNot)
+			self.Do(&s, &s.Expect.IfNot)
 			return
 		}
 
@@ -66,7 +65,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					s.Do(&s.Expect.IfNot)
+					self.Do(&s, &s.Expect.IfNot)
 				}
 				return
 			}
@@ -81,12 +80,17 @@ func (self *Epazote) Supervice(s Service) func() {
 				return
 			}
 			if re.FindString(string(body)) == "" {
-				s.Do(&s.Expect.IfNot)
+				self.Do(&s, &s.Expect.IfNot)
 			}
 			return
 		}
 
-		log.Printf("Check service with URL: %q", Red(s.URL))
+		// fin
+		if res.StatusCode == s.Expect.Status {
+			log.Println("alles ok")
+			return
+		}
+		log.Printf("Check service with URL: %s -%s", Red(s.URL), s.Expect.Status)
 		return
 	}
 }
