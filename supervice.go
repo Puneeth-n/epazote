@@ -32,11 +32,11 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
-		defer res.Body.Close()
 		if err != nil {
 			self.Do(&s, &s.Expect.IfNot)
 			return
 		}
+		defer res.Body.Close()
 
 		// if_status
 		if len(s.IfStatus) > 0 {
