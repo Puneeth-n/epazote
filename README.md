@@ -76,9 +76,7 @@ config:
     smtp:
         username: smtp@domain.tld
         password: password
-        host: smtp.domain.tld
-        port: 587
-        tls: true
+        server: mail.example.com:587
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld

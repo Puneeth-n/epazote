@@ -17,7 +17,7 @@ func SendEmail(e Email) {
 	auth := smtp.PlainAuth("",
 		e.Username,
 		e.Password,
-		e.Host,
+		e.Server,
 	)
 
 	// set From
@@ -52,7 +52,7 @@ func SendEmail(e Email) {
 	msg += CRLF + base64.StdEncoding.EncodeToString([]byte(body))
 
 	err := smtp.SendMail(
-		e.Host+":"+strconv.Itoa(e.Port),
+		e.Server+":"+strconv.Itoa(e.Port),
 		auth,
 		e.Headers["from"],
 		to,

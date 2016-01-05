@@ -24,23 +24,21 @@ type Epazote struct {
 }
 
 type Config struct {
+	Post Post  `yaml:"post"`
 	SMTP Email `yaml:"smtp"`
-	HTTP Http  `yaml:"http"`
 	Scan Scan  `yaml:"scan"`
 }
 
 type Email struct {
 	Username string
 	Password string
-	Host     string
+	Server   string
 	Port     int
-	Tls      bool
 	Headers  map[string]string
 }
 
-type Http struct {
-	Host     string
-	pathPort int
+type Post struct {
+	URL string
 }
 
 type Every struct {
