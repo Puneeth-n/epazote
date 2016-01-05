@@ -32,6 +32,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// HTTP GET service URL
 		res, err := Get(s.URL, s.Timeout)
+		defer res.Body.Close()
 		if err != nil {
 			self.Do(&s, &s.Expect.IfNot)
 			return
@@ -74,7 +75,6 @@ func (self *Epazote) Supervice(s Service) func() {
 		// Body
 		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
 			body, err := ioutil.ReadAll(res.Body)
-			res.Body.Close()
 			if err != nil {
 				log.Printf("Could not read Body for service with URL: %s - %q:", Red(s.URL), err)
 				return
