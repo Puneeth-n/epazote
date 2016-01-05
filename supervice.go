@@ -23,7 +23,7 @@ func (self *Service) Do(a *Action) error {
 }
 
 // Supervice check services
-func (self *Epazote) Supervice(s *Service) func() {
+func (self *Epazote) Supervice(s Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {

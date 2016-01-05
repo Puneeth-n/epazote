@@ -10,7 +10,7 @@ import (
 
 // just to cover
 func TestScanReturnFunc(t *testing.T) {
-	s := new(Scandir)
+	s := new(Epazote)
 	f := s.Scan("test")
 	ft := reflect.TypeOf(f).Kind()
 	if ft != reflect.Func {
@@ -21,7 +21,7 @@ func TestScanReturnFunc(t *testing.T) {
 }
 
 func TestScanSearchNonexistentRoot(t *testing.T) {
-	s := new(Scandir)
+	s := new(Epazote)
 	err := s.search("nonexistent")
 	if err == nil {
 		t.Error("Expecting: lstat nonexistent: no such file or directory")
@@ -29,7 +29,7 @@ func TestScanSearchNonexistentRoot(t *testing.T) {
 }
 
 func TestScanSearch(t *testing.T) {
-	s := new(Scandir)
+	s := new(Epazote)
 	err := s.search("test")
 	if err != nil {
 		t.Error(err)
@@ -53,7 +53,7 @@ func TestScanParseScanErr(t *testing.T) {
 
 	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
 
-	s := new(Scandir)
+	s := new(Epazote)
 	err = s.search(d)
 	if err == nil {
 		t.Error(err)

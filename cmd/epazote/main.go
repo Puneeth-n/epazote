@@ -51,5 +51,5 @@ func main() {
 	// create a Scheduler
 	sk := ez.GetScheduler()
 
-	cfg.Start()
+	cfg.Start(sk)
 }
