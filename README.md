@@ -76,7 +76,8 @@ config:
     smtp:
         username: smtp@domain.tld
         password: password
-        server: mail.example.com:587
+        server: mail.example.com
+        port: 587
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
@@ -87,6 +88,24 @@ config:
             - /home/apps
         minutes: 5
 ```
+
+### config - post
+
+An URL to post all activity related to the services
+
+### config - smtp
+
+Required to properly send alerts via email, the ``headers`` section can be
+extended with any desired value.
+
+### config - scan
+
+Paths to scan every N ``seconds``, ``minutes``, ``hours`` to find the file ``epazote.yml`` very use full when doing Continues Deployments, for example if your code is automatically uploaded to the directory ``/arena/home/sites/application_1``  and your scan paths contain ``/arena/home/sites``, you could simple upload a fine named
+
+
+
+
+
 
 TODO....
 
