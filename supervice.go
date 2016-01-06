@@ -36,7 +36,23 @@ func (self *Epazote) Supervice(s Service) func() {
 			self.Do(&s, &s.Expect.IfNot)
 			return
 		}
-		defer res.Body.Close()
+
+		// Read Body first and close if not used
+		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
+			body, err := ioutil.ReadAll(res.Body)
+			res.Body.Close()
+			if err != nil {
+				log.Printf("Could not read Body for service with URL: %s - %q:", Red(s.URL), err)
+				return
+			}
+			if re.FindString(string(body)) == "" {
+				self.Do(&s, &s.Expect.IfNot)
+			}
+			return
+		}
+
+		// close body since will not be used anymore
+		res.Body.Close()
 
 		// if_status
 		if len(s.IfStatus) > 0 {
@@ -70,19 +86,6 @@ func (self *Epazote) Supervice(s Service) func() {
 				}
 				return
 			}
-		}
-
-		// Body
-		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
-			body, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				log.Printf("Could not read Body for service with URL: %s - %q:", Red(s.URL), err)
-				return
-			}
-			if re.FindString(string(body)) == "" {
-				self.Do(&s, &s.Expect.IfNot)
-			}
-			return
 		}
 
 		// fin
