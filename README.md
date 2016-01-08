@@ -45,7 +45,8 @@ server.
 if desired.
 
 # How to use it
-First you need to install **Epazote**, either you can compile it from [source](https://github.com/nbari/epazote)
+First you need to install **Epazote**, either you can compile it from
+[source](https://github.com/nbari/epazote)
 or download a pre-compiled binary matching your operating system.
 
 > To compile from source, after downloading the sources use ``make`` to build the binary
@@ -100,7 +101,12 @@ extended with any desired value.
 
 ### config - scan
 
-Paths to scan every N ``seconds``, ``minutes``, ``hours`` to find the file ``epazote.yml`` very use full when doing Continues Deployments, for example if your code is automatically uploaded to the directory ``/arena/home/sites/application_1``  and your scan paths contain ``/arena/home/sites``, you could simple upload a fine named
+Paths to scan every N ``seconds``, ``minutes``, ``hours`` to find the
+file ``epazote.yml``, very use full when doing Continues Deployments,
+for example if your code is automatically uploaded to the directory
+``/arena/home/sites/application_1`` and your scan paths contain
+``/arena/home/sites``, you could simple upload on your application directory a
+file named ``epazote.yml`` with the service rules.
 
 
 
