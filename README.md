@@ -112,6 +112,16 @@ directory ``/arena/home/sites/application_1`` and your scan paths contain
 file named ``epazote.yml`` with the service rules, thus achieving the deployment
 of your application and the supervising at the same time.
 
+### config (optional)
+
+As you may notice the ``config`` section contains mainly settings for sending
+alerts/notifications apart from the ``scan`` option, therefore is totally
+optional, meaning that **Epazote** can still run and check your services without
+the need of the ``config`` section.
+
+If you want to automatically update/load services you will need the
+``config - scan`` setting.
+
 
 TODO....
 
