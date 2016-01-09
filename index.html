@@ -98,7 +98,10 @@ language or syntax, and simplifying the setup.</p>
 <p>The configuration file (<a href="https://en.wikipedia.org/wiki/YAML">YAML formated</a>)
 consists of two parts, a <strong>config</strong> and a <strong>services</strong> (Key-value pairs).</p>
 
-<p>The <strong>config</strong> section is composed of three blocks:</p>
+<h2>
+<a id="the-config-section" class="anchor" href="#the-config-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The config section</h2>
+
+<p>The <strong>config</strong> section is composed of three settings:</p>
 
 <pre><code>- post (Url to post the logs)
 - smtp (Email settings for sending notification)
@@ -128,7 +131,7 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
 <a id="config---post" class="anchor" href="#config---post" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - post</h3>
 
 <p>An URL to post all activity related to the services if log is enable on the
-service.</p>
+service. The <strong>post</strong> setting is optional.</p>
 
 <h3>
 <a id="config---smtp" class="anchor" href="#config---smtp" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - smtp</h3>
@@ -140,12 +143,28 @@ service.</p>
 <a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - scan</h3>
 
 <p>Paths to scan every N <code>seconds</code>, <code>minutes</code> or <code>hours</code>, a search for
-services specified in a file call <code>epazote.yml</code> is made, very use full when
-doing Continues Deployments. for example if your code is automatically uploaded
-to the directory <code>/arena/home/sites/application_1</code> and your scan paths contain
+services specified in a file call <code>epazote.yml</code> is made.</p>
+
+<p>The <strong>scan</strong> setting is optional however is very useful when doing Continues
+Deployments. for example if your code is automatically uploaded to the
+directory <code>/arena/home/sites/application_1</code> and your scan paths contain
 <code>/arena/home/sites</code>, you could simple upload on your application directory a
 file named <code>epazote.yml</code> with the service rules, thus achieving the deployment
 of your application and the supervising at the same time.</p>
+
+<h3>
+<a id="config-optional" class="anchor" href="#config-optional" aria-hidden="true"><span class="octicon octicon-link"></span></a>config (optional)</h3>
+
+<p>As you may notice the <code>config</code> section contains mainly settings for sending
+alerts/notifications apart from the <code>scan</code> option, therefore is totally
+optional, meaning that <strong>Epazote</strong> can still run and check your services without
+the need of the <code>config</code> section.</p>
+
+<p>If you want to automatically update/load services you will need the
+<code>config - scan</code> setting.</p>
+
+<h2>
+<a id="the-services-section" class="anchor" href="#the-services-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The services section</h2>
 
 <p>TODO....</p>
 
