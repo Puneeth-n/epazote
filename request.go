@@ -23,7 +23,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 
 	for k, v := range s {
 		go func(name string, url string) {
-			res, err := Get(url)
+			res, err := HTTPGet(url)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
@@ -37,7 +37,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 }
 
 // Get creates a new http request
-func Get(url string, timeout ...int) (*http.Response, error) {
+func HTTPGet(url string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
 

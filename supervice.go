@@ -31,7 +31,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}()
 
 		// HTTP GET service URL
-		res, err := Get(s.URL, s.Timeout)
+		res, err := HTTPGet(s.URL, s.Timeout)
 		if err != nil {
 			self.Do(&s, &s.Expect.IfNot)
 			return

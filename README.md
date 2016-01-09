@@ -180,8 +180,25 @@ services:
             notify: abc@domain.tld
 ```
 
-## services - name of service
+### services - name of service
 An unique string that identifies your service, in the above example, there are 3 services named:
  - my service 1
  - other service
  - redirect service
+
+### services - url
+URL of the service to supervise
+
+### services - timeout in seconds
+Timeout specifies a time limit for the HTTP requests, A Timeout of zero means no timeout, defaults to 5 seconds.
+
+### services - seconds, minutes, hours, N
+How often to check the service, the options are:
+
+ - seconds
+ - minutes
+ - hours
+
+Only one should be used
+
+### services
