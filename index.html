@@ -52,7 +52,7 @@ and based on the responses take actions.</p>
 <p>When doing Continuous Deployment "<a href="https://en.wikipedia.org/wiki/Continuous_delivery">CD</a>"
 if the ping, healthcheck, status, etc; endpoints change, it implies making changes
 in order to properly monitor the application, this creates a dependency or extra
-task apart from the CD process, therefore exists the need to detect any changes
+task apart from the "CD" process, therefore exists the need to detect any changes
 and automatically apply them upon request.</p>
 
 <h2>
@@ -68,16 +68,17 @@ either the
 
 <p>In most scenarios, is desired to apply a command directly to the application in
 cause, like a signal (<code>kill -HUP</code>), or either a restart (<code>sv restart app</code>),
-therefore in this case <strong>Epazote</strong> and the application should be running on the same
-server.</p>
+therefore in this case <strong>Epazote</strong> and the application should be running on the
+same server.</p>
 
-<p><strong>Epazote</strong> can also work in a standalone mode by only monitoring and sending alerts
-if desired.</p>
+<p><strong>Epazote</strong> can also work in a standalone mode by only monitoring and sending
+alerts if desired.</p>
 
 <h1>
 <a id="how-to-use-it" class="anchor" href="#how-to-use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use it</h1>
 
-<p>First you need to install <strong>Epazote</strong>, either you can compile it from <a href="https://github.com/nbari/epazote">source</a>
+<p>First you need to install <strong>Epazote</strong>, either you can compile it from
+<a href="https://github.com/nbari/epazote">source</a>
 or download a pre-compiled binary matching your operating system.</p>
 
 <blockquote>
@@ -111,9 +112,8 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
     <span class="pl-s"><span class="pl-ent">smtp:</span></span>
         <span class="pl-s"><span class="pl-ent">username:</span> <span class="pl-s">smtp@domain.tld</span></span>
         <span class="pl-s"><span class="pl-ent">password:</span> <span class="pl-s">password</span></span>
-        <span class="pl-s"><span class="pl-ent">host:</span> <span class="pl-s">smtp.domain.tld</span></span>
+        <span class="pl-s"><span class="pl-ent">server:</span> <span class="pl-s">mail.example.com</span></span>
         <span class="pl-c1"><span class="pl-ent">port:</span> 587</span>
-        <span class="pl-s"><span class="pl-ent">tls:</span> <span class="pl-s">true</span></span>
         <span class="pl-s"><span class="pl-ent">headers:</span></span>
             <span class="pl-s"><span class="pl-ent">from:</span> <span class="pl-s">epazote@domain.tld</span></span>
             <span class="pl-s"><span class="pl-ent">to:</span> <span class="pl-s">team@domain.tld ops@domain.tld etc@domain.tld</span></span>
@@ -123,6 +123,29 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
             <span class="pl-s">- <span class="pl-s">/arena/home/sites</span></span>
             <span class="pl-s">- <span class="pl-s">/home/apps</span></span>
         <span class="pl-c1"><span class="pl-ent">minutes:</span> 5</span></pre></div>
+
+<h3>
+<a id="config---post" class="anchor" href="#config---post" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - post</h3>
+
+<p>An URL to post all activity related to the services if log is enable on the
+service.</p>
+
+<h3>
+<a id="config---smtp" class="anchor" href="#config---smtp" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - smtp</h3>
+
+<p>Required to properly send alerts via email, all fields are required, the
+<code>headers</code> section can be extended with any desired key-pair values.</p>
+
+<h3>
+<a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - scan</h3>
+
+<p>Paths to scan every N <code>seconds</code>, <code>minutes</code> or <code>hours</code>, a search for
+services specified in a file call <code>epazote.yml</code> is made, very use full when
+doing Continues Deployments. for example if your code is automatically uploaded
+to the directory <code>/arena/home/sites/application_1</code> and your scan paths contain
+<code>/arena/home/sites</code>, you could simple upload on your application directory a
+file named <code>epazote.yml</code> with the service rules, thus achieving the deployment
+of your application and the supervising at the same time.</p>
 
 <p>TODO....</p>
 
