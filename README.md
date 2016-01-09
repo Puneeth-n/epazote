@@ -24,7 +24,7 @@ and based on the responses take actions.
 When doing Continuous Deployment "[CD](https://en.wikipedia.org/wiki/Continuous_delivery)"
 if the ping, healthcheck, status, etc; endpoints change, it implies making changes
 in order to properly monitor the application, this creates a dependency or extra
-task apart from the CD process, therefore exists the need to detect any changes
+task apart from the "CD" process, therefore exists the need to detect any changes
 and automatically apply them upon request.
 
 ## How it works
@@ -38,11 +38,11 @@ either the
 
 In most scenarios, is desired to apply a command directly to the application in
 cause, like a signal (``kill -HUP``), or either a restart (``sv restart app``),
-therefore in this case **Epazote** and the application should be running on the same
-server.
+therefore in this case **Epazote** and the application should be running on the
+same server.
 
-**Epazote** can also work in a standalone mode by only monitoring and sending alerts
-if desired.
+**Epazote** can also work in a standalone mode by only monitoring and sending
+alerts if desired.
 
 # How to use it
 First you need to install **Epazote**, either you can compile it from
@@ -92,24 +92,23 @@ config:
 
 ### config - post
 
-An URL to post all activity related to the services
+An URL to post all activity related to the services if log is enable on the
+service.
 
 ### config - smtp
 
-Required to properly send alerts via email, the ``headers`` section can be
-extended with any desired value.
+Required to properly send alerts via email, all fields are required, the
+``headers`` section can be extended with any desired key-pair values.
 
 ### config - scan
 
-Paths to scan every N ``seconds``, ``minutes``, ``hours`` to find the
-file ``epazote.yml``, very use full when doing Continues Deployments,
-for example if your code is automatically uploaded to the directory
-``/arena/home/sites/application_1`` and your scan paths contain
+Paths to scan every N ``seconds``, ``minutes`` or ``hours``, a search for
+services specified in a file call ``epazote.yml`` is made, very use full when
+doing Continues Deployments. for example if your code is automatically uploaded
+to the directory ``/arena/home/sites/application_1`` and your scan paths contain
 ``/arena/home/sites``, you could simple upload on your application directory a
-file named ``epazote.yml`` with the service rules.
-
-
-
+file named ``epazote.yml`` with the service rules, thus achieving the deployment
+of your application and the supervising at the same time.
 
 
 
