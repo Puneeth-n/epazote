@@ -63,7 +63,7 @@ language or syntax, and simplifying the setup.
 The configuration file ([YAML formated](https://en.wikipedia.org/wiki/YAML))
 consists of two parts, a **config** and a **services** (Key-value pairs).
 
-The **config** section is composed of three blocks:
+The **config** section is composed of three settings:
 
     - post (Url to post the logs)
     - smtp (Email settings for sending notification)
@@ -93,7 +93,7 @@ config:
 ### config - post
 
 An URL to post all activity related to the services if log is enable on the
-service.
+service. The **post** setting is optional.
 
 ### config - smtp
 
@@ -103,13 +103,14 @@ Required to properly send alerts via email, all fields are required, the
 ### config - scan
 
 Paths to scan every N ``seconds``, ``minutes`` or ``hours``, a search for
-services specified in a file call ``epazote.yml`` is made, very use full when
-doing Continues Deployments. for example if your code is automatically uploaded
-to the directory ``/arena/home/sites/application_1`` and your scan paths contain
+services specified in a file call ``epazote.yml`` is made.
+
+The **scan** setting is optional however is very useful when doing Continues
+Deployments. for example if your code is automatically uploaded to the
+directory ``/arena/home/sites/application_1`` and your scan paths contain
 ``/arena/home/sites``, you could simple upload on your application directory a
 file named ``epazote.yml`` with the service rules, thus achieving the deployment
 of your application and the supervising at the same time.
-
 
 
 TODO....
