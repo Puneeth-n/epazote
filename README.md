@@ -127,6 +127,9 @@ If you want to automatically update/load services you will need the
 
 ## The services section
 
+Services are the main functionality of **Epazote**, is where the URL's and the
+rules based on the response are defined.
+
 TODO....
 
 ```yaml
