@@ -128,9 +128,8 @@ If you want to automatically update/load services you will need the
 ## The services section
 
 Services are the main functionality of **Epazote**, is where the URL's and the
-rules based on the response are defined.
-
-TODO....
+rules based on the response are defined, since options vary from service to
+service, an example could help better to understand the setup:
 
 ```yaml
 services:
@@ -180,3 +179,9 @@ services:
             cmd: service restart abc
             notify: abc@domain.tld
 ```
+
+## services - name of service
+An unique string that identifies your service, in the above example, there are 3 services named:
+ - my service 1
+ - other service
+ - redirect service
