@@ -63,6 +63,8 @@ language or syntax, and simplifying the setup.
 The configuration file ([YAML formated](https://en.wikipedia.org/wiki/YAML))
 consists of two parts, a **config** and a **services** (Key-value pairs).
 
+## The config section
+
 The **config** section is composed of three settings:
 
     - post (Url to post the logs)
@@ -122,6 +124,8 @@ the need of the ``config`` section.
 If you want to automatically update/load services you will need the
 ``config - scan`` setting.
 
+
+## The services section
 
 TODO....
 
