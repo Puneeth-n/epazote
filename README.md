@@ -117,7 +117,7 @@ of your application and the supervising at the same time.
 ### config (optional)
 
 As you may notice the ``config`` section contains mainly settings for sending
-alerts/notifications apart from the ``scan`` option, therefore is totally
+alerts/notifications apart from the ``scan`` setting, therefore is totally
 optional, meaning that **Epazote** can still run and check your services without
 the need of the ``config`` section.
 
