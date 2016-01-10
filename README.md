@@ -299,7 +299,11 @@ of the recipients that will be notified when the action is executed.
 ``msg`` The message to send when the action is executed.
 
 ## Extra setup
-*green dots give some comfort* because of this when using the ``log`` option an
-extra service could be configure as a receiver for all the post that **Epazote**
-produce and based on the data obtained create a custom dashboard, something
-similar to: https://status.cloud.google.com/ or http://status.aws.amazon.com/
+*green dots give some comfort* -- Because of this when using the ``log``
+option an extra service could be configure as a receiver for all the post
+that **Epazote** produce and based on the data obtained create a custom
+dashboard, something similar to: https://status.cloud.google.com/ or
+http://status.aws.amazon.com/
+
+# Issues
+Please report any problem, bug, here: https://github.com/nbari/epazote/issues
