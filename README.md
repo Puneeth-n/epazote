@@ -203,7 +203,8 @@ How often to check the service, the options are: (Only one should be used)
 ``N`` should be an integer.
 
 ### services - log (bool)
-If set to true, it will post all events to the defined ``post`` URL on the **config** section, defaults to false.
+If set to true, it will post all events to the defined ``post`` URL on the
+**config** section, defaults to false.
 
 ### services - expect
 The ``expect`` block options are:
@@ -219,10 +220,14 @@ An Integer representing the expected [HTTP Status Code](https://en.wikipedia.org
 A key-value map of expected headers, it can be only one or more.
 
 ### services - expect - body
-A [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used to match a string on the body of the site, use full in cases you want to ensure that the content delivered is always the same or keeps a pattern.
+A [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used
+to match a string on the body of the site, use full in cases you want to ensure
+that the content delivered is always the same or keeps a pattern.
 
 ### services - expect (How it works)
-The ``expect`` logic tries to implement a [if-else](https://en.wikipedia.org/wiki/if_else) logic ``status``, ``header``, ``body`` are the **if** and the ``if_not`` block becomes the **else**.
+The ``expect`` logic tries to implement a
+[if-else](https://en.wikipedia.org/wiki/if_else) logic ``status``, ``header``,
+``body`` are the **if** and the ``if_not`` block becomes the **else**.
 
     if
         status
@@ -239,10 +244,41 @@ In case that more than one option is used, this is the order in how they are eva
     2. status
     3. header
 
-The reason for this order is related to performance, at the end we want to monitor/supervise the services in an efficient way avoiding to waste extra resources, in must cases only the HTTP Headers are enough to take an action, therefore we don't need to read the full body page, because of this if no ``body`` is defined, **Epazote** will only read the Headers saving with this time and process time.
+The reason for this order is related to performance, at the end we want to
+monitor/supervise the services in an efficient way avoiding to waste extra
+resources, in must cases only the HTTP Headers are enough to take an action,
+therefore we don't need to read the full body page, because of this if no
+``body`` is defined, **Epazote** will only read the Headers saving with this
+time and process time.
 
 ### services - expect - if_not
-``if_not`` is a block with an action of what to do it we don't get what we where expecting (``expect``). See services - Actions
+``if_not`` is a block with an action of what to do it we don't get what we where
+expecting (``expect``). See services - Actions
+
+### services - if_status  & if_header
+There maybe cases in where third-party dependencies are down and because of this
+your application could not be working properly, for this cases the ``if_status``
+and ``if_header`` could be useful.
+
+For example if the database is your application could start responding an status
+code 500 or either a custom header and based on does values take execute an
+action:
+
+The format for ``if_status`` is a key-pair where key is an int representing an
+HTTP status code, and the value an Action option
+
+The format for ``if_header`` is a key-pair where key is a string of something
+you could relate/match and has in other if_X conditions, value is an Action.
+
+This are the only ``if's`` and the order of execution:
+ 1. if_status
+ 2. if_header
+ 3. if_not
+
+This means that if a service uses ``if_status`` and ``if_not``, it will
+evaluate first the ``if_status`` and execute an Action if required, in case
+an ``if_status`` and ``if_header`` are set, same applies, first is evaluated
+``if_status``, then ``if_header`` and last ``if_not``.
 
 ## services - Actions
 An Action has tree options:
@@ -256,7 +292,14 @@ They can be used all together, only one or either none.
 ``cmd`` Contains the command to be executed.
 
 ### services - Actions - notify (string)
-``notify`` Should contain the email email address or addresses (space separated) of the recipients that will be notified when the action is executed.
+``notify`` Should contain the email email address or addresses (space separated)
+of the recipients that will be notified when the action is executed.
 
 ### services - Actions - msg (string)
 ``msg`` The message to send when the action is executed.
+
+## Extra setup
+*green dots give some comfort* because of this when using the ``log`` option an
+extra service could be configure as a receiver for all the post that **Epazote**
+produce and based on the data obtained create a custom dashboard, something
+similar to: https://status.cloud.google.com/ or http://status.aws.amazon.com/
