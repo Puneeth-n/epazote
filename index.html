@@ -256,7 +256,8 @@ timeout, defaults to 5 seconds.</p>
 <h3>
 <a id="services---log-bool" class="anchor" href="#services---log-bool" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - log (bool)</h3>
 
-<p>If set to true, it will post all events to the defined <code>post</code> URL on the <strong>config</strong> section, defaults to false.</p>
+<p>If set to true, it will post all events to the defined <code>post</code> URL on the
+<strong>config</strong> section, defaults to false.</p>
 
 <h3>
 <a id="services---expect" class="anchor" href="#services---expect" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect</h3>
@@ -283,12 +284,16 @@ timeout, defaults to 5 seconds.</p>
 <h3>
 <a id="services---expect---body" class="anchor" href="#services---expect---body" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - body</h3>
 
-<p>A <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> used to match a string on the body of the site, use full in cases you want to ensure that the content delivered is always the same or keeps a pattern.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> used
+to match a string on the body of the site, use full in cases you want to ensure
+that the content delivered is always the same or keeps a pattern.</p>
 
 <h3>
 <a id="services---expect-how-it-works" class="anchor" href="#services---expect-how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect (How it works)</h3>
 
-<p>The <code>expect</code> logic tries to implement a <a href="https://en.wikipedia.org/wiki/if_else">if-else</a> logic <code>status</code>, <code>header</code>, <code>body</code> are the <strong>if</strong> and the <code>if_not</code> block becomes the <strong>else</strong>.</p>
+<p>The <code>expect</code> logic tries to implement a
+<a href="https://en.wikipedia.org/wiki/if_else">if-else</a> logic <code>status</code>, <code>header</code>,
+<code>body</code> are the <strong>if</strong> and the <code>if_not</code> block becomes the <strong>else</strong>.</p>
 
 <pre><code>if
     status
@@ -307,12 +312,48 @@ else:
 3. header
 </code></pre>
 
-<p>The reason for this order is related to performance, at the end we want to monitor/supervise the services in an efficient way avoiding to waste extra resources, in must cases only the HTTP Headers are enough to take an action, therefore we don't need to read the full body page, because of this if no <code>body</code> is defined, <strong>Epazote</strong> will only read the Headers saving with this time and process time.</p>
+<p>The reason for this order is related to performance, at the end we want to
+monitor/supervise the services in an efficient way avoiding to waste extra
+resources, in must cases only the HTTP Headers are enough to take an action,
+therefore we don't need to read the full body page, because of this if no
+<code>body</code> is defined, <strong>Epazote</strong> will only read the Headers saving with this
+time and process time.</p>
 
 <h3>
 <a id="services---expect---if_not" class="anchor" href="#services---expect---if_not" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - if_not</h3>
 
-<p><code>if_not</code> is a block with an action of what to do it we don't get what we where expecting (<code>expect</code>). See services - Actions</p>
+<p><code>if_not</code> is a block with an action of what to do it we don't get what we where
+expecting (<code>expect</code>). See services - Actions</p>
+
+<h3>
+<a id="services---if_status---if_header" class="anchor" href="#services---if_status---if_header" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - if_status  &amp; if_header</h3>
+
+<p>There maybe cases in where third-party dependencies are down and because of this
+your application could not be working properly, for this cases the <code>if_status</code>
+and <code>if_header</code> could be useful.</p>
+
+<p>For example if the database is your application could start responding an status
+code 500 or either a custom header and based on does values take execute an
+action:</p>
+
+<p>The format for <code>if_status</code> is a key-pair where key is an int representing an
+HTTP status code, and the value an Action option</p>
+
+<p>The format for <code>if_header</code> is a key-pair where key is a string of something
+you could relate/match and has in other if_X conditions, value is an Action.</p>
+
+<p>This are the only <code>if's</code> and the order of execution:</p>
+
+<ol>
+<li>if_status</li>
+<li>if_header</li>
+<li>if_not</li>
+</ol>
+
+<p>This means that if a service uses <code>if_status</code> and <code>if_not</code>, it will
+evaluate first the <code>if_status</code> and execute an Action if required, in case
+an <code>if_status</code> and <code>if_header</code> are set, same applies, first is evaluated
+<code>if_status</code>, then <code>if_header</code> and last <code>if_not</code>.</p>
 
 <h2>
 <a id="services---actions" class="anchor" href="#services---actions" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions</h2>
@@ -335,12 +376,21 @@ else:
 <h3>
 <a id="services---actions---notify-string" class="anchor" href="#services---actions---notify-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - notify (string)</h3>
 
-<p><code>notify</code> Should contain the email email address or addresses (space separated) of the recipients that will be notified when the action is executed.</p>
+<p><code>notify</code> Should contain the email email address or addresses (space separated)
+of the recipients that will be notified when the action is executed.</p>
 
 <h3>
 <a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
 
 <p><code>msg</code> The message to send when the action is executed.</p>
+
+<h2>
+<a id="extra-setup" class="anchor" href="#extra-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extra setup</h2>
+
+<p><em>green dots give some comfort</em> because of this when using the <code>log</code> option an
+extra service could be configure as a receiver for all the post that <strong>Epazote</strong>
+produce and based on the data obtained create a custom dashboard, something
+similar to: <a href="https://status.cloud.google.com/">https://status.cloud.google.com/</a> or <a href="http://status.aws.amazon.com/">http://status.aws.amazon.com/</a></p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/nbari/epazote">Epazote</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
