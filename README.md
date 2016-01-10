@@ -181,7 +181,8 @@ services:
 ```
 
 ### services - name of service
-An unique string that identifies your service, in the above example, there are 3 services named:
+An unique string that identifies your service, in the above example, there are 3
+services named:
  - my service 1
  - other service
  - redirect service
@@ -190,15 +191,15 @@ An unique string that identifies your service, in the above example, there are 3
 URL of the service to supervise
 
 ### services - timeout in seconds
-Timeout specifies a time limit for the HTTP requests, A Timeout of zero means no timeout, defaults to 5 seconds.
+Timeout specifies a time limit for the HTTP requests, A value of zero means no
+timeout, defaults to 5 seconds.
 
-### services - seconds, minutes, hours, N
-How often to check the service, the options are:
+### services - seconds, minutes, hours
+How often to check the service, the options are: (Only one should be used)
+ - seconds N
+ - minutes N
+ - hours N
 
- - seconds
- - minutes
- - hours
-
-Only one should be used
+``N`` should be an integer.
 
 ### services
