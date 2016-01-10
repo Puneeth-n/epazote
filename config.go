@@ -56,7 +56,7 @@ type Service struct {
 	URL      string
 	Timeout  int
 	Every    `yaml:",inline"`
-	Log      string
+	Log      bool
 	Expect   Expect
 	IfStatus map[int]Action    `yaml:"if_status"`
 	IfHeader map[string]Action `yaml:"if_header"`

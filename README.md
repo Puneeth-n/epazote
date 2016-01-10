@@ -143,12 +143,12 @@ services:
             header:
                 content-type: application/json; charset=UTF-8
             body: find this string on my site
-        if_not:
-            cmd: sv restart /services/my_service_1
-            notify: team@domain.tld
-            msg: |
-                line 1 bla bla
-                line 2
+            if_not:
+                cmd: sv restart /services/my_service_1
+                notify: team@domain.tld
+                msg: |
+                    line 1 bla bla
+                    line 2
         if_status:
             500:
                 cmd: reboot
@@ -180,17 +180,17 @@ services:
             notify: abc@domain.tld
 ```
 
-### services - name of service
+### services - name of service (string)
 An unique string that identifies your service, in the above example, there are 3
 services named:
  - my service 1
  - other service
  - redirect service
 
-### services - url
+### services - url (string)
 URL of the service to supervise
 
-### services - timeout in seconds
+### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.
 
@@ -202,4 +202,61 @@ How often to check the service, the options are: (Only one should be used)
 
 ``N`` should be an integer.
 
-### services
+### services - log (bool)
+If set to true, it will post all events to the defined ``post`` URL on the **config** section, defaults to false.
+
+### services - expect
+The ``expect`` block options are:
+- status (int)
+- header (string)
+- body   (regular expression)
+- if_not (Action block)
+
+### services - expect - status
+An Integer representing the expected [HTTP Status Code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+
+### services - expect - header
+A key-value map of expected headers, it can be only one or more.
+
+### services - expect - body
+A [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used to match a string on the body of the site, use full in cases you want to ensure that the content delivered is always the same or keeps a pattern.
+
+### services - expect (How it works)
+The ``expect`` logic tries to implement a [if-else](https://en.wikipedia.org/wiki/if_else) logic ``status``, ``header``, ``body`` are the **if** and the ``if_not`` block becomes the **else**.
+
+    if
+        status
+        header
+        body
+    else:
+        if_not
+
+In must cases only one option is required, check on the above example for the service named "redirect service".
+
+In case that more than one option is used, this is the order in how they are evaluated, no meter how they where introduced on the configuration file:
+
+    1. body
+    2. status
+    3. header
+
+The reason for this order is related to performance, at the end we want to monitor/supervise the services in an efficient way avoiding to waste extra resources, in must cases only the HTTP Headers are enough to take an action, therefore we don't need to read the full body page, because of this if no ``body`` is defined, **Epazote** will only read the Headers saving with this time and process time.
+
+### services - expect - if_not
+``if_not`` is a block with an action of what to do it we don't get what we where expecting (``expect``). See services - Actions
+
+## services - Actions
+An Action has tree options:
+ - cmd
+ - notify
+ - msg
+
+They can be used all together, only one or either none.
+
+### services - Actions - cmd (string)
+``cmd`` Contains the command to be executed.
+
+### services - Actions - notify (string)
+``notify`` Should contain the email email address or addresses (space separated) of the recipients that will be notified when the action is executed.
+
+### services - Actions - msg (string)
+``msg`` The message to send when the action is executed.
