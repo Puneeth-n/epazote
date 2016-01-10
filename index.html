@@ -156,7 +156,7 @@ of your application and the supervising at the same time.</p>
 <a id="config-optional" class="anchor" href="#config-optional" aria-hidden="true"><span class="octicon octicon-link"></span></a>config (optional)</h3>
 
 <p>As you may notice the <code>config</code> section contains mainly settings for sending
-alerts/notifications apart from the <code>scan</code> option, therefore is totally
+alerts/notifications apart from the <code>scan</code> setting, therefore is totally
 optional, meaning that <strong>Epazote</strong> can still run and check your services without
 the need of the <code>config</code> section.</p>
 
@@ -166,7 +166,9 @@ the need of the <code>config</code> section.</p>
 <h2>
 <a id="the-services-section" class="anchor" href="#the-services-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The services section</h2>
 
-<p>TODO....</p>
+<p>Services are the main functionality of <strong>Epazote</strong>, is where the URL's and the
+rules based on the response are defined, since options vary from service to
+service, an example could help better to understand the setup:</p>
 
 <div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">services:</span></span>
     <span class="pl-s"><span class="pl-ent">my service 1:</span></span>
@@ -179,12 +181,12 @@ the need of the <code>config</code> section.</p>
             <span class="pl-s"><span class="pl-ent">header:</span></span>
                 <span class="pl-s"><span class="pl-ent">content-type:</span> <span class="pl-s">application/json; charset=UTF-8</span></span>
             <span class="pl-s"><span class="pl-ent">body:</span> <span class="pl-s">find this string on my site</span></span>
-        <span class="pl-s"><span class="pl-ent">if_not:</span></span>
-            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">sv restart /services/my_service_1</span></span>
-            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">team@domain.tld</span></span>
-<span class="pl-s">            <span class="pl-ent">msg:</span> |</span>
-<span class="pl-s">                line 1 bla bla</span>
-<span class="pl-s">                line 2</span>
+            <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">sv restart /services/my_service_1</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">team@domain.tld</span></span>
+<span class="pl-s">                <span class="pl-ent">msg:</span> |</span>
+<span class="pl-s">                    line 1 bla bla</span>
+<span class="pl-s">                    line 2</span>
 <span class="pl-s"></span>        <span class="pl-s"><span class="pl-ent">if_status:</span></span>
             <span class="pl-s"><span class="pl-ent">500:</span></span>
                 <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">reboot</span></span>
@@ -214,6 +216,131 @@ the need of the <code>config</code> section.</p>
         <span class="pl-s"><span class="pl-ent">if_not:</span></span>
             <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
             <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">abc@domain.tld</span></span></pre></div>
+
+<h3>
+<a id="services---name-of-service-string" class="anchor" href="#services---name-of-service-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - name of service (string)</h3>
+
+<p>An unique string that identifies your service, in the above example, there are 3
+services named:</p>
+
+<ul>
+<li>my service 1</li>
+<li>other service</li>
+<li>redirect service</li>
+</ul>
+
+<h3>
+<a id="services---url-string" class="anchor" href="#services---url-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - url (string)</h3>
+
+<p>URL of the service to supervise</p>
+
+<h3>
+<a id="services---timeout-in-seconds-int" class="anchor" href="#services---timeout-in-seconds-int" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - timeout in seconds (int)</h3>
+
+<p>Timeout specifies a time limit for the HTTP requests, A value of zero means no
+timeout, defaults to 5 seconds.</p>
+
+<h3>
+<a id="services---seconds-minutes-hours" class="anchor" href="#services---seconds-minutes-hours" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - seconds, minutes, hours</h3>
+
+<p>How often to check the service, the options are: (Only one should be used)</p>
+
+<ul>
+<li>seconds N</li>
+<li>minutes N</li>
+<li>hours N</li>
+</ul>
+
+<p><code>N</code> should be an integer.</p>
+
+<h3>
+<a id="services---log-bool" class="anchor" href="#services---log-bool" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - log (bool)</h3>
+
+<p>If set to true, it will post all events to the defined <code>post</code> URL on the <strong>config</strong> section, defaults to false.</p>
+
+<h3>
+<a id="services---expect" class="anchor" href="#services---expect" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect</h3>
+
+<p>The <code>expect</code> block options are:</p>
+
+<ul>
+<li>status (int)</li>
+<li>header (string)</li>
+<li>body   (regular expression)</li>
+<li>if_not (Action block)</li>
+</ul>
+
+<h3>
+<a id="services---expect---status" class="anchor" href="#services---expect---status" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - status</h3>
+
+<p>An Integer representing the expected <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Code</a></p>
+
+<h3>
+<a id="services---expect---header" class="anchor" href="#services---expect---header" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - header</h3>
+
+<p>A key-value map of expected headers, it can be only one or more.</p>
+
+<h3>
+<a id="services---expect---body" class="anchor" href="#services---expect---body" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - body</h3>
+
+<p>A <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> used to match a string on the body of the site, use full in cases you want to ensure that the content delivered is always the same or keeps a pattern.</p>
+
+<h3>
+<a id="services---expect-how-it-works" class="anchor" href="#services---expect-how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect (How it works)</h3>
+
+<p>The <code>expect</code> logic tries to implement a <a href="https://en.wikipedia.org/wiki/if_else">if-else</a> logic <code>status</code>, <code>header</code>, <code>body</code> are the <strong>if</strong> and the <code>if_not</code> block becomes the <strong>else</strong>.</p>
+
+<pre><code>if
+    status
+    header
+    body
+else:
+    if_not
+</code></pre>
+
+<p>In must cases only one option is required, check on the above example for the service named "redirect service".</p>
+
+<p>In case that more than one option is used, this is the order in how they are evaluated, no meter how they where introduced on the configuration file:</p>
+
+<pre><code>1. body
+2. status
+3. header
+</code></pre>
+
+<p>The reason for this order is related to performance, at the end we want to monitor/supervise the services in an efficient way avoiding to waste extra resources, in must cases only the HTTP Headers are enough to take an action, therefore we don't need to read the full body page, because of this if no <code>body</code> is defined, <strong>Epazote</strong> will only read the Headers saving with this time and process time.</p>
+
+<h3>
+<a id="services---expect---if_not" class="anchor" href="#services---expect---if_not" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - if_not</h3>
+
+<p><code>if_not</code> is a block with an action of what to do it we don't get what we where expecting (<code>expect</code>). See services - Actions</p>
+
+<h2>
+<a id="services---actions" class="anchor" href="#services---actions" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions</h2>
+
+<p>An Action has tree options:</p>
+
+<ul>
+<li>cmd</li>
+<li>notify</li>
+<li>msg</li>
+</ul>
+
+<p>They can be used all together, only one or either none.</p>
+
+<h3>
+<a id="services---actions---cmd-string" class="anchor" href="#services---actions---cmd-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - cmd (string)</h3>
+
+<p><code>cmd</code> Contains the command to be executed.</p>
+
+<h3>
+<a id="services---actions---notify-string" class="anchor" href="#services---actions---notify-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - notify (string)</h3>
+
+<p><code>notify</code> Should contain the email email address or addresses (space separated) of the recipients that will be notified when the action is executed.</p>
+
+<h3>
+<a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
+
+<p><code>msg</code> The message to send when the action is executed.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/nbari/epazote">Epazote</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
