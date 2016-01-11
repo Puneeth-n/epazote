@@ -51,9 +51,14 @@ type Scan struct {
 
 type Services map[string]Service
 
+type Test struct {
+	Test  string
+	IfNot Action `yaml:"if_not"`
+}
+
 type Service struct {
 	URL      string
-	test     string
+	Test     `yaml:",inline"`
 	Timeout  int
 	Every    `yaml:",inline"`
 	Log      string
@@ -114,6 +119,7 @@ func (self *Epazote) VerifyUrls() error {
 	for i := 0; i < len(self.Services); i++ {
 		x := <-ch
 		if x.Err != nil {
+			log.Println(self.Services[x.Service])
 			return fmt.Errorf("%s - Verify URL: %q", Red(x.Service), x.Err)
 		}
 	}

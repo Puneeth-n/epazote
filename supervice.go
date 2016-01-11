@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+func TestCmd(c string) error {
+	args := strings.Fields(c)
+	cmd := exec.Command(args[0], args[1:]...)
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (self *Epazote) Do(s *Service, a *Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
