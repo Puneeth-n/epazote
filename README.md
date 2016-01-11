@@ -65,9 +65,8 @@ consists of two parts, a **config** and a **services** (Key-value pairs).
 
 ## The config section
 
-The **config** section is composed of three settings:
+The **config** section is composed of:
 
-    - post (Url to post the logs)
     - smtp (Email settings for sending notification)
     - scan (Paths used to find the file 'epazote.yml')
 
@@ -75,7 +74,6 @@ Example:
 
 ```yaml
 config:
-    post: http://domain.tld/get/json/
     smtp:
         username: smtp@domain.tld
         password: password
@@ -91,11 +89,6 @@ config:
             - /home/apps
         minutes: 5
 ```
-
-### config - post
-
-An URL to post all activity related to the services if log is enable on the
-service. The **post** setting is optional.
 
 ### config - smtp
 
@@ -137,7 +130,7 @@ services:
         url: http://myservice.domain.tld/_healthcheck_
         timeout: 5
         seconds: 60
-        log: True
+        log: http://monitor.domain.tld
         expect:
             status: 200
             header:
@@ -202,9 +195,8 @@ How often to check the service, the options are: (Only one should be used)
 
 ``N`` should be an integer.
 
-### services - log (bool)
-If set to true, it will post all events to the defined ``post`` URL on the
-**config** section, defaults to false.
+### services - log (URL)
+An URL to post all events, default disabled.
 
 ### services - expect
 The ``expect`` block options are:

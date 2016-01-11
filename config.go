@@ -24,7 +24,6 @@ type Epazote struct {
 }
 
 type Config struct {
-	Post Post  `yaml:"post"`
 	SMTP Email `yaml:"smtp"`
 	Scan Scan  `yaml:"scan"`
 }
@@ -56,7 +55,7 @@ type Service struct {
 	URL      string
 	Timeout  int
 	Every    `yaml:",inline"`
-	Log      bool
+	Log      string
 	Expect   Expect
 	IfStatus map[int]Action    `yaml:"if_status"`
 	IfHeader map[string]Action `yaml:"if_header"`
