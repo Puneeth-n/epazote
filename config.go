@@ -119,8 +119,14 @@ func (self *Epazote) VerifyUrls() error {
 	for i := 0; i < len(self.Services); i++ {
 		x := <-ch
 		if x.Err != nil {
-			log.Println(self.Services[x.Service])
-			return fmt.Errorf("%s - Verify URL: %q", Red(x.Service), x.Err)
+			// if not a valid URL check if service contains a test & if_not
+			if len(self.Services[x.Service].Test.Test) > 0 {
+				if len(self.Services[x.Service].Test.IfNot.Cmd) == 0 {
+					return fmt.Errorf("%s - Verify test, missing cmd", Red(x.Service))
+				}
+			} else {
+				return fmt.Errorf("%s - Verify URL: %q", Red(x.Service), x.Err)
+			}
 		}
 	}
 	return nil

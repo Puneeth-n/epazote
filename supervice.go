@@ -8,16 +8,7 @@ import (
 	"strings"
 )
 
-func TestCmd(c string) error {
-	args := strings.Fields(c)
-	cmd := exec.Command(args[0], args[1:]...)
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
+// Do, execute the command in the if_not block
 func (self *Epazote) Do(s *Service, a *Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
@@ -39,6 +30,19 @@ func (self *Epazote) Supervice(s Service) func() {
 				log.Printf("Verify service options with URL: %s - %q", Red(s.URL), r)
 			}
 		}()
+
+		// Run Test if no URL
+		if len(s.URL) == 0 {
+			log.Println(s.Test.Test, s.Test.IfNot.Cmd)
+			args := strings.Fields(s.Test.Test)
+			cmd := exec.Command(args[0], args[1:]...)
+			err := cmd.Run()
+			if err != nil {
+				self.Do(&s, &s.Test.IfNot)
+				return
+			}
+			return
+		}
 
 		// HTTP GET service URL
 		res, err := HTTPGet(s.URL, s.Timeout)
