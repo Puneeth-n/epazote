@@ -53,6 +53,7 @@ type Services map[string]Service
 
 type Service struct {
 	URL      string
+	test     string
 	Timeout  int
 	Every    `yaml:",inline"`
 	Log      string
