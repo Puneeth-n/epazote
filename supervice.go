@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+func (self *Epazote) Ok(s *Service) {
+	log.Println("alles ok", s)
+}
+
 // Do, execute the command in the if_not block
 func (self *Epazote) Do(s *Service, a *Action) {
 	cmd := a.Cmd
@@ -33,14 +37,15 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Run Test if no URL
 		if len(s.URL) == 0 {
-			log.Println(s.Test.Test, s.Test.IfNot.Cmd)
 			args := strings.Fields(s.Test.Test)
 			cmd := exec.Command(args[0], args[1:]...)
 			err := cmd.Run()
 			if err != nil {
+				log.Println(err)
 				self.Do(&s, &s.Test.IfNot)
 				return
 			}
+			self.Ok(&s)
 			return
 		}
 
@@ -104,7 +109,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin
 		if res.StatusCode == s.Expect.Status {
-			log.Println("alles ok")
+			self.Ok(&s)
 			return
 		}
 
