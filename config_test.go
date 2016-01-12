@@ -195,3 +195,18 @@ func TestPathsOrServices(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestTestServices(t *testing.T) {
+	cfg, err := New("test/test.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.CheckPaths()
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyUrls()
+	if err == nil {
+		t.Error(err)
+	}
+}
