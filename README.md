@@ -173,7 +173,7 @@ services:
                 notify: abc@domain.tld
 
     salt-master:
-        test: test `pgrep -f salt`
+        test: pgrep -f salt
         if_not:
             cmd: service restart salt_master
             notify: operations@domain.tld
