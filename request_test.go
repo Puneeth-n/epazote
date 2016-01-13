@@ -56,3 +56,83 @@ func TestAsyngGet(t *testing.T) {
 		}
 	}
 }
+
+func TestIsURL(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"", false},
+		{"http://foo.bar#com", true},
+		{"http://foobar.com", true},
+		{"https://foobar.com", true},
+		{"foobar.com", true},
+		{"http://foobar.coffee/", true},
+		{"http://foobar.中文网/", true},
+		{"http://foobar.org/", true},
+		{"http://foobar.org:8080/", true},
+		{"ftp://foobar.ru/", true},
+		{"ftp.foo.bar", true},
+		{"http://user:pass@www.foobar.com/", true},
+		{"http://user:pass@www.foobar.com/path/file", true},
+		{"http://127.0.0.1/", true},
+		{"http://duckduckgo.com/?q=%2F", true},
+		{"http://localhost:3000/", true},
+		{"http://foobar.com/?foo=bar#baz=qux", true},
+		{"http://foobar.com?foo=bar", true},
+		{"http://www.xn--froschgrn-x9a.net/", true},
+		{"http://foobar.com/a-", true},
+		{"http://foobar.پاکستان/", true},
+		{"http://foobar.c_o_m", false},
+		{"", false},
+		{"xyz://foobar.com", false},
+		{"invalid.", false},
+		{".com", false},
+		{"rtmp://foobar.com", false},
+		{"http://www.foo_bar.com/", false},
+		{"http://localhost:3000/", true},
+		{"http://foobar.com#baz=qux", true},
+		{"http://foobar.com/t$-_.+!*\\'(),", true},
+		{"http://www.foobar.com/~foobar", true},
+		{"http://www.-foobar.com/", false},
+		{"http://www.foo---bar.com/", false},
+		{"mailto:someone@example.com", true},
+		{"irc://irc.server.org/channel", false},
+		{"irc://#channel@network", true},
+		{"/abs/test/dir", false},
+		{"./rel/test/dir", false},
+		{"http://foo^bar.org", false},
+		{"http://foo&*bar.org", false},
+		{"http://foo&bar.org", false},
+		{"http://foo bar.org", false},
+		{"http://foo.bar.org", true},
+		{"http://www.foo.bar.org", true},
+		{"http://www.foo.co.uk", true},
+		{"foo", false},
+		{"http://.foo.com", false},
+		{"http://,foo.com", false},
+		{",foo.com", false},
+		// according to issues #62 #66
+		{"https://pbs.twimg.com/profile_images/560826135676588032/j8fWrmYY_normal.jpeg", true},
+		{"http://me.example.com", true},
+		{"http://www.me.example.com", true},
+		{"https://farm6.static.flickr.com", true},
+		{"https://zh.wikipedia.org/wiki/Wikipedia:%E9%A6%96%E9%A1%B5", true},
+		{"google", false},
+		// According to #87
+		{"http://hyphenated-host-name.example.co.in", true},
+		{"http://cant-end-with-hyphen-.example.com", false},
+		{"http://-cant-start-with-hyphen.example.com", false},
+		{"http://www.domain-can-have-dashes.com", true},
+		// url.Parse
+		{"%//a/b/c/d;p?q#", false},
+	}
+	for _, test := range tests {
+		actual := IsURL(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsURL(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
