@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"bytes"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -36,7 +37,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 	return ch
 }
 
-// Get creates a new http request
+// HTTPGet creates a new http request
 func HTTPGet(url string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
@@ -60,6 +61,22 @@ func HTTPGet(url string, timeout ...int) (*http.Response, error) {
 	}
 
 	return res, nil
+}
+
+// HTTPPost post service json data
+func HTTPPost(url string, data []byte) {
+	// create a new request
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	req.Header.Set("User-Agent", "epazote")
+
+	client := &http.Client{}
+	// try to connect
+	res, err := client.Do(req)
+	if err != nil {
+		//		return nil
+	}
+	res.Body.Close()
+
 }
 
 // IsURL https://github.com/asaskevich/govalidator/blob/master/validator.go#L44
