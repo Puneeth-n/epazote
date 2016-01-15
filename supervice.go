@@ -8,8 +8,10 @@ import (
 	"strings"
 )
 
-func (self *Epazote) Ok(s *Service) {
-	log.Println("alles ok", s)
+// Log exit(0|1) 0 successful, 1 failure
+func (self *Epazote) Log(s *Service, status int) {
+	log.Println("alles ok", s.Log)
+
 }
 
 // Do, execute the command in the if_not block
@@ -45,7 +47,7 @@ func (self *Epazote) Supervice(s Service) func() {
 				self.Do(&s, &s.Test.IfNot)
 				return
 			}
-			self.Ok(&s)
+			self.Log(&s, 0)
 			return
 		}
 
@@ -109,7 +111,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin
 		if res.StatusCode == s.Expect.Status {
-			self.Ok(&s)
+			self.Log(&s, 0)
 			return
 		}
 

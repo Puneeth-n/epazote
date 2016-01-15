@@ -296,6 +296,38 @@ of the recipients that will be notified when the action is executed.
 ### services - Actions - msg (string)
 ``msg`` The message to send when the action is executed.
 
+
+## services - Test
+**Epazote** It is mainly used for HTTP services, for supervising other
+applications that don't listen or accept HTTP connections, like a database,
+cache engine, etc. There are tools like
+[daemontools](https://cr.yp.to/daemontools.html),
+[runit](http://smarden.org/runit/) as already mentioned, even so, **Epazote**
+can eventually be used to execute an action based on the exit of a command
+for example:
+
+```yaml
+    salt-master:
+        test: pgrep -f salt
+        if_not:
+            cmd: service restart salt_master
+            notify: operations@domain.tld
+```
+
+In this case: ``test: pgrep -f salt`` will execute the ``cmd`` on the ``if_not``
+block in case the exit code is > 0, from the ``pgrep`` man page:
+
+```txt
+EXIT STATUS
+     The pgrep and pkill utilities return one of the following values upon exit:
+
+          0       One or more processes were matched.
+          1       No processes were matched.
+          2       Invalid options were specified on the command line.
+          3       An internal error occurred.
+```
+
+
 ## Extra setup
 *green dots give some comfort* -- Because of this when using the ``log``
 option an extra service could be configure as a receiver for all the post

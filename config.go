@@ -36,10 +36,6 @@ type Email struct {
 	Headers  map[string]string
 }
 
-type Post struct {
-	URL string
-}
-
 type Every struct {
 	Seconds, Minutes, Hours int
 }
