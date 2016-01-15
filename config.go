@@ -48,19 +48,20 @@ type Scan struct {
 type Services map[string]Service
 
 type Test struct {
-	Test  string
-	IfNot Action `yaml:"if_not"`
+	Test  string `json:",omitempty"`
+	IfNot Action `yaml:"if_not" json:"-"`
 }
 
 type Service struct {
-	URL      string
-	Test     `yaml:",inline"`
-	Timeout  int
-	Every    `yaml:",inline"`
-	Log      string
-	Expect   Expect
-	IfStatus map[int]Action    `yaml:"if_status"`
-	IfHeader map[string]Action `yaml:"if_header"`
+	Name     string `json:",omitempty"`
+	URL      string `json:",omitempty"`
+	Test     `yaml:",inline" json:",omitempty"`
+	Timeout  int `json:"-"`
+	Every    `yaml:",inline" json:"-"`
+	Log      string            `json:"-"`
+	Expect   Expect            `json:"-"`
+	IfStatus map[int]Action    `yaml:"if_status" json:"-"`
+	IfHeader map[string]Action `yaml:"if_header" json:"-"`
 }
 
 type Expect struct {

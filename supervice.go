@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"os/exec"
@@ -9,9 +10,24 @@ import (
 )
 
 // Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, status int) {
-	log.Println("alles ok", s.Log)
-
+func (self *Epazote) Log(s *Service, exit int) {
+	if len(s.Log) > 0 {
+		json, err := json.Marshal(struct {
+			*Service
+			Exit int `json:"exit"`
+		}{
+			s,
+			exit,
+		})
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		err = HTTPPost(s.Log, json)
+		if err != nil {
+			log.Printf("Error while posting to %s : %q", s.Log, err)
+		}
+	}
 }
 
 // Do, execute the command in the if_not block
