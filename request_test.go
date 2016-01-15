@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +34,41 @@ func TestHTTPGet(t *testing.T) {
 
 	if res.StatusCode != 200 {
 		t.Error("Expecting StatusCode 200")
+	}
+}
+
+func TestHTTPPost(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		if r.Header.Get("Content-Type") != "application/json" {
+			t.Error("Expecting Content-Type: application/json")
+		}
+		fmt.Println(r.Body, "<-------")
+		decoder := json.NewDecoder(r.Body)
+		var d struct{ Exit int }
+		err := decoder.Decode(&d)
+		if err != nil {
+			t.Error(err)
+		}
+		if d.Exit != 0 {
+			t.Error("Expexting 0")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	err := HTTPPost(ts.URL, []byte(`{"exit":0}`))
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestHTTPPostBadURL(t *testing.T) {
+	err := HTTPPost("abc", []byte(`{"exit":0}`))
+	if err == nil {
+		t.Error(err)
 	}
 }
 
