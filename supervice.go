@@ -10,14 +10,21 @@ import (
 )
 
 // Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, exit int) {
+func (self *Epazote) Log(s *Service, exit int, d ...string) {
+	o := ""
+	if len(d) > 0 {
+		o = d[0]
+	}
+	// If log
 	if len(s.Log) > 0 {
 		json, err := json.Marshal(struct {
 			*Service
-			Exit int `json:"exit"`
+			Exit   int    `json:"exit"`
+			Output string `json:",omitempty"`
 		}{
 			s,
 			exit,
+			o,
 		})
 		if err != nil {
 			log.Println(err)
@@ -39,8 +46,9 @@ func (self *Epazote) Do(s *Service, a *Action) {
 		if err != nil {
 			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
 		}
-		log.Printf("cmd output: %q", strings.TrimSpace(string(out)))
+		self.Log(s, 1, string(out))
 	}
+	self.Log(s, 1)
 	return
 }
 
