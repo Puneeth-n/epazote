@@ -101,17 +101,15 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
 <h2>
 <a id="the-config-section" class="anchor" href="#the-config-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The config section</h2>
 
-<p>The <strong>config</strong> section is composed of three settings:</p>
+<p>The <strong>config</strong> section is composed of:</p>
 
-<pre><code>- post (Url to post the logs)
-- smtp (Email settings for sending notification)
+<pre><code>- smtp (Email settings for sending notification)
 - scan (Paths used to find the file 'epazote.yml')
 </code></pre>
 
 <p>Example:</p>
 
 <div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">config:</span></span>
-    <span class="pl-s"><span class="pl-ent">post:</span> <span class="pl-s">http://domain.tld/get/json/</span></span>
     <span class="pl-s"><span class="pl-ent">smtp:</span></span>
         <span class="pl-s"><span class="pl-ent">username:</span> <span class="pl-s">smtp@domain.tld</span></span>
         <span class="pl-s"><span class="pl-ent">password:</span> <span class="pl-s">password</span></span>
@@ -126,12 +124,6 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
             <span class="pl-s">- <span class="pl-s">/arena/home/sites</span></span>
             <span class="pl-s">- <span class="pl-s">/home/apps</span></span>
         <span class="pl-c1"><span class="pl-ent">minutes:</span> 5</span></pre></div>
-
-<h3>
-<a id="config---post" class="anchor" href="#config---post" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - post</h3>
-
-<p>An URL to post all activity related to the services if log is enable on the
-service. The <strong>post</strong> setting is optional.</p>
 
 <h3>
 <a id="config---smtp" class="anchor" href="#config---smtp" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - smtp</h3>
@@ -175,7 +167,7 @@ service, an example could help better to understand the setup:</p>
         <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://myservice.domain.tld/_healthcheck_</span></span>
         <span class="pl-c1"><span class="pl-ent">timeout:</span> 5</span>
         <span class="pl-c1"><span class="pl-ent">seconds:</span> 60</span>
-        <span class="pl-s"><span class="pl-ent">log:</span> <span class="pl-s">True</span></span>
+        <span class="pl-s"><span class="pl-ent">log:</span> <span class="pl-s">http://monitor.domain.tld</span></span>
         <span class="pl-s"><span class="pl-ent">expect:</span></span>
             <span class="pl-c1"><span class="pl-ent">status:</span> 200</span>
             <span class="pl-s"><span class="pl-ent">header:</span></span>
@@ -213,9 +205,15 @@ service, an example could help better to understand the setup:</p>
         <span class="pl-c1"><span class="pl-ent">hour:</span> 1</span>
         <span class="pl-s"><span class="pl-ent">expect:</span></span>
             <span class="pl-c1"><span class="pl-ent">status:</span> 302</span>
+            <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">abc@domain.tld</span></span>
+
+    <span class="pl-s"><span class="pl-ent">salt-master:</span></span>
+        <span class="pl-s"><span class="pl-ent">test:</span> <span class="pl-s">pgrep -f salt</span></span>
         <span class="pl-s"><span class="pl-ent">if_not:</span></span>
-            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
-            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">abc@domain.tld</span></span></pre></div>
+            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart salt_master</span></span>
+            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">operations@domain.tld</span></span></pre></div>
 
 <h3>
 <a id="services---name-of-service-string" class="anchor" href="#services---name-of-service-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - name of service (string)</h3>
@@ -254,10 +252,9 @@ timeout, defaults to 5 seconds.</p>
 <p><code>N</code> should be an integer.</p>
 
 <h3>
-<a id="services---log-bool" class="anchor" href="#services---log-bool" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - log (bool)</h3>
+<a id="services---log-url" class="anchor" href="#services---log-url" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - log (URL)</h3>
 
-<p>If set to true, it will post all events to the defined <code>post</code> URL on the
-<strong>config</strong> section, defaults to false.</p>
+<p>An URL to post all events, default disabled.</p>
 
 <h3>
 <a id="services---expect" class="anchor" href="#services---expect" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect</h3>
@@ -383,6 +380,35 @@ of the recipients that will be notified when the action is executed.</p>
 <a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
 
 <p><code>msg</code> The message to send when the action is executed.</p>
+
+<h2>
+<a id="services---test" class="anchor" href="#services---test" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Test</h2>
+
+<p><strong>Epazote</strong> It is mainly used for HTTP services, for supervising other
+applications that don't listen or accept HTTP connections, like a database,
+cache engine, etc. There are tools like
+<a href="https://cr.yp.to/daemontools.html">daemontools</a>,
+<a href="http://smarden.org/runit/">runit</a> as already mentioned, even so, <strong>Epazote</strong>
+can eventually be used to execute an action based on the exit of a command
+for example:</p>
+
+<div class="highlight highlight-source-yaml"><pre>    <span class="pl-s"><span class="pl-ent">salt-master:</span></span>
+        <span class="pl-s"><span class="pl-ent">test:</span> <span class="pl-s">pgrep -f salt</span></span>
+        <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+            <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart salt_master</span></span>
+            <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">operations@domain.tld</span></span></pre></div>
+
+<p>In this case: <code>test: pgrep -f salt</code> will execute the <code>cmd</code> on the <code>if_not</code>
+block in case the exit code is &gt; 0, from the <code>pgrep</code> man page:</p>
+
+<pre lang="txt"><code>EXIT STATUS
+     The pgrep and pkill utilities return one of the following values upon exit:
+
+          0       One or more processes were matched.
+          1       No processes were matched.
+          2       Invalid options were specified on the command line.
+          3       An internal error occurred.
+</code></pre>
 
 <h2>
 <a id="extra-setup" class="anchor" href="#extra-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extra setup</h2>
