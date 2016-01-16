@@ -42,7 +42,7 @@ func (self *Epazote) Do(s *Service, a *Action) {
 	cmd := a.Cmd
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
-		out, err := exec.Command(args[0], args[1:]...).Output()
+		out, err := exec.Command(args[0], args[1:]...).CombinedOutput()
 		if err != nil {
 			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
 		}
