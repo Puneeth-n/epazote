@@ -11,7 +11,7 @@ import (
 )
 
 // Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, exit int, d ...string) {
+func (self *Epazote) Log(s *Service, exit int, because string, d ...string) {
 	o := ""
 	if len(d) > 0 {
 		o = d[0]
@@ -20,11 +20,13 @@ func (self *Epazote) Log(s *Service, exit int, d ...string) {
 	// create json to send
 	json, err := json.Marshal(struct {
 		*Service
-		Exit   int    `json:"exit"`
-		Output string `json:",omitempty"`
+		Exit    int    `json:"exit"`
+		Output  string `json:",omitempty"`
+		Because string `json:",omitempty"`
 	}{
 		s,
 		exit,
+		because,
 		o,
 	})
 
@@ -42,7 +44,7 @@ func (self *Epazote) Log(s *Service, exit int, d ...string) {
 	}
 
 	if exit > 0 {
-		self.SendEmail(s, json)
+		//		self.SendEmail(s, because, json)
 	}
 }
 
@@ -55,9 +57,9 @@ func (self *Epazote) Do(s *Service, a *Action, because string) {
 		if err != nil {
 			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
 		}
-		self.Log(s, 1, string(out))
+		self.Log(s, 1, because, string(out))
 	}
-	self.Log(s, 1)
+	self.Log(s, 1, because)
 	return
 }
 
@@ -80,7 +82,10 @@ func (self *Epazote) Supervice(s Service) func() {
 				self.Do(&s, &s.Test.IfNot, fmt.Sprintf("Test cmd: %q", err))
 				return
 			}
-			self.Log(&s, 0)
+			/*
+			 * get the cmd out
+			 */
+			self.Log(&s, 0, fmt.Sprintf("Test cmd: %d", 0))
 			return
 		}
 
@@ -144,7 +149,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin
 		if res.StatusCode == s.Expect.Status {
-			self.Log(&s, 0)
+			self.Log(&s, 0, fmt.Sprintf("Status: %q", res.StatusCode))
 			return
 		}
 
