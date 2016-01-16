@@ -12,25 +12,25 @@ import (
 
 const CRLF = "\r\n"
 
-func SendEmail(e Email) {
+func (self *Epazote) SendEmail(s *Service, body string) {
 	// auth Set up authentication information.
 	auth := smtp.PlainAuth("",
-		e.Username,
-		e.Password,
-		e.Server,
+		self.Config.SMTP.Username,
+		self.Config.SMTP.Password,
+		self.Config.SMTP.Server,
 	)
 
 	// set From
-	if _, ok := e.Headers["from"]; !ok {
+	if _, ok := self.Config.SMTP.Headers["from"]; !ok {
 		name, err := os.Hostname()
 		if err != nil {
 			log.Println(err)
 		}
-		e.Headers["from"] = "epazote@" + name
+		self.Config.SMTP.Headers["from"] = "epazote@" + name
 	}
 
 	// set To
-	to := strings.Split(e.Headers["to"], " ")
+	to := strings.Split(self.Config.SMTP.Headers["to"], " ")
 
 	// add headers
 	e.Headers["MIME-Version"] = "1.0"
