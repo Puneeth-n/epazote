@@ -25,7 +25,7 @@ func (self *Epazote) Log(s *Service, exit int) {
 		}
 		err = HTTPPost(s.Log, json)
 		if err != nil {
-			log.Printf("Error while posting to %s : %q", s.Log, err)
+			log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 		}
 	}
 }
@@ -37,7 +37,7 @@ func (self *Epazote) Do(s *Service, a *Action) {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).Output()
 		if err != nil {
-			log.Printf("cmd error for service with URL: %s - %q:", Red(s.URL), err)
+			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
 		}
 		log.Printf("cmd output: %q", strings.TrimSpace(string(out)))
 	}
@@ -49,17 +49,17 @@ func (self *Epazote) Supervice(s Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("Verify service options with URL: %s - %q", Red(s.URL), r)
+				log.Printf("Verify service %q options: %s - %q", Red(s.Name), r)
 			}
 		}()
 
 		// Run Test if no URL
+		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if len(s.URL) == 0 {
 			args := strings.Fields(s.Test.Test)
 			cmd := exec.Command(args[0], args[1:]...)
 			err := cmd.Run()
 			if err != nil {
-				log.Println(err)
 				self.Do(&s, &s.Test.IfNot)
 				return
 			}
@@ -79,7 +79,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			body, err := ioutil.ReadAll(res.Body)
 			res.Body.Close()
 			if err != nil {
-				log.Printf("Could not read Body for service with URL: %s - %q:", Red(s.URL), err)
+				log.Printf("Could not read Body for service %q: %q", Red(s.Name), err)
 				return
 			}
 			if re.FindString(string(body)) == "" {
@@ -131,7 +131,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			return
 		}
 
-		log.Printf("Check service with URL: %s -%s", Red(s.URL), s.Expect.Status)
+		log.Printf("Check service %q: %s", Red(s.Name), s.Expect.Status)
 		return
 	}
 }

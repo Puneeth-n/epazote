@@ -36,6 +36,9 @@ func (self *Epazote) search(root string) error {
 					continue
 				}
 
+				// Set service name
+				v.Name = k
+
 				// Status
 				if v.Expect.Status < 1 {
 					v.Expect.Status = 200
