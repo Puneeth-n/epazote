@@ -53,7 +53,7 @@ type Test struct {
 }
 
 type Service struct {
-	Name     string `json:",omitempty"`
+	Name     string `yaml:"-"`
 	URL      string `json:",omitempty"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
@@ -140,6 +140,9 @@ func (self *Epazote) PathsOrServices() error {
 // Start Add services to scheduler
 func (self *Epazote) Start(sk *scheduler.Scheduler) {
 	for k, v := range self.Services {
+		// Set service name
+		v.Name = k
+
 		// Status
 		if v.Expect.Status < 1 {
 			v.Expect.Status = 200
