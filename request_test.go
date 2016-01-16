@@ -45,7 +45,6 @@ func TestHTTPPost(t *testing.T) {
 		if r.Header.Get("Content-Type") != "application/json" {
 			t.Error("Expecting Content-Type: application/json")
 		}
-		fmt.Println(r.Body, "<-------")
 		decoder := json.NewDecoder(r.Body)
 		var d struct{ Exit int }
 		err := decoder.Decode(&d)
