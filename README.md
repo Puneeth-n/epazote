@@ -127,7 +127,6 @@ service, an example could help better to understand the setup:
 ```yaml
 services:
     my service 1:
-        name: my-service-identifier
         url: http://myservice.domain.tld/_healthcheck_
         timeout: 5
         seconds: 60
@@ -186,10 +185,6 @@ services named:
  - my service 1
  - other service
  - redirect service
-
-### services - name (string)
-A string that identifies your service used when posting the logs, in must cases
-could be the same as the service name.
 
 ### services - url (string)
 URL of the service to supervise
