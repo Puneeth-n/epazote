@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -77,15 +78,14 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.URL) == 0 {
 			args := strings.Fields(s.Test.Test)
 			cmd := exec.Command(args[0], args[1:]...)
+			var out bytes.Buffer
+			cmd.Stdout = &out
 			err := cmd.Run()
 			if err != nil {
 				self.Do(&s, &s.Test.IfNot, fmt.Sprintf("Test cmd: %q", err))
 				return
 			}
-			/*
-			 * get the cmd out
-			 */
-			self.Log(&s, 0, fmt.Sprintf("Test cmd: %d", 0))
+			self.Log(&s, 0, fmt.Sprintf("Test cmd: %q", out.String()))
 			return
 		}
 
