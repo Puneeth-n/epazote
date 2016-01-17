@@ -13,10 +13,10 @@ import (
 )
 
 // Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, exit int, because string, d ...string) {
-	o := ""
-	if len(d) > 0 {
-		o = d[0]
+func (self *Epazote) Log(s *Service, exit int, because string, o ...string) {
+	output := ""
+	if len(o) > 0 {
+		output = o[0]
 	}
 
 	// create json to send
@@ -28,8 +28,8 @@ func (self *Epazote) Log(s *Service, exit int, because string, d ...string) {
 	}{
 		s,
 		exit,
+		output,
 		because,
-		o,
 	})
 
 	if err != nil {
@@ -80,7 +80,7 @@ func (self *Epazote) Supervice(s Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("Verify service %q options: %s - %q", Red(s.Name), r)
+				log.Printf("Verify service %q options: %q", Red(s.Name), r)
 			}
 		}()
 
@@ -93,17 +93,17 @@ func (self *Epazote) Supervice(s Service) func() {
 			cmd.Stdout = &out
 			err := cmd.Run()
 			if err != nil {
-				self.Do(&s, &s.Test.IfNot, fmt.Sprintf("Test cmd: %q", err))
+				self.Do(&s, &s.Test.IfNot, fmt.Sprintf("Test cmd: %s", err))
 				return
 			}
-			self.Log(&s, 0, fmt.Sprintf("Test cmd: %q", out.String()))
+			self.Log(&s, 0, fmt.Sprintf("Test cmd: %s", out.String()))
 			return
 		}
 
 		// HTTP GET service URL
 		res, err := HTTPGet(s.URL, s.Timeout)
 		if err != nil {
-			self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("GET: %q", err))
+			self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("GET: %s", err))
 			return
 		}
 
@@ -112,11 +112,11 @@ func (self *Epazote) Supervice(s Service) func() {
 			body, err := ioutil.ReadAll(res.Body)
 			res.Body.Close()
 			if err != nil {
-				log.Printf("Could not read Body for service %q: %q", Red(s.Name), err)
+				log.Printf("Could not read Body for service %q: %s", Red(s.Name), err)
 				return
 			}
 			if re.FindString(string(body)) == "" {
-				self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("Body: %q", re.String()))
+				self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("Body: %s", re.String()))
 			}
 			return
 		}
@@ -152,7 +152,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					self.Do(&s, &s.Expect.IfNot, fmt.Sprint("Header: %q", k))
+					self.Do(&s, &s.Expect.IfNot, fmt.Sprint("Header: %s", k))
 				}
 				return
 			}
@@ -160,7 +160,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin
 		if res.StatusCode == s.Expect.Status {
-			self.Log(&s, 0, fmt.Sprintf("Status: %q", res.StatusCode))
+			self.Log(&s, 0, fmt.Sprintf("Status: %d", res.StatusCode))
 			return
 		}
 
