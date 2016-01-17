@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/mail"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -43,10 +44,6 @@ func (self *Epazote) Log(s *Service, exit int, because string, d ...string) {
 			log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 		}
 	}
-
-	if exit > 0 {
-		//		self.SendEmail(s, because, json)
-	}
 }
 
 // Do, execute the command in the if_not block
@@ -61,6 +58,20 @@ func (self *Epazote) Do(s *Service, a *Action, because string) {
 		self.Log(s, 1, because, string(out))
 	}
 	self.Log(s, 1, because)
+
+	// send email
+	if len(a.Notify) > 0 {
+		var to []string
+		for _, v := range strings.Split(a.Notify, " ") {
+			e, err := mail.ParseAddress(v)
+			if err != nil {
+				continue
+			}
+			to = append(to, e.Address)
+		}
+		// send email
+		self.SendEmail(s, to, a.Msg)
+	}
 	return
 }
 

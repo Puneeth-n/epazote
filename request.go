@@ -2,6 +2,8 @@ package epazote
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -77,6 +79,8 @@ func HTTPPost(url string, data []byte) error {
 		return err
 	}
 
+	body, _ := ioutil.ReadAll(res.Body)
+	fmt.Println("response Body:", string(body))
 	res.Body.Close()
 
 	return nil

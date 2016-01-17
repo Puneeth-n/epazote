@@ -170,7 +170,7 @@ services:
             status: 302
             if_not:
                 cmd: service restart abc
-                notify: abc@domain.tld
+                notify: true
 
     salt-master:
         test: pgrep -f salt

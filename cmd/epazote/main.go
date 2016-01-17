@@ -48,6 +48,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// verifyEMAIL recipients & headers
+	err = cfg.VerifyEMAIL()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// create a Scheduler
 	sk := ez.GetScheduler()
 
