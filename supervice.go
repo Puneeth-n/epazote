@@ -116,7 +116,7 @@ func (self *Epazote) Supervice(s Service) func() {
 				return
 			}
 			if re.FindString(string(body)) == "" {
-				self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("Body: %q", string(body)))
+				self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("Body: %q", re.String()))
 			}
 			return
 		}
