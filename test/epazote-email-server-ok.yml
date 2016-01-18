@@ -26,6 +26,7 @@ services:
         if_status:
             500:
                 cmd: sv restart .
+                notify: m@tilde
             404:
                 cmd: sv restart .
                 msg: not found
@@ -35,6 +36,7 @@ services:
         if_header:
             x-db-kaputt:
                 cmd: sv restart
+                notify: yes
             x-amqp-kaputt:
                 cmd: sv restart
                 notify: you@abc.com
@@ -42,5 +44,7 @@ services:
                     The rabbit is angry
                     & hungry
 
-    service 2:
-        seconds: 30
+    service X:
+        test: pgrep nginx
+        if_not:
+            notify: m@tilde t@reco

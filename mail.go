@@ -104,7 +104,7 @@ func (self *Epazote) VerifyEmail() error {
 						if err != nil {
 							return fmt.Errorf("Verify notify email addresses for service [%q if_status: %d]: %q", k, kS, err)
 						}
-						v.Expect.IfNot.Notify = strings.Join(to, " ")
+						j.Notify = strings.Join(to, " ")
 					} else if j.Notify == "yes" {
 						notify = true
 						if _, ok := self.Config.SMTP.Headers["to"]; !ok {
@@ -126,7 +126,7 @@ func (self *Epazote) VerifyEmail() error {
 						if err != nil {
 							return fmt.Errorf("Verify notify email addresses for service [%q if_header: %s]: %q", k, kH, err)
 						}
-						v.Expect.IfNot.Notify = strings.Join(to, " ")
+						j.Notify = strings.Join(to, " ")
 					} else if j.Notify == "yes" {
 						notify = true
 						if _, ok := self.Config.SMTP.Headers["to"]; !ok {
@@ -158,11 +158,6 @@ func (self *Epazote) SendEmail(s *Service, to []string, m string) {
 	// set To
 	if len(to) < 1 {
 		to = strings.Split(self.Config.SMTP.Headers["to"], " ")
-	}
-
-	if len(to) == 0 {
-		log.Println("No recipients set, no email sent")
-		return
 	}
 
 	// email Body

@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -102,6 +103,30 @@ func TestVerifyEmailIfHeaderYes(t *testing.T) {
 	}
 }
 
+func TestVerifyEmailTest(t *testing.T) {
+	cfg, err := New("test/epazote-email-test.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	e := `Verify notify email addresses for service: service X - "mail: missing phrase"`
+	if err.Error() != e {
+		t.Errorf("Expecting %q got %q", e, err.Error())
+	}
+}
+
+func TestVerifyEmailTestYes(t *testing.T) {
+	cfg, err := New("test/epazote-email-test-yes.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	e := `Service "service X" need smtp/headers/to settings to be available to notify.`
+	if err.Error() != e {
+		t.Errorf("Expecting %q got %q", e, err.Error())
+	}
+}
+
 func TestVerifyEmailServer(t *testing.T) {
 	cfg, err := New("test/epazote-email-server.yml")
 	if err != nil {
@@ -122,5 +147,39 @@ func TestVerifyEmailServerOk(t *testing.T) {
 	err = cfg.VerifyEmail()
 	if err != nil {
 		t.Error(err)
+	}
+
+	if cfg.Config.SMTP.Headers["from"] != "from@email" {
+		t.Error("Expecting from@email")
+	}
+
+	if cfg.Services["service X"].IfNot.Notify != "m@tilde t@reco" {
+		t.Error("Expecting m@tilde t@reco")
+	}
+}
+
+func TestVerifyEmailBadTo(t *testing.T) {
+	cfg, err := New("test/epazote-email-badto.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	e := `mail: missing phrase`
+	if err.Error() != e {
+		t.Errorf("Expecting %q got %q", e, err.Error())
+	}
+}
+
+func TestVerifyEmailFrom(t *testing.T) {
+	cfg, err := New("test/epazote-email-from.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	if err != nil {
+		t.Error(err)
+	}
+	if !strings.HasPrefix(cfg.Config.SMTP.Headers["from"], "epazote@") {
+		t.Error("Expecting email with prefix: epazote@")
 	}
 }

@@ -1,0 +1,12 @@
+config:
+    smtp:
+        headers:
+            from: from@email
+            subject: >
+                [%s - %s], Service, Status
+
+services:
+    service X:
+        test: pgrep nginx
+        if_not:
+            notify: yes
