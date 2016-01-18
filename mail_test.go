@@ -27,6 +27,17 @@ func TestVerifyEmail(t *testing.T) {
 	}
 }
 
+func TestVerifyEmailNoTo(t *testing.T) {
+	cfg, err := New("test/epazote-email-noto.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	if err == nil {
+		t.Errorf("Expecting error: %s", err)
+	}
+}
+
 func TestVerifyEmail2(t *testing.T) {
 	var conf = `
 config:
