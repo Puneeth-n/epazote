@@ -1,10 +1,6 @@
 config:
     smtp:
-        username: username
-        password: password
         server: smtp server
-        port: 587
-        tls: true
         headers:
             from: from@email
             to: team@email
@@ -15,28 +11,17 @@ services:
     service 1:
         # url
         url: 'http...'
-        timeout: 5
-        log: True
 
         # check every (only use 1)
         seconds: 60
-        minutes: 1
         hours: 1
 
         expect:
             status: 200
-            header:
-                content-type: application/json; charset=UTF-8
-                request-id: 'regex'
-            body: regex
 
             # when_fail
             if_not:
-                cmd: sv restart .
                 notify: url/email
-                msg: |
-                    line 1
-                    line 2
 
         # if status
         if_status:
