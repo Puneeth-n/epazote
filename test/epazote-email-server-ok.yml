@@ -1,0 +1,46 @@
+config:
+    smtp:
+        username: username
+        password: password
+        server: smtp.domain.tld
+        headers:
+            from: from@email
+            to: team@email
+            subject: >
+                [%s - %s], Service, Status
+
+services:
+    service 1:
+        # url
+        url: 'http...'
+
+        expect:
+            status: 200
+            if_not:
+                notify: yes
+                msg: |
+                    line 1
+                    line 2
+
+        # if status
+        if_status:
+            500:
+                cmd: sv restart .
+            404:
+                cmd: sv restart .
+                msg: not found
+                notify: yes
+
+        # if header
+        if_header:
+            x-db-kaputt:
+                cmd: sv restart
+            x-amqp-kaputt:
+                cmd: sv restart
+                notify: you@abc.com
+                msg: |
+                    The rabbit is angry
+                    & hungry
+
+    service 2:
+        seconds: 30

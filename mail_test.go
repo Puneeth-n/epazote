@@ -101,3 +101,26 @@ func TestVerifyEmailIfHeaderYes(t *testing.T) {
 		t.Errorf("Expecting %q got %q", e, err.Error())
 	}
 }
+
+func TestVerifyEmailServer(t *testing.T) {
+	cfg, err := New("test/epazote-email-server.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	e := `SMTP server required for been available to send email notifications.`
+	if err.Error() != e {
+		t.Errorf("Expecting %q got %q", e, err.Error())
+	}
+}
+
+func TestVerifyEmailServerOk(t *testing.T) {
+	cfg, err := New("test/epazote-email-server-ok.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	if err != nil {
+		t.Error(err)
+	}
+}
