@@ -33,7 +33,7 @@ services:
             # when_fail
             if_not:
                 cmd: sv restart .
-                notify: yes
+                notify: url/email
                 msg: |
                     line 1
                     line 2

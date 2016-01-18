@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"net/mail"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -126,38 +125,6 @@ func (self *Epazote) VerifyUrls() error {
 				return fmt.Errorf("%s - Verify URL: %q", Red(x.Service), x.Err)
 			}
 		}
-	}
-	return nil
-}
-
-func (self *Epazote) VerifyEMAIL() error {
-	if _, ok := self.Config.SMTP.Headers["MIME-Version"]; !ok {
-		self.Config.SMTP.Headers["MIME-Version"] = "1.0"
-	}
-	if _, ok := self.Config.SMTP.Headers["Content-Type"]; !ok {
-		self.Config.SMTP.Headers["Content-Type"] = "text/plain; charset=UTF-8"
-	}
-	if _, ok := self.Config.SMTP.Headers["Content-Transfer-Encoding"]; !ok {
-		self.Config.SMTP.Headers["Content-Transfer-Encoding"] = "base64"
-	}
-	// set From
-	if _, ok := self.Config.SMTP.Headers["from"]; !ok {
-		name, err := os.Hostname()
-		if err != nil {
-			return err
-		}
-		self.Config.SMTP.Headers["from"] = "epazote@" + name
-	}
-	if val, ok := self.Config.SMTP.Headers["to"]; ok {
-		var to []string
-		for _, v := range strings.Split(val, " ") {
-			e, err := mail.ParseAddress(v)
-			if err != nil {
-				return err
-			}
-			to = append(to, e.Address)
-		}
-		self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
 	}
 	return nil
 }

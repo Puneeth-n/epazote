@@ -13,51 +13,54 @@ import (
 )
 
 // Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, exit int, because string, o ...string) {
-	output := ""
-	if len(o) > 0 {
-		output = o[0]
-	}
-
-	// create json to send
-	json, err := json.Marshal(struct {
-		*Service
-		Exit    int    `json:"exit"`
-		Output  string `json:",omitempty"`
-		Because string `json:",omitempty"`
-	}{
-		s,
-		exit,
-		output,
-		because,
-	})
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	// If log
+func (self *Epazote) Log(s *Service, exit int, because string, o ...string) (error, []byte) {
 	if len(s.Log) > 0 {
-		err = HTTPPost(s.Log, json)
+		output := ""
+		if len(o) > 0 {
+			output = o[0]
+		}
+
+		// create json to send
+		j, err := json.Marshal(struct {
+			*Service
+			Exit    int    `json:"exit"`
+			Output  string `json:",omitempty"`
+			Because string `json:",omitempty"`
+		}{
+			s,
+			exit,
+			output,
+			because,
+		})
+
+		if err != nil {
+			return err, nil
+		}
+
+		// If log
+		err = HTTPPost(s.Log, j)
 		if err != nil {
 			log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 		}
+		return nil, j
 	}
+	return nil, nil
 }
 
 // Do, execute the command in the if_not block
 func (self *Epazote) Do(s *Service, a *Action, because string) {
 	cmd := a.Cmd
+	j := []byte{}
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).CombinedOutput()
 		if err != nil {
 			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
 		}
-		self.Log(s, 1, because, string(out))
+		err, j = self.Log(s, 1, because, string(out))
 	}
-	self.Log(s, 1, because)
+
+	_, j = self.Log(s, 1, because)
 
 	// send email
 	if len(a.Notify) > 0 {
@@ -70,6 +73,7 @@ func (self *Epazote) Do(s *Service, a *Action, because string) {
 			to = append(to, e.Address)
 		}
 		// send email
+		log.Println(j)
 		self.SendEmail(s, to, a.Msg)
 	}
 	return
@@ -86,7 +90,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
-		if len(s.URL) == 0 {
+		if s.URL == "" {
 			args := strings.Fields(s.Test.Test)
 			cmd := exec.Command(args[0], args[1:]...)
 			var out bytes.Buffer

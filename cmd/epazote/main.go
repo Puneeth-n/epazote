@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// verifyEMAIL recipients & headers
-	err = cfg.VerifyEMAIL()
+	err = cfg.VerifyEmail()
 	if err != nil {
 		log.Fatalln(err)
 	}
