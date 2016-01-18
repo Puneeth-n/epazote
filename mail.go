@@ -136,10 +136,13 @@ func (self *Epazote) VerifyEmail() error {
 				}
 			}
 		}
-
 	}
 
-	log.Println(">>>>>>>>>>>>>>>>>>", notify)
+	if notify {
+		if self.Config.SMTP.Server == "" {
+			return fmt.Errorf("SMTP server required for been available to send email notifications.")
+		}
+	}
 
 	return nil
 }
