@@ -4,7 +4,6 @@ config:
         password: password
         server: smtp server
         port: 587
-        tls: true
         headers:
             from: from@email
             to: team@email
