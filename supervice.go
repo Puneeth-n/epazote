@@ -6,77 +6,58 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/mail"
 	"os/exec"
 	"regexp"
 	"strings"
 )
 
-// Log exit(0|1) 0 successful, 1 failure
-func (self *Epazote) Log(s *Service, exit int, because string, o ...string) (error, []byte) {
-	if len(s.Log) > 0 {
-		output := ""
-		if len(o) > 0 {
-			output = o[0]
-		}
-
-		// create json to send
-		j, err := json.Marshal(struct {
-			*Service
-			Exit    int    `json:"exit"`
-			Output  string `json:",omitempty"`
-			Because string `json:",omitempty"`
-		}{
-			s,
-			exit,
-			output,
-			because,
-		})
-
-		if err != nil {
-			return err, nil
-		}
-
-		// If log
-		err = HTTPPost(s.Log, j)
-		if err != nil {
-			log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
-		}
-		return nil, j
+// Status Service, exit(0|1) 0 successful, 1 failure, because (reason), output of command
+func (self *Epazote) Status(s *Service, exit int, because string, o ...string) (error, []byte) {
+	output := ""
+	if len(o) > 0 {
+		output = o[0]
 	}
-	return nil, nil
+
+	// create json to send
+	j, err := json.Marshal(struct {
+		*Service
+		Exit    int    `json:"exit"`
+		Output  string `json:",omitempty"`
+		Because string `json:",omitempty"`
+	}{
+		s,
+		exit,
+		output,
+		because,
+	})
+
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, j
+}
+
+func (self *Epazote) Log(s *Service, j []byte) {
+	// If log
+	err := HTTPPost(s.Log, j)
+	if err != nil {
+		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
+	}
 }
 
 // Do, execute the command in the if_not block
-func (self *Epazote) Do(s *Service, a *Action, because string) {
+func (self *Epazote) Do(a *Action) string {
 	cmd := a.Cmd
-	j := []byte{}
 	if len(cmd) > 0 {
 		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).CombinedOutput()
 		if err != nil {
-			log.Printf("cmd error on service %q: %q", Red(s.Name), err)
+			return err.Error()
 		}
-		err, j = self.Log(s, 1, because, string(out))
+		return string(out)
 	}
-
-	_, j = self.Log(s, 1, because)
-
-	// send email
-	if len(a.Notify) > 0 {
-		var to []string
-		for _, v := range strings.Split(a.Notify, " ") {
-			e, err := mail.ParseAddress(v)
-			if err != nil {
-				continue
-			}
-			to = append(to, e.Address)
-		}
-		// send email
-		log.Println(j)
-		self.SendEmail(s, to, a.Msg)
-	}
-	return
+	return "No defined cmd"
 }
 
 // Supervice check services
@@ -97,10 +78,23 @@ func (self *Epazote) Supervice(s Service) func() {
 			cmd.Stdout = &out
 			err := cmd.Run()
 			if err != nil {
-				self.Do(&s, &s.Test.IfNot, fmt.Sprintf("Test cmd: %s", err))
+				err, status := self.Status(&s, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot))
+				if err != nil {
+					log.Printf("Error creating status for service %q: %s", s.Name, err)
+				}
+
+				if s.Log != "" {
+				}
+				// action
+				if s.Test.IfNot.Notify != "" {
+					// notify
+				}
 				return
 			}
-			self.Log(&s, 0, fmt.Sprintf("Test cmd: %s", out.String()))
+			err, status := self.Status(&s, 0, fmt.Sprintf("Test cmd: %s", out.String()))
+			if err != nil {
+				log.Printf("Error creating status for service %q: %s", s.Name, err)
+			}
 			return
 		}
 
