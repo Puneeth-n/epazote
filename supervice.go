@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 // Status Service, exit(0|1) 0 successful, 1 failure, because (reason), output of command
@@ -38,12 +39,12 @@ func (self *Epazote) Status(s *Service, exit int, because string, o ...string) (
 	return nil, j
 }
 
-func (self *Epazote) Log(s *Service, j []byte) {
-	// If log
-	err := HTTPPost(s.Log, j)
+func (self *Epazote) Log(s *Service, status []byte, wg *sync.WaitGroup) {
+	err := HTTPPost(s.Log, status)
 	if err != nil {
 		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 	}
+	wg.Done()
 }
 
 // Do, execute the command in the if_not block
@@ -60,6 +61,9 @@ func (self *Epazote) Do(a *Action) string {
 	return "No defined cmd"
 }
 
+func (self *Epazote) Notify(s *Service, to string, j []byte, wg *sync.WaitGroup) {
+}
+
 // Supervice check services
 func (self *Epazote) Supervice(s Service) func() {
 	return func() {
@@ -68,6 +72,9 @@ func (self *Epazote) Supervice(s Service) func() {
 				log.Printf("Verify service %q options: %q", Red(s.Name), r)
 			}
 		}()
+
+		// sync wait
+		var wg sync.WaitGroup
 
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
@@ -81,19 +88,29 @@ func (self *Epazote) Supervice(s Service) func() {
 				err, status := self.Status(&s, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot))
 				if err != nil {
 					log.Printf("Error creating status for service %q: %s", s.Name, err)
+					return
 				}
-
+				// Log
 				if s.Log != "" {
+					wg.Add(1)
+					go self.Log(&s, status, &wg)
 				}
 				// action
 				if s.Test.IfNot.Notify != "" {
-					// notify
+					wg.Add(1)
+					go self.Notify(&s, s.Test.IfNot.Notify, status, &wg)
 				}
+				wg.Wait()
 				return
 			}
 			err, status := self.Status(&s, 0, fmt.Sprintf("Test cmd: %s", out.String()))
 			if err != nil {
 				log.Printf("Error creating status for service %q: %s", s.Name, err)
+			}
+			// Log
+			if s.Log != "" {
+				wg.Add(1)
+				go self.Log(&s, status, &wg)
 			}
 			return
 		}
@@ -101,7 +118,23 @@ func (self *Epazote) Supervice(s Service) func() {
 		// HTTP GET service URL
 		res, err := HTTPGet(s.URL, s.Timeout)
 		if err != nil {
-			self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("GET: %s", err))
+			err, status := self.Status(&s, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot))
+			if err != nil {
+				log.Printf("Error creating status for service %q: %s", s.Name, err)
+				return
+			}
+			// Log
+			if s.Log != "" {
+				wg.Add(1)
+				go self.Log(&s, status, &wg)
+			}
+			// action
+			if s.Test.IfNot.Notify != "" {
+				wg.Add(1)
+				go self.Notify(&s, s.Test.IfNot.Notify, status, &wg)
+			}
+			wg.Wait()
+
 			return
 		}
 
