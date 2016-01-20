@@ -437,6 +437,9 @@ func TestSuperviceIfStatusMatch302(t *testing.T) {
 			502: Action{},
 			503: Action{},
 		},
+		IfHeader: map[string]Action{
+			"x-amqp-kapputt": Action{},
+		},
 	}
 	ez := &Epazote{
 		Services: s,
