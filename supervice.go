@@ -127,10 +127,13 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// if_header
 		if len(s.IfHeader) > 0 {
+			//fmt.Printf("%#v", s.IfHeader)
+			fmt.Println(len(s.IfHeader))
 			for k, a := range s.IfHeader {
-				if res.Header.Get(k) != "" {
-					self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
-				}
+				fmt.Println("-oooooo", k, a)
+				//	if res.Header.Get(k) != "" {
+				//		self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
+				//	}
 			}
 			return
 		}

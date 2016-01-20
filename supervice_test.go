@@ -364,13 +364,100 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 	wg.Wait()
 }
 
-func TestSuperviceIfStatusMatch302(t *testing.T) {
+func TestSuperviceIfStatusMatch502(t *testing.T) {
 	var wg sync.WaitGroup
 	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("User-agent") != "epazote" {
 			t.Error("Expecting User-agent: epazote")
 		}
 		http.Error(w, http.StatusText(502), 502)
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check name
+		if n, ok := i["name"]; ok {
+			if n != "s 1" {
+				t.Errorf("Expecting  %q, got: %q", "s 1", n)
+			}
+		} else {
+			t.Errorf("key not found: %q", "name")
+		}
+		// check because
+		if b, ok := i["because"]; ok {
+			if b != "Status: 502" {
+				t.Errorf("Expecting: %q, got: %q", "Status: 502", b)
+			}
+		} else {
+			t.Errorf("key not found: %q", "because")
+		}
+		// check exit
+		if e, ok := i["exit"]; ok {
+			if e.(float64) != 1 {
+				t.Errorf("Expecting: 0 got: %v", e.(float64))
+			}
+		} else {
+			t.Errorf("key not found: %q", "exit")
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if o, ok := i["output"]; ok {
+			e := "No defined cmd"
+			if o != e {
+				t.Errorf("Expecting %q, got %q", e, o)
+			}
+		} else {
+			t.Errorf("key not found: %q", "output")
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = Service{
+		Name: "s 1",
+		URL:  check_s.URL,
+		Log:  log_s.URL,
+		Expect: Expect{
+			Status: 200,
+			IfNot:  Action{},
+		},
+		IfStatus: map[int]Action{
+			501: Action{},
+			502: Action{},
+			503: Action{},
+		},
+		IfHeader: map[string]Action{
+			"x-amqp-kapputt": Action{
+				Notify: "yes",
+			},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+}
+
+func TestSuperviceIfStatusNoMatch(t *testing.T) {
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		http.Error(w, http.StatusText(505), 505)
 	}))
 	defer check_s.Close()
 	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
