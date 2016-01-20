@@ -34,7 +34,8 @@ func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
 	}
 
 	if s.Log != "" {
-		go self.Log(s, j)
+		log.Println(j)
+		//go self.Log(s, j)
 	}
 	// action
 	if a.Notify != "" {
@@ -63,7 +64,7 @@ func (self *Epazote) Supervice(s Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("Verify service %q options: %q", Red(s.Name), r)
+				log.Printf("Verify service %s options: %q", Red(s.Name), r)
 			}
 		}()
 
