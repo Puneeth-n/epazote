@@ -24,8 +24,8 @@ func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
 	j, err := json.Marshal(struct {
 		*Service
 		Exit    int    `json:"exit"`
-		Output  string `json:",omitempty"`
-		Because string `json:",omitempty"`
+		Output  string `json:"output,omitempty"`
+		Because string `json:"because,omitempty"`
 	}{s, e, o, b})
 
 	if err != nil {

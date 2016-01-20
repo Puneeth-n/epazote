@@ -53,8 +53,8 @@ type Test struct {
 }
 
 type Service struct {
-	Name     string `yaml:"-"`
-	URL      string `json:",omitempty"`
+	Name     string `json:"name" yaml:"-"`
+	URL      string `json:"url,omitempty"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
 	Every    `yaml:",inline" json:"-"`
