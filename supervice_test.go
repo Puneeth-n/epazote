@@ -370,7 +370,7 @@ func TestSuperviceIfStatusMatch302(t *testing.T) {
 		if r.Header.Get("User-agent") != "epazote" {
 			t.Error("Expecting User-agent: epazote")
 		}
-		w.WriteHeader(http.StatusFound)
+		http.Error(w, http.StatusText(502), 502)
 	}))
 	defer check_s.Close()
 	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -393,15 +393,15 @@ func TestSuperviceIfStatusMatch302(t *testing.T) {
 		}
 		// check because
 		if b, ok := i["because"]; ok {
-			if b != "Status: 201" {
-				t.Errorf("Expecting: %q, got: %q", "Status: 201", b)
+			if b != "Status: 502" {
+				t.Errorf("Expecting: %q, got: %q", "Status: 502", b)
 			}
 		} else {
 			t.Errorf("key not found: %q", "because")
 		}
 		// check exit
 		if e, ok := i["exit"]; ok {
-			if e.(float64) != 0 {
+			if e.(float64) != 1 {
 				t.Errorf("Expecting: 0 got: %v", e.(float64))
 			}
 		} else {
@@ -413,7 +413,7 @@ func TestSuperviceIfStatusMatch302(t *testing.T) {
 		}
 		// check output
 		if o, ok := i["output"]; ok {
-			e := "exit status 1"
+			e := "No defined cmd"
 			if o != e {
 				t.Errorf("Expecting %q, got %q", e, o)
 			}
@@ -433,7 +433,9 @@ func TestSuperviceIfStatusMatch302(t *testing.T) {
 			IfNot:  Action{},
 		},
 		IfStatus: map[int]Action{
-			301: Action{},
+			501: Action{},
+			502: Action{},
+			503: Action{},
 		},
 	}
 	ez := &Epazote{
