@@ -480,8 +480,8 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 		}
 		// check because
 		if b, ok := i["because"]; ok {
-			if b != "Status: 502" {
-				t.Errorf("Expecting: %q, got: %q", "Status: 502", b)
+			if b != "Status: 505" {
+				t.Errorf("Expecting: %q, got: %q", "Status: 505", b)
 			}
 		} else {
 			t.Errorf("key not found: %q", "because")
@@ -525,7 +525,95 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 			503: Action{},
 		},
 		IfHeader: map[string]Action{
-			"x-amqp-kapputt": Action{},
+			"x-amqp-kapputt": Action{Notify: "yes"},
+			"x-db-kapputt":   Action{},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+}
+func TestSuperviceIfHeaderMatch(t *testing.T) {
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		w.Header().Set("x-db-kapputt", "si si si")
+		fmt.Fprintln(w, "Hello")
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check name
+		if n, ok := i["name"]; ok {
+			if n != "s 1" {
+				t.Errorf("Expecting  %q, got: %q", "s 1", n)
+			}
+		} else {
+			t.Errorf("key not found: %q", "name")
+		}
+		// check because
+		if b, ok := i["because"]; ok {
+			if b != "Header: X-Db-Kapputt" {
+				t.Errorf("Expecting: %q, got: %q", "Header: x-db-kapputt", b)
+			}
+		} else {
+			t.Errorf("key not found: %q", "because")
+		}
+		// check exit
+		if e, ok := i["exit"]; ok {
+			if e.(float64) != 1 {
+				t.Errorf("Expecting: 0 got: %v", e.(float64))
+			}
+		} else {
+			t.Errorf("key not found: %q", "exit")
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if o, ok := i["output"]; ok {
+			e := "exit status 1"
+			if o != e {
+				t.Errorf("Expecting %q, got %q", e, o)
+			}
+		} else {
+			t.Errorf("key not found: %q", "output")
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = Service{
+		Name: "s 1",
+		URL:  check_s.URL,
+		Log:  log_s.URL,
+		Expect: Expect{
+			Status: 200,
+			IfNot:  Action{},
+		},
+		IfStatus: map[int]Action{
+			501: Action{},
+			503: Action{},
+		},
+		IfHeader: map[string]Action{
+			"x-amqp-kapputt": Action{Notify: "yes"},
+			"X-Db-Kapputt": Action{
+				Cmd: "test 1 -gt 2",
+			},
 		},
 	}
 	ez := &Epazote{

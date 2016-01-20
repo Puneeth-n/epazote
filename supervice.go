@@ -19,7 +19,6 @@ func (self *Epazote) Log(s *Service, status []byte) {
 }
 
 func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
-
 	// create status report
 	j, err := json.Marshal(struct {
 		*Service
@@ -127,15 +126,17 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// if_header
 		if len(s.IfHeader) > 0 {
-			//fmt.Printf("%#v", s.IfHeader)
-			fmt.Println(len(s.IfHeader))
+			// return if true
+			r := false
 			for k, a := range s.IfHeader {
-				fmt.Println("-oooooo", k, a)
-				//	if res.Header.Get(k) != "" {
-				//		self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
-				//	}
+				if res.Header.Get(k) != "" {
+					r = true
+					self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
+				}
 			}
-			return
+			if r {
+				return
+			}
 		}
 
 		// Status
@@ -154,7 +155,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			}
 		}
 
-		// fin
+		// fin if all is ok
 		if res.StatusCode == s.Expect.Status {
 			self.Report(&s, nil, 0, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
