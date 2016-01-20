@@ -121,8 +121,8 @@ func (self *Epazote) Supervice(s Service) func() {
 			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
 				self.Report(&s, &a, 1, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
+				return
 			}
-			return
 		}
 
 		// if_header
