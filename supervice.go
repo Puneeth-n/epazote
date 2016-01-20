@@ -34,12 +34,18 @@ func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
 	}
 
 	if s.Log != "" {
-		log.Println(j)
-		//go self.Log(s, j)
+		go self.Log(s, j)
 	}
+
+	// if no Action return
+	if a == nil {
+		return
+	}
+
 	// action
 	if a.Notify != "" {
-		//		go self.Notify(&s, s.Test.IfNot.Notify, status)
+		log.Println(j)
+		//	go self.Notify(&s, s.Test.IfNot.Notify, status)
 	}
 }
 

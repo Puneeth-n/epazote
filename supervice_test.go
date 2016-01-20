@@ -1,7 +1,8 @@
 package epazote
 
 import (
-	"fmt"
+	"encoding/json"
+	//	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -10,18 +11,56 @@ import (
 
 var wg sync.WaitGroup
 
-func TestSupervice(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestSuperviceStatusOk(t *testing.T) {
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("User-agent") != "epazote" {
 			t.Error("Expecting User-agent: epazote")
 		}
-		fmt.Fprintln(w, "Hello, epazote")
+		w.WriteHeader(http.StatusOK)
 	}))
-	defer ts.Close()
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check name
+		if n, ok := i["Name"]; ok {
+			if n != "s 1" {
+				t.Errorf("Expecting  %q, got: %q", "s 1", n)
+			}
+		} else {
+			t.Errorf("key not found: %q", "Name")
+		}
+		// check because
+		if b, ok := i["Because"]; ok {
+			if b != "Status: 200" {
+				t.Errorf("Expecting: %q, got: %q", "Status: 200", b)
+			}
+		} else {
+			t.Errorf("key not found: %q", "Because")
+		}
+		// check exit
+		if e, ok := i["exit"]; ok {
+			if e.(float64) != 0 {
+				t.Errorf("Expecting: 0 got: %v", e.(float64))
+			}
+		} else {
+			t.Errorf("key not found: %q", "exit")
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
 	s := make(Services)
 	s["s 1"] = Service{
 		Name: "s 1",
-		URL:  ts.URL,
+		URL:  check_s.URL,
+		Log:  log_s.URL,
 		Expect: Expect{
 			Status: 200,
 		},
@@ -29,7 +68,7 @@ func TestSupervice(t *testing.T) {
 	ez := &Epazote{
 		Services: s,
 	}
-	fmt.Println(ez)
-	f := ez.Supervice(s["s 1"])
-	f()
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
 }
