@@ -9,49 +9,43 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-	"sync"
 )
 
-// Status Service, exit(0|1) 0 successful, 1 failure, because (reason), output of command
-func (self *Epazote) Status(s *Service, exit int, because string, o ...string) (error, []byte) {
-	output := ""
-	if len(o) > 0 {
-		output = o[0]
+func (self *Epazote) Log(s *Service, status []byte) {
+	err := HTTPPost(s.Log, status)
+	if err != nil {
+		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 	}
+}
 
-	// create json to send
+func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
+
+	// create status report
 	j, err := json.Marshal(struct {
 		*Service
 		Exit    int    `json:"exit"`
 		Output  string `json:",omitempty"`
 		Because string `json:",omitempty"`
-	}{
-		s,
-		exit,
-		output,
-		because,
-	})
+	}{s, e, o, b})
 
 	if err != nil {
-		return err, nil
+		log.Printf("Error creating report status for service %q: %s", s.Name, err)
+		return
 	}
 
-	return nil, j
-}
-
-func (self *Epazote) Log(s *Service, status []byte, wg *sync.WaitGroup) {
-	err := HTTPPost(s.Log, status)
-	if err != nil {
-		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
+	if s.Log != "" {
+		go self.Log(s, j)
 	}
-	wg.Done()
+	// action
+	if a.Notify != "" {
+		//		go self.Notify(&s, s.Test.IfNot.Notify, status)
+	}
 }
 
 // Do, execute the command in the if_not block
-func (self *Epazote) Do(a *Action) string {
-	cmd := a.Cmd
-	if len(cmd) > 0 {
-		args := strings.Fields(cmd)
+func (self *Epazote) Do(cmd *string) string {
+	if len(*cmd) > 0 {
+		args := strings.Fields(*cmd)
 		out, err := exec.Command(args[0], args[1:]...).CombinedOutput()
 		if err != nil {
 			return err.Error()
@@ -61,7 +55,7 @@ func (self *Epazote) Do(a *Action) string {
 	return "No defined cmd"
 }
 
-func (self *Epazote) Notify(s *Service, to string, j []byte, wg *sync.WaitGroup) {
+func (self *Epazote) Notify(s *Service, to string, j []byte) {
 }
 
 // Supervice check services
@@ -73,9 +67,6 @@ func (self *Epazote) Supervice(s Service) func() {
 			}
 		}()
 
-		// sync wait
-		var wg sync.WaitGroup
-
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
@@ -84,56 +75,17 @@ func (self *Epazote) Supervice(s Service) func() {
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
-				if err, status := self.Status(&s, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot)); err != nil {
-					log.Printf("Error creating status for service %q: %s", s.Name, err)
-					return
-				} else {
-					// Log
-					if s.Log != "" {
-						wg.Add(1)
-						go self.Log(&s, status, &wg)
-					}
-					// action
-					if s.Test.IfNot.Notify != "" {
-						wg.Add(1)
-						go self.Notify(&s, s.Test.IfNot.Notify, status, &wg)
-					}
-					wg.Wait()
-					return
-				}
-			}
-			if err, status := self.Status(&s, 0, fmt.Sprintf("Test cmd: %s", out.String())); err != nil {
-				log.Printf("Error creating status for service %q: %s", s.Name, err)
+				self.Report(&s, &s.Test.IfNot, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot.Cmd))
 			} else {
-				// Log
-				if s.Log != "" {
-					wg.Add(1)
-					go self.Log(&s, status, &wg)
-				}
-				wg.Wait()
-				return
+				self.Report(&s, nil, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
 			}
+			return
 		}
 
 		// HTTP GET service URL
 		res, err := HTTPGet(s.URL, s.Timeout)
 		if err != nil {
-			err, status := self.Status(&s, 1, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot))
-			if err != nil {
-				log.Printf("Error creating status for service %q: %s", s.Name, err)
-				return
-			}
-			// Log
-			if s.Log != "" {
-				wg.Add(1)
-				go self.Log(&s, status, &wg)
-			}
-			// notify
-			if s.Expect.IfNot.Notify != "" {
-				wg.Add(1)
-				go self.Notify(&s, s.Expect.IfNot.Notify, status, &wg)
-			}
-			wg.Wait()
+			self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd))
 			return
 		}
 
@@ -145,25 +97,11 @@ func (self *Epazote) Supervice(s Service) func() {
 				log.Printf("Could not read Body for service %q: %s", Red(s.Name), err)
 				return
 			}
-			if re.FindString(string(body)) == "" {
-				//				self.Do(&s, &s.Expect.IfNot, fmt.Sprintf("Body: %s", re.String()))
-				err, status := self.Status(&s, 1, fmt.Sprintf("Body: %s", err), self.Do(&s.Expect.IfNot))
-				if err != nil {
-					log.Printf("Error creating status for service %q: %s", s.Name, err)
-					return
-				}
-				// Log
-				if s.Log != "" {
-					wg.Add(1)
-					go self.Log(&s, status, &wg)
-				}
-				// notify
-				if s.Expect.IfNot.Notify != "" {
-					wg.Add(1)
-					go self.Notify(&s, s.Expect.IfNot.Notify, status, &wg)
-				}
-				wg.Wait()
-				return
+			r := re.FindString(string(body))
+			if r == "" {
+				self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Body no regex match: %s", re.String()), self.Do(&s.Expect.IfNot.Cmd))
+			} else {
+				self.Report(&s, nil, 0, fmt.Sprintf("Body regex match: %s", r), "")
 			}
 			return
 		}
@@ -173,24 +111,9 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// if_status
 		if len(s.IfStatus) > 0 {
+			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				err, status := self.Status(&s, 1, fmt.Sprintf("Status: %d", err), self.Do(&a))
-				if err != nil {
-					log.Printf("Error creating status for service %q: %s", s.Name, err)
-					return
-				}
-				// Log
-				if s.Log != "" {
-					wg.Add(1)
-					go self.Log(&s, status, &wg)
-				}
-				// notify
-				if a.Notify != "" {
-					wg.Add(1)
-					go self.Notify(&s, a.Notify, status, &wg)
-				}
-				wg.Wait()
-				return
+				self.Report(&s, &a, 1, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
 			}
 			return
 		}
@@ -199,23 +122,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.IfHeader) > 0 {
 			for k, a := range s.IfHeader {
 				if res.Header.Get(k) != "" {
-					err, status := self.Status(&s, 1, fmt.Sprintf("Header: %q", err), self.Do(&a))
-					if err != nil {
-						log.Printf("Error creating status for service %q: %s", s.Name, err)
-						return
-					}
-					// Log
-					if s.Log != "" {
-						wg.Add(1)
-						go self.Log(&s, status, &wg)
-					}
-					// notify
-					if a.Notify != "" {
-						wg.Add(1)
-						go self.Notify(&s, a.Notify, status, &wg)
-					}
-					wg.Wait()
-					return
+					self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
 				}
 			}
 			return
@@ -223,22 +130,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			err, status := self.Status(&s, 1, fmt.Sprintf("Status: %d", err), self.Do(&s.Expect.IfNot))
-			if err != nil {
-				log.Printf("Error creating status for service %q: %s", s.Name, err)
-				return
-			}
-			// Log
-			if s.Log != "" {
-				wg.Add(1)
-				go self.Log(&s, status, &wg)
-			}
-			// notify
-			if s.Expect.IfNot.Notify != "" {
-				wg.Add(1)
-				go self.Notify(&s, s.Expect.IfNot.Notify, status, &wg)
-			}
-			wg.Wait()
+			self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&s.Expect.IfNot.Cmd))
 			return
 		}
 
@@ -246,22 +138,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					err, status := self.Status(&s, 1, fmt.Sprintf("Header: %s", err), self.Do(&s.Expect.IfNot))
-					if err != nil {
-						log.Printf("Error creating status for service %q: %s", s.Name, err)
-						return
-					}
-					// Log
-					if s.Log != "" {
-						wg.Add(1)
-						go self.Log(&s, status, &wg)
-					}
-					// notify
-					if s.Expect.IfNot.Notify != "" {
-						wg.Add(1)
-						go self.Notify(&s, s.Expect.IfNot.Notify, status, &wg)
-					}
-					wg.Wait()
+					self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
 				}
 				return
 			}
@@ -269,16 +146,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin
 		if res.StatusCode == s.Expect.Status {
-			err, status := self.Status(&s, 0, fmt.Sprintf("Status: %d", res.StatusCode))
-			if err != nil {
-				log.Printf("Error creating status for service %q: %s", s.Name, err)
-			}
-			// Log
-			if s.Log != "" {
-				wg.Add(1)
-				go self.Log(&s, status, &wg)
-			}
-			wg.Wait()
+			self.Report(&s, nil, 0, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
 
