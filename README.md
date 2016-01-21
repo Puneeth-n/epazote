@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/nbari/epazote.svg?branch=develop)](https://travis-ci.org/nbari/epazote)
 
 # Epazote 🌿
-Microservices supervisor
+Automated Microservices Supervisor
 
 ## Why ?
 There are good supervisors,
