@@ -150,8 +150,8 @@ func (self *Epazote) Supervice(s Service) func() {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
 					self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
+					return
 				}
-				return
 			}
 		}
 
@@ -160,8 +160,5 @@ func (self *Epazote) Supervice(s Service) func() {
 			self.Report(&s, nil, 0, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
-
-		log.Printf("Check service %q: %s", Red(s.Name), s.Expect.Status)
-		return
 	}
 }
