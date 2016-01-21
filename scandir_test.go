@@ -3,6 +3,7 @@ package epazote
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"reflect"
 	"testing"
@@ -38,7 +39,7 @@ func TestScanSearch(t *testing.T) {
 
 func TestScanParseScanErr(t *testing.T) {
 	dir := "./"
-	prefix := "test-scan-"
+	prefix := "test-scan1-"
 
 	d, err := ioutil.TempDir(dir, prefix)
 
@@ -56,6 +57,65 @@ func TestScanParseScanErr(t *testing.T) {
 	s := new(Epazote)
 	err = s.search(d)
 	if err == nil {
+		t.Error(err)
+	}
+}
+
+func TestScanParseScanSearchOk(t *testing.T) {
+	dir := "./"
+	prefix := "test-scan2-"
+
+	d, err := ioutil.TempDir(dir, prefix)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer os.RemoveAll(d)
+
+	f := []byte(`
+    service 1:
+        url: http://about.epazote.io
+        expect:
+           body: "123"
+`)
+
+	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
+
+	s := new(Epazote)
+	err = s.search(d)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestScanParseScanSearchBadRegex(t *testing.T) {
+	dir := "./"
+	prefix := "test-scan2-"
+
+	d, err := ioutil.TempDir(dir, prefix)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer os.RemoveAll(d)
+
+	f := []byte(`
+    service 1:
+        url: http://about.epazote.io
+        expect:
+           body: ?()
+`)
+
+	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
+
+	//discard logs
+	log.SetOutput(ioutil.Discard)
+
+	s := new(Epazote)
+	s.search(d)
+	if err != nil {
 		t.Error(err)
 	}
 }
