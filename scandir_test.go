@@ -1,6 +1,7 @@
 package epazote
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -105,17 +106,27 @@ func TestScanParseScanSearchBadRegex(t *testing.T) {
     service 1:
         url: http://about.epazote.io
         expect:
-           body: ?()
+           body: ?(),
 `)
 
 	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
 
-	//discard logs
-	log.SetOutput(ioutil.Discard)
+	buf := new(bytes.Buffer)
+	log.SetOutput(buf)
 
 	s := new(Epazote)
 	s.search(d)
 	if err != nil {
 		t.Error(err)
 	}
+
+	if buf.Len() == 0 {
+		t.Error("Expecting log.Println error")
+	}
+	sk := GetScheduler()
+
+	if len(sk.Schedulers) != 1 {
+		t.Error("Expecting 1")
+	}
+
 }
