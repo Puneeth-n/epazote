@@ -14,6 +14,7 @@ ifdef DEBUG
 	${GO} get -u github.com/mailgun/godebug
 	${GOPATH}/bin/godebug build -instrument="github.com/nbari/epazote/..." -o ${BIN_NAME}.debug cmd/epazote/main.go
 else
+	${GO} get -u gopkg.in/yaml.v2
 	${GO} build -o ${BIN_NAME} cmd/epazote/main.go
 endif
 
