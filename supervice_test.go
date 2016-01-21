@@ -10,6 +10,149 @@ import (
 	"testing"
 )
 
+func TestSuperviceTestOk(t *testing.T) {
+	var wg sync.WaitGroup
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check name
+		if n, ok := i["name"]; ok {
+			if n != "s 1" {
+				t.Errorf("Expecting  %q, got: %q", "s 1", n)
+			}
+		} else {
+			t.Errorf("key not found: %q", "name")
+		}
+		// check because
+		if b, ok := i["because"]; ok {
+			if b != "Test cmd: " {
+				t.Errorf("Expecting: %q, got: %q", "Test cmd: ", b)
+			}
+		} else {
+			t.Errorf("key not found: %q", "because")
+		}
+		// check exit
+		if e, ok := i["exit"]; ok {
+			if e.(float64) != 0 {
+				t.Errorf("Expecting: 0 got: %v", e.(float64))
+			}
+		} else {
+			t.Errorf("key not found: %q", "exit")
+		}
+		// check test
+		if tt, ok := i["test"]; ok {
+			if tt != "test 3 -gt 2" {
+				t.Errorf("Expecting: %q, got: %q", "Test cmd: ", tt)
+			}
+		} else {
+			t.Errorf("key not found: %q", "test")
+		}
+		// check url
+		if o, ok := i["url"]; ok {
+			t.Errorf("key should not exist,content: %q", o)
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = Service{
+		Name: "s 1",
+		Test: Test{
+			Test: "test 3 -gt 2",
+		},
+		Log: log_s.URL,
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+}
+
+func TestSuperviceTestNotOk(t *testing.T) {
+	var wg sync.WaitGroup
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check name
+		if n, ok := i["name"]; ok {
+			if n != "s 1" {
+				t.Errorf("Expecting  %q, got: %q", "s 1", n)
+			}
+		} else {
+			t.Errorf("key not found: %q", "name")
+		}
+		// check because
+		if b, ok := i["because"]; ok {
+			if b != "Test cmd: exit status 1" {
+				t.Errorf("Expecting: %q, got: %q", "Test cmd: exit status 1", b)
+			}
+		} else {
+			t.Errorf("key not found: %q", "because")
+		}
+		// check exit
+		if e, ok := i["exit"]; ok {
+			if e.(float64) != 1 {
+				t.Errorf("Expecting: 1 got: %v", e.(float64))
+			}
+		} else {
+			t.Errorf("key not found: %q", "exit")
+		}
+		// check test
+		if tt, ok := i["test"]; ok {
+			if tt != "test 3 -gt 5" {
+				t.Errorf("Expecting: %q, got: %q", "Test cmd: ", tt)
+			}
+		} else {
+			t.Errorf("key not found: %q", "test")
+		}
+		// check url
+		if o, ok := i["url"]; ok {
+			t.Errorf("key should not exist,content: %q", o)
+		}
+		// check output
+		if o, ok := i["output"]; ok {
+			e := "No defined cmd"
+			if o != e {
+				t.Errorf("Expecting %q, got %q", e, o)
+			}
+		} else {
+			t.Errorf("key not found: %q", "output")
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = Service{
+		Name: "s 1",
+		Test: Test{
+			Test: "test 3 -gt 5",
+		},
+		Log: log_s.URL,
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+}
+
 func TestSuperviceStatusCreated(t *testing.T) {
 	var wg sync.WaitGroup
 	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -850,9 +993,6 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 			t.Errorf("key should not exist,content: %q", o)
 		}
 		wg.Done()
-		for k, v := range i {
-			fmt.Println(k, v)
-		}
 	}))
 	defer log_s.Close()
 	s := make(Services)

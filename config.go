@@ -48,7 +48,7 @@ type Scan struct {
 type Services map[string]Service
 
 type Test struct {
-	Test  string `json:",omitempty"`
+	Test  string `json:"test,omitempty"`
 	IfNot Action `yaml:"if_not" json:"-"`
 }
 
