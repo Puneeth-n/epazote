@@ -1,6 +1,7 @@
 [![Build Status](https://drone.io/github.com/nbari/epazote/status.png)](https://drone.io/github.com/nbari/epazote/latest)
 [![Build Status](https://travis-ci.org/nbari/epazote.svg?branch=develop)](https://travis-ci.org/nbari/epazote)
 [![Coverage Status](https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master)](https://coveralls.io/github/nbari/epazote?branch=master)
+[![Coverage](http://gocover.io/_badge/github.com/nbari/epazote?0)](http://gocover.io/github.com/nbari/epazote)
 
 # Epazote 🌿
 Automated Microservices Supervisor
