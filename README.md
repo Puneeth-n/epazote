@@ -291,12 +291,13 @@ They can be used all together, only one or either none.
 ``cmd`` Contains the command to be executed.
 
 ### services - Actions - notify (string)
-``notify`` Should contain the email email address or addresses (space separated)
+``notify`` Should contain ``yes``, the email email address or addresses (space separated)
 of the recipients that will be notified when the action is executed.
+
+If the string is ``yes`` the global recipients will be used.
 
 ### services - Actions - msg (string)
 ``msg`` The message to send when the action is executed.
-
 
 ## services - Test
 **Epazote** It is mainly used for HTTP services, for supervising other
