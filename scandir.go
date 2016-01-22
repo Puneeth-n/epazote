@@ -51,7 +51,7 @@ func (self *Epazote) search(root string) error {
 						log.Printf("[%s] %s - Verify Body: %q - %q", Red(path), k, v.Expect.Body, err)
 						continue
 					}
-					v.Expect.body = re
+					v.Expect.body = *re
 				}
 
 				// schedule service
