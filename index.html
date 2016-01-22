@@ -20,16 +20,17 @@
 
     <section class="main-content">
       <p><a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a>
-<a href="https://travis-ci.org/nbari/epazote"><img src="https://travis-ci.org/nbari/epazote.svg?branch=develop" alt="Build Status"></a></p>
+<a href="https://travis-ci.org/nbari/epazote"><img src="https://travis-ci.org/nbari/epazote.svg?branch=develop" alt="Build Status"></a>
+<a href="https://coveralls.io/github/nbari/epazote?branch=master"><img src="https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master" alt="Coverage Status"></a></p>
 
 <h1>
-<a id="epazote-" class="anchor" href="#epazote-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Epazote <g-emoji alias="herb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f33f.png">🌿</g-emoji>
+<a id="epazote-" class="anchor" href="#epazote-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Epazote <g-emoji alias="herb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f33f.png">🌿</g-emoji>
 </h1>
 
-<p>Microservices supervisor</p>
+<p>Automated Microservices Supervisor</p>
 
 <h2>
-<a id="why-" class="anchor" href="#why-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why ?</h2>
+<a id="why-" class="anchor" href="#why-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why ?</h2>
 
 <p>There are good supervisors,
 <a href="https://cr.yp.to/daemontools.html">daemontools</a>,
@@ -41,7 +42,7 @@ request, display unwanted content, etc. here is where <strong>Epazote</strong> c
 action.</p>
 
 <h2>
-<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span class="octicon octicon-link"></span></a>The problem to solve</h2>
+<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The problem to solve</h2>
 
 <p>Once your site/application is up and running, it can become idle and
 unresponsive, your supervisor will not notice this, since in most of the cases
@@ -56,7 +57,7 @@ task apart from the "CD" process, therefore exists the need to detect any change
 and automatically apply them upon request.</p>
 
 <h2>
-<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works</h2>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How it works</h2>
 
 <p>In its basic way of operation, <strong>Epazote</strong> periodically checks the services endpoints
 "<a href="https://en.wikipedia.org/wiki/Uniform_Resource_Locator">URLs</a>"
@@ -75,7 +76,7 @@ same server.</p>
 alerts if desired.</p>
 
 <h1>
-<a id="how-to-use-it" class="anchor" href="#how-to-use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use it</h1>
+<a id="how-to-use-it" class="anchor" href="#how-to-use-it" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use it</h1>
 
 <p>First you need to install <strong>Epazote</strong>, either you can compile it from
 <a href="https://github.com/nbari/epazote">source</a>
@@ -93,13 +94,13 @@ is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.</p>
 
 <h2>
-<a id="the-configuration-file" class="anchor" href="#the-configuration-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>The configuration file</h2>
+<a id="the-configuration-file" class="anchor" href="#the-configuration-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The configuration file</h2>
 
 <p>The configuration file (<a href="https://en.wikipedia.org/wiki/YAML">YAML formated</a>)
 consists of two parts, a <strong>config</strong> and a <strong>services</strong> (Key-value pairs).</p>
 
 <h2>
-<a id="the-config-section" class="anchor" href="#the-config-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The config section</h2>
+<a id="the-config-section" class="anchor" href="#the-config-section" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The config section</h2>
 
 <p>The <strong>config</strong> section is composed of:</p>
 
@@ -126,13 +127,13 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
         <span class="pl-c1"><span class="pl-ent">minutes:</span> 5</span></pre></div>
 
 <h3>
-<a id="config---smtp" class="anchor" href="#config---smtp" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - smtp</h3>
+<a id="config---smtp" class="anchor" href="#config---smtp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - smtp</h3>
 
 <p>Required to properly send alerts via email, all fields are required, the
 <code>headers</code> section can be extended with any desired key-pair values.</p>
 
 <h3>
-<a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span class="octicon octicon-link"></span></a>config - scan</h3>
+<a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - scan</h3>
 
 <p>Paths to scan every N <code>seconds</code>, <code>minutes</code> or <code>hours</code>, a search for
 services specified in a file call <code>epazote.yml</code> is made.</p>
@@ -145,7 +146,7 @@ file named <code>epazote.yml</code> with the service rules, thus achieving the d
 of your application and the supervising at the same time.</p>
 
 <h3>
-<a id="config-optional" class="anchor" href="#config-optional" aria-hidden="true"><span class="octicon octicon-link"></span></a>config (optional)</h3>
+<a id="config-optional" class="anchor" href="#config-optional" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config (optional)</h3>
 
 <p>As you may notice the <code>config</code> section contains mainly settings for sending
 alerts/notifications apart from the <code>scan</code> setting, therefore is totally
@@ -156,7 +157,7 @@ the need of the <code>config</code> section.</p>
 <code>config - scan</code> setting.</p>
 
 <h2>
-<a id="the-services-section" class="anchor" href="#the-services-section" aria-hidden="true"><span class="octicon octicon-link"></span></a>The services section</h2>
+<a id="the-services-section" class="anchor" href="#the-services-section" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The services section</h2>
 
 <p>Services are the main functionality of <strong>Epazote</strong>, is where the URL's and the
 rules based on the response are defined, since options vary from service to
@@ -207,7 +208,7 @@ service, an example could help better to understand the setup:</p>
             <span class="pl-c1"><span class="pl-ent">status:</span> 302</span>
             <span class="pl-s"><span class="pl-ent">if_not:</span></span>
                 <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
-                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">abc@domain.tld</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">yes</span></span>
 
     <span class="pl-s"><span class="pl-ent">salt-master:</span></span>
         <span class="pl-s"><span class="pl-ent">test:</span> <span class="pl-s">pgrep -f salt</span></span>
@@ -216,7 +217,7 @@ service, an example could help better to understand the setup:</p>
             <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">operations@domain.tld</span></span></pre></div>
 
 <h3>
-<a id="services---name-of-service-string" class="anchor" href="#services---name-of-service-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - name of service (string)</h3>
+<a id="services---name-of-service-string" class="anchor" href="#services---name-of-service-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - name of service (string)</h3>
 
 <p>An unique string that identifies your service, in the above example, there are 3
 services named:</p>
@@ -228,18 +229,18 @@ services named:</p>
 </ul>
 
 <h3>
-<a id="services---url-string" class="anchor" href="#services---url-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - url (string)</h3>
+<a id="services---url-string" class="anchor" href="#services---url-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - url (string)</h3>
 
 <p>URL of the service to supervise</p>
 
 <h3>
-<a id="services---timeout-in-seconds-int" class="anchor" href="#services---timeout-in-seconds-int" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - timeout in seconds (int)</h3>
+<a id="services---timeout-in-seconds-int" class="anchor" href="#services---timeout-in-seconds-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - timeout in seconds (int)</h3>
 
 <p>Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.</p>
 
 <h3>
-<a id="services---seconds-minutes-hours" class="anchor" href="#services---seconds-minutes-hours" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - seconds, minutes, hours</h3>
+<a id="services---seconds-minutes-hours" class="anchor" href="#services---seconds-minutes-hours" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - seconds, minutes, hours</h3>
 
 <p>How often to check the service, the options are: (Only one should be used)</p>
 
@@ -252,12 +253,12 @@ timeout, defaults to 5 seconds.</p>
 <p><code>N</code> should be an integer.</p>
 
 <h3>
-<a id="services---log-url" class="anchor" href="#services---log-url" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - log (URL)</h3>
+<a id="services---log-url" class="anchor" href="#services---log-url" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - log (URL)</h3>
 
 <p>An URL to post all events, default disabled.</p>
 
 <h3>
-<a id="services---expect" class="anchor" href="#services---expect" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect</h3>
+<a id="services---expect" class="anchor" href="#services---expect" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect</h3>
 
 <p>The <code>expect</code> block options are:</p>
 
@@ -269,24 +270,24 @@ timeout, defaults to 5 seconds.</p>
 </ul>
 
 <h3>
-<a id="services---expect---status" class="anchor" href="#services---expect---status" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - status</h3>
+<a id="services---expect---status" class="anchor" href="#services---expect---status" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - status</h3>
 
 <p>An Integer representing the expected <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Code</a></p>
 
 <h3>
-<a id="services---expect---header" class="anchor" href="#services---expect---header" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - header</h3>
+<a id="services---expect---header" class="anchor" href="#services---expect---header" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - header</h3>
 
 <p>A key-value map of expected headers, it can be only one or more.</p>
 
 <h3>
-<a id="services---expect---body" class="anchor" href="#services---expect---body" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - body</h3>
+<a id="services---expect---body" class="anchor" href="#services---expect---body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - body</h3>
 
 <p>A <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> used
 to match a string on the body of the site, use full in cases you want to ensure
 that the content delivered is always the same or keeps a pattern.</p>
 
 <h3>
-<a id="services---expect-how-it-works" class="anchor" href="#services---expect-how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect (How it works)</h3>
+<a id="services---expect-how-it-works" class="anchor" href="#services---expect-how-it-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect (How it works)</h3>
 
 <p>The <code>expect</code> logic tries to implement a
 <a href="https://en.wikipedia.org/wiki/if_else">if-else</a> logic <code>status</code>, <code>header</code>,
@@ -317,13 +318,13 @@ therefore we don't need to read the full body page, because of this if no
 time and process time.</p>
 
 <h3>
-<a id="services---expect---if_not" class="anchor" href="#services---expect---if_not" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - expect - if_not</h3>
+<a id="services---expect---if_not" class="anchor" href="#services---expect---if_not" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - if_not</h3>
 
 <p><code>if_not</code> is a block with an action of what to do it we don't get what we where
 expecting (<code>expect</code>). See services - Actions</p>
 
 <h3>
-<a id="services---if_status---if_header" class="anchor" href="#services---if_status---if_header" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - if_status  &amp; if_header</h3>
+<a id="services---if_status---if_header" class="anchor" href="#services---if_status---if_header" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - if_status  &amp; if_header</h3>
 
 <p>There maybe cases in where third-party dependencies are down and because of this
 your application could not be working properly, for this cases the <code>if_status</code>
@@ -353,7 +354,7 @@ an <code>if_status</code> and <code>if_header</code> are set, same applies, firs
 <code>if_status</code>, then <code>if_header</code> and last <code>if_not</code>.</p>
 
 <h2>
-<a id="services---actions" class="anchor" href="#services---actions" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions</h2>
+<a id="services---actions" class="anchor" href="#services---actions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions</h2>
 
 <p>An Action has tree options:</p>
 
@@ -366,23 +367,23 @@ an <code>if_status</code> and <code>if_header</code> are set, same applies, firs
 <p>They can be used all together, only one or either none.</p>
 
 <h3>
-<a id="services---actions---cmd-string" class="anchor" href="#services---actions---cmd-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - cmd (string)</h3>
+<a id="services---actions---cmd-string" class="anchor" href="#services---actions---cmd-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - cmd (string)</h3>
 
 <p><code>cmd</code> Contains the command to be executed.</p>
 
 <h3>
-<a id="services---actions---notify-string" class="anchor" href="#services---actions---notify-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - notify (string)</h3>
+<a id="services---actions---notify-string" class="anchor" href="#services---actions---notify-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - notify (string)</h3>
 
 <p><code>notify</code> Should contain the email email address or addresses (space separated)
 of the recipients that will be notified when the action is executed.</p>
 
 <h3>
-<a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
+<a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
 
 <p><code>msg</code> The message to send when the action is executed.</p>
 
 <h2>
-<a id="services---test" class="anchor" href="#services---test" aria-hidden="true"><span class="octicon octicon-link"></span></a>services - Test</h2>
+<a id="services---test" class="anchor" href="#services---test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Test</h2>
 
 <p><strong>Epazote</strong> It is mainly used for HTTP services, for supervising other
 applications that don't listen or accept HTTP connections, like a database,
@@ -411,7 +412,7 @@ block in case the exit code is &gt; 0, from the <code>pgrep</code> man page:</p>
 </code></pre>
 
 <h2>
-<a id="extra-setup" class="anchor" href="#extra-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extra setup</h2>
+<a id="extra-setup" class="anchor" href="#extra-setup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Extra setup</h2>
 
 <p><em>green dots give some comfort</em> -- Because of this when using the <code>log</code>
 option an extra service could be configure as a receiver for all the post
@@ -420,7 +421,7 @@ dashboard, something similar to: <a href="https://status.cloud.google.com/">http
 <a href="http://status.aws.amazon.com/">http://status.aws.amazon.com/</a></p>
 
 <h1>
-<a id="issues" class="anchor" href="#issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>Issues</h1>
+<a id="issues" class="anchor" href="#issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Issues</h1>
 
 <p>Please report any problem, bug, here: <a href="https://github.com/nbari/epazote/issues">https://github.com/nbari/epazote/issues</a></p>
 
