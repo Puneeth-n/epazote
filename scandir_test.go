@@ -10,6 +10,9 @@ import (
 	"testing"
 )
 
+// for catching the log.Println
+var buf *bytes.Buffer
+
 // just to cover
 func TestScanReturnFunc(t *testing.T) {
 	s := new(Epazote)
@@ -111,7 +114,7 @@ func TestScanParseScanSearchBadRegex(t *testing.T) {
 
 	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
 
-	buf := new(bytes.Buffer)
+	buf = new(bytes.Buffer)
 	log.SetOutput(buf)
 
 	s := new(Epazote)
@@ -128,5 +131,7 @@ func TestScanParseScanSearchBadRegex(t *testing.T) {
 	if len(sk.Schedulers) != 1 {
 		t.Error("Expecting 1")
 	}
+
+	buf.Reset()
 
 }

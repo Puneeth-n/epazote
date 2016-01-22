@@ -1027,3 +1027,22 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
+
+func TestSuperviceLogErr(t *testing.T) {
+	s := make(Services)
+	s["s 1"] = Service{
+		Name: "s 1",
+		URL:  "--",
+		Log:  "http://",
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := new(Epazote)
+	ser := s["s 1"]
+	ez.Log(&ser, []byte{0})
+
+	if buf.Len() == 0 {
+		t.Error("Expecting log.Println error")
+	}
+}
