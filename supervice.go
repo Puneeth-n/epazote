@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Log send log via HTTP POST to defined URL
 func (self *Epazote) Log(s *Service, status []byte) {
 	err := HTTPPost(s.Log, status)
 	if err != nil {
@@ -17,6 +18,7 @@ func (self *Epazote) Log(s *Service, status []byte) {
 	}
 }
 
+// Report create report to send via log/email
 func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
 	// create status report
 	j, err := json.Marshal(struct {

@@ -147,14 +147,36 @@ func (self *Epazote) VerifyEmail() error {
 	return nil
 }
 
-func (self *Epazote) SendEmail(s *Service, to []string, m string) {
+// EmailSender to simplify tests
+type EmailSender interface {
+	Send(to []string, body []byte) error
+}
+
+func NewEmailSender(conf *Email) EmailSender {
+	return &emailSender{
+		conf,
+		smtp.SendMail,
+	}
+}
+
+type emailSender struct {
+	conf *Email
+	send func(string, smtp.Auth, string, []string, []byte) error
+}
+
+func (self *emailSender) Send(to []string, body []byte) error {
+	// x.x.x.x:25
+	addr := self.conf.Server + ":" + strconv.Itoa(self.conf.Port)
 	// auth Set up authentication information.
 	auth := smtp.PlainAuth("",
-		self.Config.SMTP.Username,
-		self.Config.SMTP.Password,
-		self.Config.SMTP.Server,
+		self.conf.Username,
+		self.conf.Password,
+		self.conf.Server,
 	)
+	return self.send(addr, auth, self.conf.Headers["from"], to, body)
+}
 
+func (self *Epazote) SendEmail(m EmailSender, s *Service, to []string, b string) error {
 	// set To
 	if len(to) < 1 {
 		to = strings.Split(self.Config.SMTP.Headers["to"], " ")
@@ -177,16 +199,5 @@ func (self *Epazote) SendEmail(s *Service, to []string, m string) {
 	}
 	msg += CRLF + base64.StdEncoding.EncodeToString([]byte(body))
 
-	err := smtp.SendMail(
-		self.Config.SMTP.Server+":"+strconv.Itoa(self.Config.SMTP.Port),
-		auth,
-		self.Config.SMTP.Headers["from"],
-		to,
-		[]byte(msg),
-	)
-
-	if err != nil {
-		log.Println("ERROR: attempting to send a mail ", err)
-	}
-
+	return m.Send(to, []byte(msg))
 }
