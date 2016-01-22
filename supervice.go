@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
@@ -96,16 +95,16 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// Read Body first and close if not used
-		if re, ok := s.Expect.Body.(regexp.Regexp); ok {
+		if s.Expect.Body != "" {
 			body, err := ioutil.ReadAll(res.Body)
 			res.Body.Close()
 			if err != nil {
 				log.Printf("Could not read Body for service %q: %s", Red(s.Name), err)
 				return
 			}
-			r := re.FindString(string(body))
+			r := s.Expect.body.FindString(string(body))
 			if r == "" {
-				self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Body no regex match: %s", re.String()), self.Do(&s.Expect.IfNot.Cmd))
+				self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(&s.Expect.IfNot.Cmd))
 			} else {
 				self.Report(&s, nil, 0, fmt.Sprintf("Body regex match: %s", r), "")
 			}

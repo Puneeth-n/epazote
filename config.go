@@ -67,7 +67,8 @@ type Service struct {
 type Expect struct {
 	Status int
 	Header map[string]string
-	Body   interface{}
+	Body   string
+	body   *regexp.Regexp
 	IfNot  Action `yaml:"if_not"`
 }
 
@@ -149,9 +150,9 @@ func (self *Epazote) Start(sk *scheduler.Scheduler) {
 		}
 
 		// rxBody
-		if body, ok := v.Expect.Body.(string); ok {
-			re := regexp.MustCompile(body)
-			v.Expect.Body = *re
+		if v.Expect.Body != "" {
+			re := regexp.MustCompile(v.Expect.Body)
+			v.Expect.body = re
 		}
 
 		// schedule service

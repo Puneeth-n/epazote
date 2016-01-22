@@ -278,7 +278,8 @@ func TestSuperviceBodyMatch(t *testing.T) {
 		URL:  check_s.URL,
 		Log:  log_s.URL,
 		Expect: Expect{
-			Body: *re,
+			Body: "(?i)[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}",
+			body: re,
 		},
 	}
 	ez := &Epazote{
@@ -356,7 +357,8 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 		URL:  check_s.URL,
 		Log:  log_s.URL,
 		Expect: Expect{
-			Body: *re,
+			Body: "[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}",
+			body: re,
 		},
 	}
 	ez := &Epazote{

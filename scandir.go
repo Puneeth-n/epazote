@@ -45,13 +45,13 @@ func (self *Epazote) search(root string) error {
 				}
 
 				// rxBody
-				if body, ok := v.Expect.Body.(string); ok {
-					re, err := regexp.Compile(body)
+				if v.Expect.Body != "" {
+					re, err := regexp.Compile(v.Expect.Body)
 					if err != nil {
-						log.Printf("[%s] %s - Verify Body: %q - %q", Red(path), k, body, err)
+						log.Printf("[%s] %s - Verify Body: %q - %q", Red(path), k, v.Expect.Body, err)
 						continue
 					}
-					v.Expect.Body = *re
+					v.Expect.body = re
 				}
 
 				// schedule service
