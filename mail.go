@@ -3,11 +3,8 @@ package epazote
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/mail"
-	"net/smtp"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -147,47 +144,7 @@ func (self *Epazote) VerifyEmail() error {
 	return nil
 }
 
-// EmailSender to simplify tests
-type EmailSender interface {
-	Send(to []string, body []byte) error
-}
-
-func NewEmailSender(conf *Email) EmailSender {
-	return &emailSender{
-		conf,
-		smtp.SendMail,
-	}
-}
-
-type emailSender struct {
-	conf *Email
-	send func(string, smtp.Auth, string, []string, []byte) error
-}
-
-func (self *emailSender) Send(to []string, body []byte) error {
-	// x.x.x.x:25
-	addr := self.conf.Server + ":" + strconv.Itoa(self.conf.Port)
-	// auth Set up authentication information.
-	auth := smtp.PlainAuth("",
-		self.conf.Username,
-		self.conf.Password,
-		self.conf.Server,
-	)
-	return self.send(addr, auth, self.conf.Headers["from"], to, body)
-}
-
-func (self *Epazote) SendEmail(m EmailSender, s *Service, to []string, b string) error {
-	// set To
-	if len(to) < 1 {
-		to = strings.Split(self.Config.SMTP.Headers["to"], " ")
-	}
-
-	// email Body
-	body := `
-	Service: %q
-
-	`
-
+func (self *Epazote) SendEmail(m MailMan, to []string, body []byte) error {
 	// message template
 	msg := ""
 	for k, v := range self.Config.SMTP.Headers {
@@ -197,6 +154,7 @@ func (self *Epazote) SendEmail(m EmailSender, s *Service, to []string, b string)
 			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), strings.TrimSpace(v), CRLF)
 		}
 	}
+
 	msg += CRLF + base64.StdEncoding.EncodeToString([]byte(body))
 
 	return m.Send(to, []byte(msg))

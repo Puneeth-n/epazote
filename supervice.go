@@ -44,8 +44,14 @@ func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
 
 	// action
 	if a.Notify != "" {
-		log.Println(j)
-		//	go self.Notify(&s, s.Test.IfNot.Notify, status)
+		m := NewMailMan(&self.Config.SMTP)
+		var to []string
+		if a.Notify == "yes" {
+			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
+		} else {
+			to = strings.Split(a.Notify, " ")
+		}
+		go self.SendEmail(m, to, j)
 	}
 }
 

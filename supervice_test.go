@@ -23,12 +23,8 @@ func TestSuperviceTestOk(t *testing.T) {
 			t.Error(err)
 		}
 		// check name
-		if n, ok := i["name"]; ok {
-			if n != "s 1" {
-				t.Errorf("Expecting  %q, got: %q", "s 1", n)
-			}
-		} else {
-			t.Errorf("key not found: %q", "name")
+		if i["name"] != "s 1" {
+			t.Errorf("Expecting  %q, got: %q", "s 1", i["name"])
 		}
 		// check because
 		if b, ok := i["because"]; ok {
