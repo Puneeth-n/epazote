@@ -54,6 +54,9 @@ func TestSuperviceTestOk(t *testing.T) {
 		if o, ok := i["url"]; ok {
 			t.Errorf("key should not exist,content: %q", o)
 		}
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
+		}
 		wg.Done()
 	}))
 	defer log_s.Close()
@@ -130,6 +133,9 @@ func TestSuperviceTestNotOk(t *testing.T) {
 		} else {
 			t.Errorf("key not found: %q", "output")
 		}
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
+		}
 		wg.Done()
 	}))
 	defer log_s.Close()
@@ -195,6 +201,9 @@ func TestSuperviceStatusCreated(t *testing.T) {
 		// check url
 		if _, ok := i["url"]; !ok {
 			t.Error("URL key not found")
+		}
+		if i["status"].(float64) != 201 {
+			t.Errorf("Expecting status: %d got: %v", 201, i["status"])
 		}
 		wg.Done()
 	}))
@@ -263,6 +272,9 @@ func TestSuperviceBodyMatch(t *testing.T) {
 		// check url
 		if _, ok := i["url"]; !ok {
 			t.Error("URL key not found")
+		}
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
 		}
 		wg.Done()
 	}))
@@ -343,6 +355,9 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 		if _, ok := i["url"]; !ok {
 			t.Error("URL key not found")
 		}
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
 		wg.Done()
 	}))
 	defer log_s.Close()
@@ -378,42 +393,29 @@ func TestSuperviceNoGet(t *testing.T) {
 			t.Error(err)
 		}
 		// check name
-		if n, ok := i["name"]; ok {
-			if n != "s 1" {
-				t.Errorf("Expecting  %q, got: %q", "s 1", n)
-			}
-		} else {
-			t.Errorf("key not found: %q", "name")
+		if i["name"] != "s 1" {
+			t.Errorf("Expecting  %q, got: %q", "s 1", i["name"])
 		}
 		// check because
-		if b, ok := i["because"]; ok {
-			e := "GET: Get http://: http: no Host in request URL"
-			if b != e {
-				t.Errorf("Expecting: %q, got: %q", e, b)
-			}
-		} else {
-			t.Errorf("key not found: %q", "because")
+		e := "GET: Get http://: http: no Host in request URL"
+		if i["because"] != e {
+			t.Errorf("Expecting: %q, got: %q", e, i["because"])
 		}
 		// check exit
-		if e, ok := i["exit"]; ok {
-			if e.(float64) != 1 {
-				t.Errorf("Expecting: 1 got: %v", e.(float64))
-			}
-		} else {
-			t.Errorf("key not found: %q", "exit")
+		if i["exit"].(float64) != 1 {
+			t.Errorf("Expecting: 1 got: %v", i["exit"].(float64))
 		}
 		// check output
-		if o, ok := i["output"]; ok {
-			e := "exit status 1"
-			if o != e {
-				t.Errorf("Expecting %q, got %q", e, o)
-			}
-		} else {
-			t.Errorf("key not found: %q", "output")
+		e = "exit status 1"
+		if i["output"] != e {
+			t.Errorf("Expecting %q, got %q", e, i["oputput"])
 		}
 		// check url
 		if _, ok := i["url"]; !ok {
 			t.Error("URL key not found")
+		}
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
 		}
 		wg.Done()
 	}))
@@ -437,6 +439,7 @@ func TestSuperviceNoGet(t *testing.T) {
 	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
+
 func TestSuperviceNoGetStatus0(t *testing.T) {
 	var wg sync.WaitGroup
 	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -481,6 +484,9 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 		// check url
 		if _, ok := i["url"]; !ok {
 			t.Error("URL key not found")
+		}
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
 		}
 		wg.Done()
 	}))
@@ -553,13 +559,12 @@ func TestSuperviceIfStatusMatch502(t *testing.T) {
 			t.Error("URL key not found")
 		}
 		// check output
-		if o, ok := i["output"]; ok {
-			e := "No defined cmd"
-			if o != e {
-				t.Errorf("Expecting %q, got %q", e, o)
-			}
-		} else {
-			t.Errorf("key not found: %q", "output")
+		e := "No defined cmd"
+		if i["output"] != e {
+			t.Errorf("Expecting %q, got %q", e, i["output"])
+		}
+		if i["status"].(float64) != 502 {
+			t.Errorf("Expecting status: %d got: %v", 502, i["status"])
 		}
 		wg.Done()
 	}))
@@ -640,13 +645,12 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 			t.Error("URL key not found")
 		}
 		// check output
-		if o, ok := i["output"]; ok {
-			e := "No defined cmd"
-			if o != e {
-				t.Errorf("Expecting %q, got %q", e, o)
-			}
-		} else {
-			t.Errorf("key not found: %q", "output")
+		e := "No defined cmd"
+		if i["output"] != e {
+			t.Errorf("Expecting %q, got %q", e, i["output"])
+		}
+		if i["status"].(float64) != 505 {
+			t.Errorf("Expecting status: %d got: %v", 505, i["status"])
 		}
 		wg.Done()
 	}))
@@ -727,13 +731,12 @@ func TestSuperviceIfHeaderMatch(t *testing.T) {
 			t.Error("URL key not found")
 		}
 		// check output
-		if o, ok := i["output"]; ok {
-			e := "exit status 1"
-			if o != e {
-				t.Errorf("Expecting %q, got %q", e, o)
-			}
-		} else {
-			t.Errorf("key not found: %q", "output")
+		e := "exit status 1"
+		if i["output"] != e {
+			t.Errorf("Expecting %q, got %q", e, i["output"])
+		}
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
 		}
 		wg.Done()
 	}))
@@ -816,6 +819,9 @@ func TestSuperviceStatus202(t *testing.T) {
 		// check output
 		if o, ok := i["output"]; ok {
 			t.Errorf("key should not exist,content: %q", o)
+		}
+		if i["status"].(float64) != 202 {
+			t.Errorf("Expecting status: %d got: %v", 202, i["status"])
 		}
 		wg.Done()
 	}))
@@ -904,6 +910,9 @@ func TestSuperviceMissingHeader(t *testing.T) {
 		} else {
 			t.Errorf("key not found: %q", "output")
 		}
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
 		wg.Done()
 	}))
 	defer log_s.Close()
@@ -989,6 +998,9 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 		// check output
 		if o, ok := i["output"]; ok {
 			t.Errorf("key should not exist,content: %q", o)
+		}
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
 		}
 		wg.Done()
 	}))

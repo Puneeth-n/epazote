@@ -19,14 +19,15 @@ func (self *Epazote) Log(s *Service, status []byte) {
 }
 
 // Report create report to send via log/email
-func (self *Epazote) Report(s *Service, a *Action, e int, b string, o string) {
+func (self *Epazote) Report(s *Service, a *Action, e, status int, b, o string) {
 	// create status report
 	j, err := json.Marshal(struct {
 		*Service
 		Exit    int    `json:"exit"`
+		Status  int    `json:"status"`
 		Output  string `json:"output,omitempty"`
 		Because string `json:"because,omitempty"`
-	}{s, e, o, b})
+	}{s, e, status, o, b})
 
 	if err != nil {
 		log.Printf("Error creating report status for service %q: %s", s.Name, err)
@@ -88,9 +89,9 @@ func (self *Epazote) Supervice(s Service) func() {
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
-				self.Report(&s, &s.Test.IfNot, 1, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot.Cmd))
+				self.Report(&s, &s.Test.IfNot, 1, 0, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot.Cmd))
 			} else {
-				self.Report(&s, nil, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
+				self.Report(&s, nil, 0, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
 			}
 			return
 		}
@@ -98,7 +99,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		// HTTP GET service URL
 		res, err := HTTPGet(s.URL, s.Timeout)
 		if err != nil {
-			self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd))
+			self.Report(&s, &s.Expect.IfNot, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd))
 			return
 		}
 
@@ -112,9 +113,9 @@ func (self *Epazote) Supervice(s Service) func() {
 			}
 			r := s.Expect.body.FindString(string(body))
 			if r == "" {
-				self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(&s.Expect.IfNot.Cmd))
+				self.Report(&s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(&s.Expect.IfNot.Cmd))
 			} else {
-				self.Report(&s, nil, 0, fmt.Sprintf("Body regex match: %s", r), "")
+				self.Report(&s, nil, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
 			}
 			return
 		}
@@ -126,7 +127,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.IfStatus) > 0 {
 			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				self.Report(&s, &a, 1, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
+				self.Report(&s, &a, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
 				return
 			}
 		}
@@ -138,7 +139,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			for k, a := range s.IfHeader {
 				if res.Header.Get(k) != "" {
 					r = true
-					self.Report(&s, &a, 1, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
+					self.Report(&s, &a, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
 				}
 			}
 			if r {
@@ -148,7 +149,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&s.Expect.IfNot.Cmd))
+			self.Report(&s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&s.Expect.IfNot.Cmd))
 			return
 		}
 
@@ -156,7 +157,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if len(s.Expect.Header) > 0 {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
-					self.Report(&s, &s.Expect.IfNot, 1, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
+					self.Report(&s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
 					return
 				}
 			}
@@ -164,7 +165,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin if all is ok
 		if res.StatusCode == s.Expect.Status {
-			self.Report(&s, nil, 0, fmt.Sprintf("Status: %d", res.StatusCode), "")
+			self.Report(&s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
 	}
