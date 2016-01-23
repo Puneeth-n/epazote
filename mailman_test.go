@@ -101,3 +101,48 @@ func TestReportNotify(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestReportNotifyYes(t *testing.T) {
+	headers := map[string]string{
+		"from": "epazote@domain.tld",
+		"to":   "test@ejemplo.org",
+	}
+	c := Email{"username", "password", "server", 587, headers}
+	f, r := mockSend(nil)
+	sender := &mailMan{&c, f}
+	ss := &Service{
+		Name: "s 1",
+		URL:  "http://about.epazote.io",
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	a := &Action{Notify: "yes", Msg: "testing notifications"}
+	e := &Epazote{}
+	e.Config.SMTP = c
+
+	e.Report(sender, ss, a, 0, 200, "because", "output")
+
+	// need to find how to deal with the gorutine (sync Done()) could be
+	time.Sleep(10 * time.Millisecond)
+
+	if r.addr != "server:587" {
+		t.Errorf("Expecting %q got %q", "server:587", r.addr)
+	}
+	if r.from != "epazote@domain.tld" {
+		t.Errorf("Expecting %q got %q", "epazote@domain.tld", r.from)
+	}
+	if r.to[0] != "test@ejemplo.org" {
+		t.Errorf("Expecting %q got %q", "test@ejemplo.org", r.to[0])
+	}
+
+	crlf := []byte("\r\n\r\n")
+	index := bytes.Index(r.msg, crlf)
+
+	data := r.msg[index+len(crlf):]
+
+	data, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		t.Error(err)
+	}
+}
