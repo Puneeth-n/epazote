@@ -75,6 +75,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
 		}
 
+		s = strings.Replace(s, "name", n, 1)
+
 		go self.SendEmail(m, to, []byte(body))
 	}
 }
