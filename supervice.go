@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os/exec"
+	"sort"
 	"strings"
 )
 
@@ -51,7 +52,30 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		} else {
 			to = strings.Split(a.Notify, " ")
 		}
-		go self.SendEmail(m, to, j)
+
+		var parsed map[string]interface{}
+		err := json.Unmarshal(j, &parsed)
+		if err != nil {
+			log.Printf("Error creating email report status for service %q: %s", s.Name, err)
+			return
+		}
+		// sort the map
+		var keys []string
+		for k := range parsed {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		// prepare email body
+		body := ""
+		if a.Msg != "" {
+			body += fmt.Sprintf("%s %s%s", a.Msg, CRLF, CRLF)
+		}
+		for _, k := range keys {
+			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
+		}
+
+		go self.SendEmail(m, to, []byte(body))
 	}
 }
 
