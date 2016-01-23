@@ -3,9 +3,27 @@ package epazote
 import (
 	"encoding/base64"
 	"fmt"
+	"net/smtp"
 	"testing"
 	"time"
 )
+
+// emailRecorder for testing
+type emailRecorder struct {
+	addr string
+	auth smtp.Auth
+	from string
+	to   []string
+	msg  []byte
+}
+
+func mockSend(errToReturn error) (func(string, smtp.Auth, string, []string, []byte) error, *emailRecorder) {
+	r := new(emailRecorder)
+	return func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+		*r = emailRecorder{addr, a, from, to, msg}
+		return errToReturn
+	}, r
+}
 
 func TestEmail_SendSuccessful(t *testing.T) {
 	c := &Email{}
@@ -28,10 +46,7 @@ func TestSendEmail(t *testing.T) {
 	sender := &mailMan{c, f}
 	body := "Hello World"
 	e := &Epazote{}
-	err := e.SendEmail(sender, []string{"me@example.com"}, []byte(body))
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	e.SendEmail(sender, []string{"me@example.com"}, []byte(body))
 
 	data, err := base64.StdEncoding.DecodeString(string(r.msg))
 	if err != nil {

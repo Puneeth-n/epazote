@@ -3,6 +3,7 @@ package epazote
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/mail"
 	"os"
 	"strings"
@@ -144,7 +145,7 @@ func (self *Epazote) VerifyEmail() error {
 	return nil
 }
 
-func (self *Epazote) SendEmail(m MailMan, to []string, body []byte) error {
+func (self *Epazote) SendEmail(m MailMan, to []string, body []byte) {
 	// message template
 	msg := ""
 	for k, v := range self.Config.SMTP.Headers {
@@ -157,5 +158,8 @@ func (self *Epazote) SendEmail(m MailMan, to []string, body []byte) error {
 
 	msg += CRLF + base64.StdEncoding.EncodeToString([]byte(body))
 
-	return m.Send(to, []byte(msg))
+	err := m.Send(to, []byte(msg))
+	if err != nil {
+		log.Println("ERROR: attempting to send a mail ", err)
+	}
 }

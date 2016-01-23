@@ -167,5 +167,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			self.Report(m, &s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
+
+		return
 	}
 }
