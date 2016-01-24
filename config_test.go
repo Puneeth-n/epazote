@@ -210,3 +210,15 @@ func TestTestServices(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// pending
+func TestStart(t *testing.T) {
+	cfg, err := New("test/epazote-start.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.PathsOrServices()
+	if err != nil {
+		t.Error(err)
+	}
+}

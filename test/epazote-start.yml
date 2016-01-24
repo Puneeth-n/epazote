@@ -1,0 +1,51 @@
+config:
+    smtp:
+        username: username
+        password: password
+        server: smtp server
+        port: 587
+        tls: true
+        headers:
+            from: from@email
+            to: team@email
+            subject: "[name - exit - status]"
+
+services:
+    service 1:
+        # url
+        url: 'http...'
+        timeout: 5
+        log: True
+
+        expect:
+            header:
+                content-type: application/json; charset=UTF-8
+            body: ">?"
+
+            # when_fail
+            if_not:
+                cmd: sv restart .
+                notify: yes
+                msg: |
+                    line 1
+                    line 2
+
+        # if status
+        if_status:
+            500:
+                cmd: sv restart .
+            404:
+                cmd: sv restart .
+                msg: not found
+                notify: yes
+
+        # if header
+        if_header:
+            x-db-kaputt:
+                cmd: sv restart
+            x-amqp-kaputt:
+                cmd: sv restart
+                notify: you@abc.com
+                msg: |
+                    The rabbit is angry
+                    & hungry
