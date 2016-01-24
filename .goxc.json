@@ -2,11 +2,12 @@
     "ConfigVersion": "0.9",
     "AppName": "epazote",
     "ArtifactsDest": "build",
+    "PackageVersion": "1.0.0",
     "TaskSettings": {
         "bintray": {
             "downloadspage": "bintray.md",
             "package": "epazote",
-            "repository": "generic",
+            "repository": "epazote",
             "subject": "nbari"
         }
     }

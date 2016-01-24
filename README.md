@@ -1,3 +1,4 @@
+[![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg)](https://bintray.com/nbari/epazote/epazote/_latestVersion)
 [![Build Status](https://drone.io/github.com/nbari/epazote/status.png)](https://drone.io/github.com/nbari/epazote/latest)
 [![Build Status](https://travis-ci.org/nbari/epazote.svg?branch=develop)](https://travis-ci.org/nbari/epazote)
 [![Coverage Status](https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master)](https://coveralls.io/github/nbari/epazote?branch=master)
@@ -5,28 +6,15 @@
 # Epazote 🌿
 Automated Microservices Supervisor
 
-## Why ?
-There are good supervisors,
-[daemontools](https://cr.yp.to/daemontools.html),
-[runit](http://smarden.org/runit/) just to mention some, on most cases is just
-a matter of uploading code to the server, create a run script and you are all
-set, your code will start up and live forever, so far so good, but let's face
-it, "stuff happens", suddenly the site or application can stop responding
-request, display unwanted content, etc. here is where **Epazote** comes into
-action.
+**Epazote** automatically update/add services specified in a file call
+``epazote.yml``. Periodically checks the defined endpoints and execute recovery
+commands in case services responses are not behaving like expected helping with
+this to automate actions in order to keep services/applications up and running.
 
-## The problem to solve
-Once your site/application is up and running, it can become idle and
-unresponsive, your supervisor will not notice this, since in most of the cases
-is just responsible for keeping your App process up and running no matter how it
-is behaving, therefore exists the need to monitor the status of the application
-and based on the responses take actions.
-
-When doing Continuous Deployment "[CD](https://en.wikipedia.org/wiki/Continuous_delivery)"
-if the ping, healthcheck, status, etc; endpoints change, it implies making changes
-in order to properly monitor the application, this creates a dependency or extra
-task apart from the "CD" process, therefore exists the need to detect any changes
-and automatically apply them upon request.
+In Continuous Integration/Deployment environments the file ``epazote.yml`` can
+dynamically be updated/change without need to restart the supervisor, avoiding
+with this an extra dependency on the deployment flow which could imply to
+restart the supervisor, in this case **Epazote**.
 
 ## How it works
 In its basic way of operation, **Epazote** periodically checks the services endpoints
@@ -48,7 +36,10 @@ alerts if desired.
 # How to use it
 First you need to install **Epazote**, either you can compile it from
 [source](https://github.com/nbari/epazote)
-or download a pre-compiled binary matching your operating system.
+or download a pre-compiled binary matching your operating system from here:
+https://dl.bintray.com/nbari/epazote/
+
+ [![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg)](https://bintray.com/nbari/epazote/epazote/_latestVersion)
 
 > To compile from source, after downloading the sources use ``make`` to build the binary
 
@@ -83,7 +74,7 @@ config:
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
-            subject: [%s -%s], Service, Status
+            subject: "[name - status]"
     scan:
         paths:
             - /arena/home/sites
@@ -95,6 +86,13 @@ config:
 
 Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
+
+### config - smtp - subject (because exit name output status url)
+The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
+``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
+would transform to ``[my service - 500]`` the ``name`` has replaced
+by the service name, ``my service`` and ``status`` by the response status code
+``500`` in this case.
 
 ### config - scan
 
