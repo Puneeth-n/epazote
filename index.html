@@ -19,7 +19,8 @@
     </section>
 
     <section class="main-content">
-      <p><a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a>
+      <p><a href="https://bintray.com/nbari/epazote/epazote/_latestVersion"><img src="https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg" alt="Download"></a>
+<a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a>
 <a href="https://travis-ci.org/nbari/epazote"><img src="https://travis-ci.org/nbari/epazote.svg?branch=develop" alt="Build Status"></a>
 <a href="https://coveralls.io/github/nbari/epazote?branch=master"><img src="https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master" alt="Coverage Status"></a></p>
 
@@ -29,32 +30,15 @@
 
 <p>Automated Microservices Supervisor</p>
 
-<h2>
-<a id="why-" class="anchor" href="#why-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why ?</h2>
+<p><strong>Epazote</strong> automatically update/add services specified in a file call
+<code>epazote.yml</code>. Periodically checks the defined endpoints and execute recovery
+commands in case services responses are not behaving like expected helping with
+this to automate actions in order to keep services/applications up and running.</p>
 
-<p>There are good supervisors,
-<a href="https://cr.yp.to/daemontools.html">daemontools</a>,
-<a href="http://smarden.org/runit/">runit</a> just to mention some, on most cases is just
-a matter of uploading code to the server, create a run script and you are all
-set, your code will start up and live forever, so far so good, but let's face
-it, "stuff happens", suddenly the site or application can stop responding
-request, display unwanted content, etc. here is where <strong>Epazote</strong> comes into
-action.</p>
-
-<h2>
-<a id="the-problem-to-solve" class="anchor" href="#the-problem-to-solve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The problem to solve</h2>
-
-<p>Once your site/application is up and running, it can become idle and
-unresponsive, your supervisor will not notice this, since in most of the cases
-is just responsible for keeping your App process up and running no matter how it
-is behaving, therefore exists the need to monitor the status of the application
-and based on the responses take actions.</p>
-
-<p>When doing Continuous Deployment "<a href="https://en.wikipedia.org/wiki/Continuous_delivery">CD</a>"
-if the ping, healthcheck, status, etc; endpoints change, it implies making changes
-in order to properly monitor the application, this creates a dependency or extra
-task apart from the "CD" process, therefore exists the need to detect any changes
-and automatically apply them upon request.</p>
+<p>In Continuous Integration/Deployment environments the file <code>epazote.yml</code> can
+dynamically be updated/change without need to restart the supervisor, avoiding
+with this an extra dependency on the deployment flow which could imply to
+restart the supervisor, in this case <strong>Epazote</strong>.</p>
 
 <h2>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How it works</h2>
@@ -80,7 +64,10 @@ alerts if desired.</p>
 
 <p>First you need to install <strong>Epazote</strong>, either you can compile it from
 <a href="https://github.com/nbari/epazote">source</a>
-or download a pre-compiled binary matching your operating system.</p>
+or download a pre-compiled binary matching your operating system from here:
+<a href="https://dl.bintray.com/nbari/epazote/">https://dl.bintray.com/nbari/epazote/</a></p>
+
+<p><a href="https://bintray.com/nbari/epazote/epazote/_latestVersion"><img src="https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg" alt="Download"></a></p>
 
 <blockquote>
 <p>To compile from source, after downloading the sources use <code>make</code> to build the binary</p>
@@ -119,7 +106,7 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
         <span class="pl-s"><span class="pl-ent">headers:</span></span>
             <span class="pl-s"><span class="pl-ent">from:</span> <span class="pl-s">epazote@domain.tld</span></span>
             <span class="pl-s"><span class="pl-ent">to:</span> <span class="pl-s">team@domain.tld ops@domain.tld etc@domain.tld</span></span>
-            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s">[%s -%s], Service, Status</span></span>
+            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s"><span class="pl-pds">"</span>[name - status]<span class="pl-pds">"</span></span></span>
     <span class="pl-s"><span class="pl-ent">scan:</span></span>
         <span class="pl-s"><span class="pl-ent">paths:</span></span>
             <span class="pl-s">- <span class="pl-s">/arena/home/sites</span></span>
@@ -131,6 +118,15 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
 
 <p>Required to properly send alerts via email, all fields are required, the
 <code>headers</code> section can be extended with any desired key-pair values.</p>
+
+<h3>
+<a id="config---smtp---subject-because-exit-name-output-status-url" class="anchor" href="#config---smtp---subject-because-exit-name-output-status-url" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - smtp - subject (because exit name output status url)</h3>
+
+<p>The subject can be formed by using this keywords: <code>because</code> <code>exit</code> <code>name</code>
+<code>output</code> <code>status</code> <code>url</code> on the previous example, <code>subject: [name - status]</code>
+would transform to <code>[my service - 500]</code> the <code>name</code> has replaced
+by the service name, <code>my service</code> and <code>status</code> by the response status code
+<code>500</code> in this case.</p>
 
 <h3>
 <a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - scan</h3>
@@ -374,8 +370,10 @@ an <code>if_status</code> and <code>if_header</code> are set, same applies, firs
 <h3>
 <a id="services---actions---notify-string" class="anchor" href="#services---actions---notify-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - notify (string)</h3>
 
-<p><code>notify</code> Should contain the email email address or addresses (space separated)
+<p><code>notify</code> Should contain <code>yes</code>, the email email address or addresses (space separated)
 of the recipients that will be notified when the action is executed.</p>
+
+<p>If the string is <code>yes</code> the global recipients will be used.</p>
 
 <h3>
 <a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
