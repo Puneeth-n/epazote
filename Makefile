@@ -2,8 +2,8 @@
 
 GO ?= go
 BIN_NAME=epazote
-GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux"
-GOXC_FILE = .goxc.json
+GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux" -d=epazote-xc
+GOXC_FILE = .goxc.local.json
 
 all: clean build
 
@@ -31,7 +31,7 @@ cover:
 	${GO} test -coverprofile=coverage.out  && \
 	${GO} tool cover -html=coverage.out
 
-compile: goxc
+compile: test goxc
 
 goxc:
 	$(shell echo '{\n "ConfigVersion": "0.9",' > $(GOXC_FILE))
