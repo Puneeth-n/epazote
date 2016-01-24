@@ -45,6 +45,11 @@ func (self *Epazote) VerifyEmail() error {
 		self.Config.SMTP.Headers["from"] = "epazote@" + name
 	}
 
+	// set subject
+	if _, ok := self.Config.SMTP.Headers["subject"]; !ok {
+		self.Config.SMTP.Headers["subject"] = "[name - exit]"
+	}
+
 	// check To recipients
 	if val, ok := self.Config.SMTP.Headers["to"]; ok {
 		err, to := GetEmailAddress(val)
@@ -145,12 +150,14 @@ func (self *Epazote) VerifyEmail() error {
 	return nil
 }
 
-func (self *Epazote) SendEmail(m MailMan, to []string, body []byte) {
+func (self *Epazote) SendEmail(m MailMan, to []string, subject string, body []byte) {
 	// message template
 	msg := ""
 	for k, v := range self.Config.SMTP.Headers {
 		if k == "to" {
 			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), strings.Join(to, ", "), CRLF)
+		} else if k == "subject" {
+			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), subject, CRLF)
 		} else {
 			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), strings.TrimSpace(v), CRLF)
 		}

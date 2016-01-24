@@ -71,13 +71,15 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		if a.Msg != "" {
 			body += fmt.Sprintf("%s %s%s", a.Msg, CRLF, CRLF)
 		}
+
+		// set subject
+		subject := self.Config.SMTP.Headers["subject"]
 		for _, k := range keys {
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
+			subject = strings.Replace(subject, k, fmt.Sprintf("%v", parsed[k]), 1)
 		}
 
-		s = strings.Replace(s, "name", n, 1)
-
-		go self.SendEmail(m, to, []byte(body))
+		go self.SendEmail(m, to, subject, []byte(body))
 	}
 }
 

@@ -47,7 +47,7 @@ func TestSendEmail(t *testing.T) {
 	sender := &mailMan{c, f}
 	body := "Hello World"
 	e := &Epazote{}
-	e.SendEmail(sender, []string{"me@example.com"}, []byte(body))
+	e.SendEmail(sender, []string{"me@example.com"}, "[name - exit]", []byte(body))
 
 	data, err := base64.StdEncoding.DecodeString(string(r.msg))
 	if err != nil {
@@ -104,8 +104,9 @@ func TestReportNotify(t *testing.T) {
 
 func TestReportNotifyYes(t *testing.T) {
 	headers := map[string]string{
-		"from": "epazote@domain.tld",
-		"to":   "test@ejemplo.org",
+		"from":    "epazote@domain.tld",
+		"to":      "test@ejemplo.org",
+		"subject": "[name: name - exit - url - because]",
 	}
 	c := Email{"username", "password", "server", 587, headers}
 	f, r := mockSend(nil)
