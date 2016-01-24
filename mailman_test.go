@@ -41,7 +41,7 @@ func TestEmail_SendSuccessful(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 	if string(r.msg) != body {
-		t.Errorf("wrong message body.\n\nexpected: %\n got: %s", body, r.msg)
+		t.Errorf("wrong message body.\n\nexpected: %s got: %s", body, r.msg)
 	}
 }
 
