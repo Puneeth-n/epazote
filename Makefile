@@ -31,7 +31,7 @@ cover:
 	${GO} test -coverprofile=coverage.out  && \
 	${GO} tool cover -html=coverage.out
 
-compile: test goxc
+compile: goxc
 
 goxc:
 	$(shell echo '{\n "ConfigVersion": "0.9",' > $(GOXC_FILE))

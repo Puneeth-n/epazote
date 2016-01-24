@@ -6,7 +6,7 @@
         "bintray": {
             "downloadspage": "bintray.md",
             "package": "epazote",
-            "repository": "generic",
+            "repository": "epazote",
             "subject": "nbari"
         }
     }
