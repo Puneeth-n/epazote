@@ -3,10 +3,11 @@ package epazote
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/smtp"
+	"sync"
 	"testing"
-	"time"
 )
 
 // emailRecorder for testing
@@ -18,19 +19,22 @@ type emailRecorder struct {
 	msg  []byte
 }
 
-func mockSend(errToReturn error) (func(string, smtp.Auth, string, []string, []byte) error, *emailRecorder) {
+func mockSend(errToReturn error, wg *sync.WaitGroup) (func(string, smtp.Auth, string, []string, []byte) error, *emailRecorder) {
 	r := new(emailRecorder)
 	return func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+		defer wg.Done()
 		*r = emailRecorder{addr, a, from, to, msg}
 		return errToReturn
 	}, r
 }
 
 func TestEmail_SendSuccessful(t *testing.T) {
+	var wg sync.WaitGroup
 	c := &Email{}
-	f, r := mockSend(nil)
+	f, r := mockSend(nil, &wg)
 	sender := &mailMan{c, f}
 	body := "Hello World"
+	wg.Add(1)
 	err := sender.Send([]string{"me@example.com"}, []byte(body))
 
 	if err != nil {
@@ -42,11 +46,13 @@ func TestEmail_SendSuccessful(t *testing.T) {
 }
 
 func TestSendEmail(t *testing.T) {
+	var wg sync.WaitGroup
 	c := &Email{}
-	f, r := mockSend(nil)
+	f, r := mockSend(nil, &wg)
 	sender := &mailMan{c, f}
 	body := "Hello World"
 	e := &Epazote{}
+	wg.Add(1)
 	e.SendEmail(sender, []string{"me@example.com"}, "[name - exit]", []byte(body))
 
 	data, err := base64.StdEncoding.DecodeString(string(r.msg))
@@ -59,11 +65,12 @@ func TestSendEmail(t *testing.T) {
 }
 
 func TestReportNotify(t *testing.T) {
+	var wg sync.WaitGroup
 	headers := map[string]string{
 		"from": "epazote@domain.tld",
 	}
 	c := Email{"username", "password", "server", 587, headers}
-	f, r := mockSend(nil)
+	f, r := mockSend(nil, &wg)
 	sender := &mailMan{&c, f}
 	ss := &Service{
 		Name: "s 1",
@@ -76,10 +83,9 @@ func TestReportNotify(t *testing.T) {
 	e := &Epazote{}
 	e.Config.SMTP = c
 
+	wg.Add(1)
 	e.Report(sender, ss, a, 0, 200, "because", "output")
-
-	// need to find how to deal with the gorutine (sync Done()) could be
-	time.Sleep(10 * time.Millisecond)
+	wg.Wait()
 
 	if r.addr != "server:587" {
 		t.Errorf("Expecting %q got %q", "server:587", r.addr)
@@ -103,13 +109,15 @@ func TestReportNotify(t *testing.T) {
 }
 
 func TestReportNotifyYes(t *testing.T) {
+	var wg sync.WaitGroup
+	buf.Reset()
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
 		"subject": "[name: name - exit - url - because]",
 	}
 	c := Email{"username", "password", "server", 587, headers}
-	f, r := mockSend(nil)
+	f, r := mockSend(errors.New("I love errors"), &wg)
 	sender := &mailMan{&c, f}
 	ss := &Service{
 		Name: "s 1",
@@ -122,10 +130,9 @@ func TestReportNotifyYes(t *testing.T) {
 	e := &Epazote{}
 	e.Config.SMTP = c
 
+	wg.Add(1)
 	e.Report(sender, ss, a, 0, 200, "because", "output")
-
-	// need to find how to deal with the gorutine (sync Done()) could be
-	time.Sleep(10 * time.Millisecond)
+	wg.Wait()
 
 	if r.addr != "server:587" {
 		t.Errorf("Expecting %q got %q", "server:587", r.addr)
@@ -145,5 +152,9 @@ func TestReportNotifyYes(t *testing.T) {
 	data, err := base64.StdEncoding.DecodeString(string(data))
 	if err != nil {
 		t.Error(err)
+	}
+
+	if buf.Len() != 69 {
+		t.Errorf("buf len not matching, got: %q", buf)
 	}
 }

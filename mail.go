@@ -167,6 +167,6 @@ func (self *Epazote) SendEmail(m MailMan, to []string, subject string, body []by
 
 	err := m.Send(to, []byte(msg))
 	if err != nil {
-		log.Println("ERROR: attempting to send a mail ", err)
+		log.Printf("ERROR attempting to send a mail: %q", err)
 	}
 }

@@ -1,17 +1,12 @@
 package epazote
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"reflect"
 	"testing"
 )
-
-// for catching the log.Println
-var buf *bytes.Buffer
 
 // just to cover
 func TestScanReturnFunc(t *testing.T) {
@@ -94,6 +89,7 @@ func TestScanParseScanSearchOk(t *testing.T) {
 }
 
 func TestScanParseScanSearchBadRegex(t *testing.T) {
+	buf.Reset()
 	dir := "./"
 	prefix := "test-scan2-"
 
@@ -114,9 +110,6 @@ func TestScanParseScanSearchBadRegex(t *testing.T) {
 
 	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
 
-	buf = new(bytes.Buffer)
-	log.SetOutput(buf)
-
 	s := new(Epazote)
 	s.search(d)
 	if err != nil {
@@ -133,5 +126,4 @@ func TestScanParseScanSearchBadRegex(t *testing.T) {
 	}
 
 	buf.Reset()
-
 }
