@@ -2,7 +2,7 @@
 
 GO ?= go
 BIN_NAME=epazote
-GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux" -d=epazote-xc
+GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux"
 GOXC_FILE = .goxc.local.json
 
 all: clean build

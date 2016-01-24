@@ -2,3 +2,4 @@ epazote
 !*epazote/
 coverage.out
 .goxc.local.json
+build
