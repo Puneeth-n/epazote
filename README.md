@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg) ](https://bintray.com/nbari/epazote/epazote/_latestVersion)
+[![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg)](https://bintray.com/nbari/epazote/epazote/_latestVersion)
 [![Build Status](https://drone.io/github.com/nbari/epazote/status.png)](https://drone.io/github.com/nbari/epazote/latest)
 [![Build Status](https://travis-ci.org/nbari/epazote.svg?branch=develop)](https://travis-ci.org/nbari/epazote)
 [![Coverage Status](https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master)](https://coveralls.io/github/nbari/epazote?branch=master)
@@ -39,7 +39,7 @@ First you need to install **Epazote**, either you can compile it from
 or download a pre-compiled binary matching your operating system from here:
 https://dl.bintray.com/nbari/epazote/
 
- [ ![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg) ](https://bintray.com/nbari/epazote/epazote/_latestVersion)
+ [![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg)](https://bintray.com/nbari/epazote/epazote/_latestVersion)
 
 > To compile from source, after downloading the sources use ``make`` to build the binary
 
@@ -74,7 +74,7 @@ config:
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
-            subject: [%s -%s], Service, Status
+            subject: "[name - status]"
     scan:
         paths:
             - /arena/home/sites
@@ -86,6 +86,13 @@ config:
 
 Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
+
+### config - smtp - subject (because exit name output status url)
+The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
+``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
+would transform to ``[my service - 500]`` the ``name`` has replaced
+by the service name, ``my service`` and ``status`` by the response status code
+``500`` in this case.
 
 ### config - scan
 
