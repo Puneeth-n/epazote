@@ -196,6 +196,5 @@ func (self *Epazote) Supervice(s Service) func() {
 			return
 		}
 
-		return
 	}
 }

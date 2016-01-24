@@ -183,3 +183,17 @@ func TestVerifyEmailFrom(t *testing.T) {
 		t.Error("Expecting email with prefix: epazote@")
 	}
 }
+
+func TestVerifyEmailSubject(t *testing.T) {
+	cfg, err := New("test/epazote-email-subject.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = cfg.VerifyEmail()
+	if err != nil {
+		t.Error(err)
+	}
+	if cfg.Config.SMTP.Headers["subject"] != "[name - exit]" {
+		t.Errorf("Expecting subject: [name - exit] got: %v", cfg.Config.SMTP.Headers["subject"])
+	}
+}
