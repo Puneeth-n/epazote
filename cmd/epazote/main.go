@@ -11,6 +11,7 @@ func main() {
 	// f config file name
 	var f = flag.String("f", "epazote.yml", "Epazote configuration file.")
 	var c = flag.Bool("c", false, "Continue on errors.")
+	var d = flag.Bool("d", false, "Debug mode.")
 
 	flag.Parse()
 
@@ -57,5 +58,5 @@ func main() {
 	// create a Scheduler
 	sk := ez.GetScheduler()
 
-	cfg.Start(sk)
+	cfg.Start(sk, *d)
 }

@@ -1,0 +1,91 @@
+package epazote
+
+import (
+	"github.com/nbari/epazote/scheduler"
+	"gopkg.in/yaml.v2"
+	"log"
+	"os"
+	"os/signal"
+	"regexp"
+	"runtime"
+	"strings"
+	"syscall"
+	"time"
+)
+
+// Start Add services to scheduler
+func (self *Epazote) Start(sk *scheduler.Scheduler, debug bool) {
+	if debug {
+		self.debug = true
+	}
+
+	for k, v := range self.Services {
+		// Set service name
+		v.Name = k
+
+		// Status
+		if v.Expect.Status < 1 {
+			v.Expect.Status = 200
+		}
+
+		// rxBody
+		if v.Expect.Body != "" {
+			re := regexp.MustCompile(v.Expect.Body)
+			v.Expect.body = re
+		}
+
+		// schedule service
+		sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
+	}
+
+	if len(self.Config.Scan.Paths) > 0 {
+		for _, v := range self.Config.Scan.Paths {
+			sk.AddScheduler(v, GetInterval(300, self.Config.Scan.Every), self.Scan(v))
+		}
+	}
+
+	log.Printf("Epazote %s   on %d services, scan paths: %s [pid: %d]", herb, len(self.Services), strings.Join(self.Config.Scan.Paths, ","), os.Getpid())
+
+	// stop until signal received
+	start := time.Now()
+
+	// loop forever
+	block := make(chan os.Signal)
+
+	signal.Notify(block, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGUSR1, syscall.SIGUSR2)
+
+	for {
+		signalType := <-block
+		switch signalType {
+		case syscall.SIGUSR1, syscall.SIGUSR2:
+			y, err := yaml.Marshal(&self)
+			if err != nil {
+				log.Printf("Error: %v", err)
+			}
+			l := `
+    Gorutines: %d
+    Alloc : %d
+    Total Alloc: %d
+    Sys: %d
+    Lookups: %d
+    Mallocs: %d
+    Frees: %d
+    Seconds in GC: %d
+    Started on: %v
+    Uptime: %v`
+
+			runtime.NumGoroutine()
+			s := new(runtime.MemStats)
+			runtime.ReadMemStats(s)
+
+			log.Printf("Config dump:\n%s---"+Green(l), y, runtime.NumGoroutine(), s.Alloc, s.TotalAlloc, s.Sys, s.Lookups, s.Mallocs, s.Frees, s.PauseTotalNs/1000000000, start.Format(time.RFC3339), time.Since(start))
+
+		default:
+			signal.Stop(block)
+			log.Printf("%q signal received.", signalType)
+			sk.StopAll()
+			log.Println("Exiting.")
+			os.Exit(0)
+		}
+	}
+}
