@@ -34,6 +34,14 @@ func (self *Epazote) Start(sk *scheduler.Scheduler, debug bool) {
 			v.Expect.body = re
 		}
 
+		if self.debug {
+			if v.URL != "" {
+				log.Printf(Green("Adding service: %s URL: %s"), v.Name, v.URL)
+			} else {
+				log.Printf(Green("Adding service: %s Test: %s"), v.Name, v.Test)
+			}
+		}
+
 		// schedule service
 		sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
 	}

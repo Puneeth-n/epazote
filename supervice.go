@@ -22,17 +22,22 @@ func (self *Epazote) Log(s *Service, status []byte) {
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
 	// create status report
-	j, err := json.Marshal(struct {
+	j, err := json.MarshalIndent(struct {
 		*Service
 		Exit    int    `json:"exit"`
 		Status  int    `json:"status"`
 		Output  string `json:"output,omitempty"`
 		Because string `json:"because,omitempty"`
-	}{s, e, status, o, b})
+	}{s, e, status, o, b}, "", "  ")
 
 	if err != nil {
 		log.Printf("Error creating report status for service %q: %s", s.Name, err)
 		return
+	}
+
+	// debug
+	if self.debug {
+		log.Printf("Report: %s", j)
 	}
 
 	if s.Log != "" {
