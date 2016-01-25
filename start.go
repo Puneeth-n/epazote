@@ -1,7 +1,6 @@
 package epazote
 
 import (
-	"github.com/nbari/epazote/scheduler"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
@@ -13,8 +12,13 @@ import (
 	"time"
 )
 
+type IScheduler interface {
+	AddScheduler(string, int, func())
+	StopAll()
+}
+
 // Start Add services to scheduler
-func (self *Epazote) Start(sk *scheduler.Scheduler, debug bool) {
+func (self *Epazote) Start(isk IScheduler, debug bool) {
 	if debug {
 		self.debug = true
 	}
@@ -42,13 +46,13 @@ func (self *Epazote) Start(sk *scheduler.Scheduler, debug bool) {
 			}
 		}
 
-		// schedule service
-		sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
+		// schedule the service
+		isk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
 	}
 
 	if len(self.Config.Scan.Paths) > 0 {
 		for _, v := range self.Config.Scan.Paths {
-			sk.AddScheduler(v, GetInterval(300, self.Config.Scan.Every), self.Scan(v))
+			isk.AddScheduler(v, GetInterval(300, self.Config.Scan.Every), self.Scan(v))
 		}
 	}
 
@@ -91,7 +95,7 @@ func (self *Epazote) Start(sk *scheduler.Scheduler, debug bool) {
 		default:
 			signal.Stop(block)
 			log.Printf("%q signal received.", signalType)
-			sk.StopAll()
+			//			isk.StopAll()
 			log.Println("Exiting.")
 			os.Exit(0)
 		}
