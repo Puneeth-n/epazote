@@ -52,6 +52,26 @@ language or syntax, and simplifying the setup.
 
 ## Basic example
 
+```yaml
+services:
+    my site:
+        url: http://www.google.com
+            expect:
+                status: 200
+```
+
+To supervice ``my site`` you would run:
+
+    $ epazote -f /path/to/yaml/file/basic.yml -d
+
+> -d is for debuging
+
+This basic setup will only supervise every 60 seconds the service ``my site``,
+but will not log, notify either execute an action in case the status code is not
+the expected, could be only useful for doing continues requests and watch the
+output on the terminal.
+
+
 ## The configuration file
 
 The configuration file ([YAML formated](https://en.wikipedia.org/wiki/YAML))
