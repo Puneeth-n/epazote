@@ -59,4 +59,7 @@ func main() {
 	sk := ez.GetScheduler()
 
 	cfg.Start(sk, *d)
+
+	// run forever until ctrl+c or kill signal
+	cfg.Block()
 }

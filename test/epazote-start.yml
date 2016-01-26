@@ -10,6 +10,7 @@ config:
             to: team@email
             subject: "[name - exit - status]"
     scan:
+        hours: 1
         paths:
             - /my/service/path
 
@@ -23,6 +24,7 @@ services:
         url: 'http...'
         timeout: 5
         log: True
+        seconds: 30
 
         expect:
             header:
