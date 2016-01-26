@@ -397,7 +397,7 @@ func TestSuperviceNoGet(t *testing.T) {
 			t.Errorf("Expecting  %q, got: %q", "s 1", i["name"])
 		}
 		// check because
-		e := "GET: Get http://: http: no Host in request URL"
+		e := "GET: http: no Host in request URL"
 		if i["because"] != e {
 			t.Errorf("Expecting: %q, got: %q", e, i["because"])
 		}
@@ -462,7 +462,7 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 		}
 		// check because
 		if b, ok := i["because"]; ok {
-			e := "GET: Get http://: http: no Host in request URL"
+			e := "GET: http: no Host in request URL"
 			if b != e {
 				t.Errorf("Expecting: %q, got: %q", e, b)
 			}
