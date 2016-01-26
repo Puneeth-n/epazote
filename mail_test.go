@@ -164,7 +164,7 @@ func TestVerifyEmailBadTo(t *testing.T) {
 		t.Error(err)
 	}
 	err = cfg.VerifyEmail()
-	e := `mail: missing phrase`
+	e := Red(`Verify recipient's email address: mail: missing phrase`)
 	if err.Error() != e {
 		t.Errorf("Expecting %q got %q", e, err.Error())
 	}

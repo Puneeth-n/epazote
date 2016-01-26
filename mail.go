@@ -146,7 +146,7 @@ func (self *Epazote) VerifyEmail() error {
 		if val, ok := self.Config.SMTP.Headers["to"]; ok {
 			err, to := GetEmailAddress(val)
 			if err != nil {
-				return err
+				return fmt.Errorf(Red("Verify recipient's email address: %s"), err)
 			}
 			self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
 		}
