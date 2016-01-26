@@ -50,6 +50,8 @@ infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.
 
+## Basic example
+
 ## The configuration file
 
 The configuration file ([YAML formated](https://en.wikipedia.org/wiki/YAML))

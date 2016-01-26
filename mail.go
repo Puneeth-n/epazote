@@ -25,38 +25,9 @@ func GetEmailAddress(s string) (error, []string) {
 }
 
 func (self *Epazote) VerifyEmail() error {
-	// set Headers
-	if _, ok := self.Config.SMTP.Headers["MIME-Version"]; !ok {
-		self.Config.SMTP.Headers["MIME-Version"] = "1.0"
-	}
-	if _, ok := self.Config.SMTP.Headers["Content-Type"]; !ok {
-		self.Config.SMTP.Headers["Content-Type"] = "text/plain; charset=UTF-8"
-	}
-	if _, ok := self.Config.SMTP.Headers["Content-Transfer-Encoding"]; !ok {
-		self.Config.SMTP.Headers["Content-Transfer-Encoding"] = "base64"
-	}
-
-	// set From
-	if _, ok := self.Config.SMTP.Headers["from"]; !ok {
-		name, err := os.Hostname()
-		if err != nil {
-			return err
-		}
-		self.Config.SMTP.Headers["from"] = "epazote@" + name
-	}
-
-	// set subject
-	if _, ok := self.Config.SMTP.Headers["subject"]; !ok {
-		self.Config.SMTP.Headers["subject"] = "[name - exit]"
-	}
-
-	// check To recipients
-	if val, ok := self.Config.SMTP.Headers["to"]; ok {
-		err, to := GetEmailAddress(val)
-		if err != nil {
-			return err
-		}
-		self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
+	//initialize Headers in case they don't exists
+	if self.Config.SMTP.Headers == nil {
+		self.Config.SMTP.Headers = make(map[string]string)
 	}
 
 	// if any serivce needs to notify, check the SMPT settings
@@ -70,12 +41,12 @@ func (self *Epazote) VerifyEmail() error {
 			if v.Expect.IfNot.Notify != "yes" {
 				err, to := GetEmailAddress(v.Expect.IfNot.Notify)
 				if err != nil {
-					return fmt.Errorf("Verify notify email addresses for service: %s - %q", k, err)
+					return fmt.Errorf(Red("Verify notify email addresses for service: %s - %q"), k, err)
 				}
 				v.Expect.IfNot.Notify = strings.Join(to, " ")
 			} else if v.Expect.IfNot.Notify == "yes" {
 				if _, ok := self.Config.SMTP.Headers["to"]; !ok {
-					return fmt.Errorf("Service %q need smtp/headers/to settings to be available to notify.", k)
+					return fmt.Errorf(Red("Service %q need smtp/headers/to settings to be available to notify."), k)
 				}
 			}
 		}
@@ -86,12 +57,12 @@ func (self *Epazote) VerifyEmail() error {
 			if v.IfNot.Notify != "yes" {
 				err, to := GetEmailAddress(v.IfNot.Notify)
 				if err != nil {
-					return fmt.Errorf("Verify notify email addresses for service: %s - %q", k, err)
+					return fmt.Errorf(Red("Verify notify email addresses for service: %s - %q"), k, err)
 				}
 				v.IfNot.Notify = strings.Join(to, " ")
 			} else if v.IfNot.Notify == "yes" {
 				if _, ok := self.Config.SMTP.Headers["to"]; !ok {
-					return fmt.Errorf("Service %q need smtp/headers/to settings to be available to notify.", k)
+					return fmt.Errorf(Red("Service %q need smtp/headers/to settings to be available to notify."), k)
 				}
 			}
 		}
@@ -105,13 +76,13 @@ func (self *Epazote) VerifyEmail() error {
 					if j.Notify != "yes" {
 						err, to := GetEmailAddress(j.Notify)
 						if err != nil {
-							return fmt.Errorf("Verify notify email addresses for service [%q if_status: %d]: %q", k, kS, err)
+							return fmt.Errorf(Red("Verify notify email addresses for service [%q if_status: %d]: %q"), k, kS, err)
 						}
 						j.Notify = strings.Join(to, " ")
 					} else if j.Notify == "yes" {
 						notify = true
 						if _, ok := self.Config.SMTP.Headers["to"]; !ok {
-							return fmt.Errorf("Service [%q - %d] need smtp/headers/to settings to be available to notify.", k, kS)
+							return fmt.Errorf(Red("Service [%q - %d] need smtp/headers/to settings to be available to notify."), k, kS)
 						}
 					}
 				}
@@ -127,13 +98,13 @@ func (self *Epazote) VerifyEmail() error {
 					if j.Notify != "yes" {
 						err, to := GetEmailAddress(j.Notify)
 						if err != nil {
-							return fmt.Errorf("Verify notify email addresses for service [%q if_header: %s]: %q", k, kH, err)
+							return fmt.Errorf(Red("Verify notify email addresses for service [%q if_header: %s]: %q"), k, kH, err)
 						}
 						j.Notify = strings.Join(to, " ")
 					} else if j.Notify == "yes" {
 						notify = true
 						if _, ok := self.Config.SMTP.Headers["to"]; !ok {
-							return fmt.Errorf("Service [%q - %s] need smtp/headers/to settings to be available to notify.", k, kH)
+							return fmt.Errorf(Red("Service [%q - %s] need smtp/headers/to settings to be available to notify."), k, kH)
 						}
 					}
 				}
@@ -143,7 +114,41 @@ func (self *Epazote) VerifyEmail() error {
 
 	if notify {
 		if self.Config.SMTP.Server == "" {
-			return fmt.Errorf("SMTP server required for been available to send email notifications.")
+			return fmt.Errorf(Red("SMTP server required for been available to send email notifications."))
+		}
+
+		// set Headers
+		if _, ok := self.Config.SMTP.Headers["MIME-Version"]; !ok {
+			self.Config.SMTP.Headers["MIME-Version"] = "1.0"
+		}
+		if _, ok := self.Config.SMTP.Headers["Content-Type"]; !ok {
+			self.Config.SMTP.Headers["Content-Type"] = "text/plain; charset=UTF-8"
+		}
+		if _, ok := self.Config.SMTP.Headers["Content-Transfer-Encoding"]; !ok {
+			self.Config.SMTP.Headers["Content-Transfer-Encoding"] = "base64"
+		}
+
+		// set From
+		if _, ok := self.Config.SMTP.Headers["from"]; !ok {
+			name, err := os.Hostname()
+			if err != nil {
+				return err
+			}
+			self.Config.SMTP.Headers["from"] = "epazote@" + name
+		}
+
+		// set subject
+		if _, ok := self.Config.SMTP.Headers["subject"]; !ok {
+			self.Config.SMTP.Headers["subject"] = "[name - exit]"
+		}
+
+		// check To recipients
+		if val, ok := self.Config.SMTP.Headers["to"]; ok {
+			err, to := GetEmailAddress(val)
+			if err != nil {
+				return err
+			}
+			self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
 		}
 	}
 
