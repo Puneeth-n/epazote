@@ -122,7 +122,7 @@ func (self *Epazote) VerifyEmail() error {
 			self.Config.SMTP.Headers["MIME-Version"] = "1.0"
 		}
 		if _, ok := self.Config.SMTP.Headers["Content-Type"]; !ok {
-			self.Config.SMTP.Headers["Content-Type"] = "text/plain; charset=UTF-8"
+			self.Config.SMTP.Headers["Content-Type"] = "text/plain; charset=\"utf-8\""
 		}
 		if _, ok := self.Config.SMTP.Headers["Content-Transfer-Encoding"]; !ok {
 			self.Config.SMTP.Headers["Content-Transfer-Encoding"] = "base64"
@@ -160,15 +160,15 @@ func (self *Epazote) SendEmail(m MailMan, to []string, subject string, body []by
 	msg := ""
 	for k, v := range self.Config.SMTP.Headers {
 		if k == "to" {
-			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), strings.Join(to, ", "), CRLF)
+			msg += fmt.Sprintf("%s: %s%s", strings.Title(k), strings.Join(to, ", "), CRLF)
 		} else if k == "subject" {
-			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), subject, CRLF)
+			msg += fmt.Sprintf("%s: %s%s", strings.Title(k), strings.TrimSpace(subject), CRLF)
 		} else {
-			msg += fmt.Sprintf("%s: %s %s", strings.Title(k), strings.TrimSpace(v), CRLF)
+			msg += fmt.Sprintf("%s: %s%s", strings.Title(k), strings.TrimSpace(v), CRLF)
 		}
 	}
 
-	msg += CRLF + base64.StdEncoding.EncodeToString([]byte(body))
+	msg += CRLF + base64.StdEncoding.EncodeToString(body)
 
 	err := m.Send(to, []byte(msg))
 	if err != nil {
