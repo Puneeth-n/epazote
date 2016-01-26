@@ -54,23 +54,24 @@ language or syntax, and simplifying the setup.
 
 ```yaml
 services:
-    my site:
+    google:
         url: http://www.google.com
-            expect:
-                status: 200
+        seconds: 5
+        expect:
+            status: 200
+            if_not:
+                cmd: echo -n "google down"
 ```
 
-To supervice ``my site`` you would run:
+To supervise ``google`` you would run:
 
     $ epazote -f /path/to/yaml/file/basic.yml -d
 
-> -d is for debuging
+> -d is for debugging, will print all output to standard output.
 
-This basic setup will only supervise every 60 seconds the service ``my site``,
-but will not log, notify either execute an action in case the status code is not
-the expected, could be only useful for doing continues requests and watch the
-output on the terminal.
-
+This basic setup will supervise every 5 seconds the service with name
+``google``, it will do an HTTP GET to ``http://www.google.com`` and will expect
+an ``200 Status code`` if not,  it will ``echo -n "google down"``
 
 ## The configuration file
 
