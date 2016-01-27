@@ -24,7 +24,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 
 	for k, v := range s {
 		go func(name string, url string) {
-			res, err := HTTPGet(url)
+			res, err := HTTPGet(url, true)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
@@ -38,7 +38,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 }
 
 // HTTPGet creates a new http request
-func HTTPGet(url string, timeout ...int) (*http.Response, error) {
+func HTTPGet(url string, follow bool, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
 
@@ -54,12 +54,21 @@ func HTTPGet(url string, timeout ...int) (*http.Response, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "epazote")
 
-	// try to connect
-	res, err := client.Do(req)
+	if follow {
+		res, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	// not follow redirects
+	var DefaultTransport http.RoundTripper = &http.Transport{}
+
+	res, err := DefaultTransport.RoundTrip(req)
 	if err != nil {
 		return nil, err
 	}
-
 	return res, nil
 }
 

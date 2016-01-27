@@ -18,7 +18,7 @@ func TestHTTPGet(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := HTTPGet(ts.URL, 3)
+	res, err := HTTPGet(ts.URL, false, 3)
 	if err != nil {
 		t.Error(err)
 	}
