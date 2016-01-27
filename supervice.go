@@ -22,17 +22,26 @@ func (self *Epazote) Log(s *Service, status []byte) {
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
 	// create status report
-	j, err := json.Marshal(struct {
+	j, err := json.MarshalIndent(struct {
 		*Service
 		Exit    int    `json:"exit"`
 		Status  int    `json:"status"`
 		Output  string `json:"output,omitempty"`
 		Because string `json:"because,omitempty"`
-	}{s, e, status, o, b})
+	}{s, e, status, o, b}, "", "  ")
 
 	if err != nil {
 		log.Printf("Error creating report status for service %q: %s", s.Name, err)
 		return
+	}
+
+	// debug
+	if self.debug {
+		if e == 0 {
+			log.Printf(Green("Report: %s"), j)
+		} else {
+			log.Printf(Red("Report: %s"), j)
+		}
 	}
 
 	if s.Log != "" {
@@ -124,7 +133,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// HTTP GET service URL
-		res, err := HTTPGet(s.URL, s.Timeout)
+		res, err := HTTPGet(s.URL, s.Follow, s.Timeout)
 		if err != nil {
 			self.Report(m, &s, &s.Expect.IfNot, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd))
 			return
@@ -151,7 +160,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		res.Body.Close()
 
 		// if_status
-		if len(s.IfStatus) > 0 {
+		if s.IfStatus != nil {
 			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
 				self.Report(m, &s, &a, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
@@ -160,7 +169,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// if_header
-		if len(s.IfHeader) > 0 {
+		if s.IfHeader != nil {
 			// return if true
 			r := false
 			for k, a := range s.IfHeader {
@@ -181,7 +190,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// Header
-		if len(s.Expect.Header) > 0 {
+		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
 					self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
