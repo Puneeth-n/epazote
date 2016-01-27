@@ -46,8 +46,11 @@ func HTTPGet(url string, follow bool, timeout ...int) (*http.Response, error) {
 		t = timeout[0]
 	}
 
+	// set timeout
+	tout := time.Duration(t) * time.Second
+
 	client := &http.Client{
-		Timeout: time.Duration(t) * time.Second,
+		Timeout: tout,
 	}
 
 	// create a new request
@@ -63,7 +66,9 @@ func HTTPGet(url string, follow bool, timeout ...int) (*http.Response, error) {
 	}
 
 	// not follow redirects
-	var DefaultTransport http.RoundTripper = &http.Transport{}
+	var DefaultTransport http.RoundTripper = &http.Transport{
+		ResponseHeaderTimeout: tout,
+	}
 
 	res, err := DefaultTransport.RoundTrip(req)
 	if err != nil {
