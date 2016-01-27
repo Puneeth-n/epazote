@@ -68,7 +68,7 @@ func (self *Epazote) VerifyEmail() error {
 		}
 
 		// check SMTP.Headers["to"] settings for IfNot
-		if len(v.IfStatus) > 0 {
+		if v.IfStatus != nil {
 			// key for Service
 			for kS, j := range v.IfStatus {
 				if j.Notify != "" {
@@ -90,7 +90,7 @@ func (self *Epazote) VerifyEmail() error {
 		}
 
 		// check SMTP.Headers["to"] settings for IfHeader
-		if len(v.IfHeader) > 0 {
+		if v.IfHeader != nil {
 			// key for Header
 			for kH, j := range v.IfHeader {
 				if j.Notify != "" {

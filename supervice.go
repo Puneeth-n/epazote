@@ -160,7 +160,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		res.Body.Close()
 
 		// if_status
-		if len(s.IfStatus) > 0 {
+		if s.IfStatus != nil {
 			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
 				self.Report(m, &s, &a, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
@@ -169,7 +169,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// if_header
-		if len(s.IfHeader) > 0 {
+		if s.IfHeader != nil {
 			// return if true
 			r := false
 			for k, a := range s.IfHeader {
@@ -190,7 +190,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// Header
-		if len(s.Expect.Header) > 0 {
+		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
 				if res.Header.Get(k) != v {
 					self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))

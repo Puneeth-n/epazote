@@ -127,7 +127,7 @@ func (self *Epazote) VerifyUrls() error {
 
 // PathOrServices check if at least one path or service is set
 func (self *Epazote) PathsOrServices() error {
-	if len(self.Config.Scan.Paths) == 0 && len(self.Services) == 0 {
+	if len(self.Config.Scan.Paths) == 0 && self.Services == nil {
 		return fmt.Errorf("%s", Red("No services to supervices or paths to scan."))
 	}
 	return nil
