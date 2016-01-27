@@ -63,7 +63,7 @@ services:
                 cmd: echo -n "google down"
 ```
 
-To supervise ``google`` you would run:
+To supervise ``google`` you would run (basic.yml is a file containing the above code):
 
     $ epazote -f /path/to/yaml/file/basic.yml -d
 
@@ -72,6 +72,36 @@ To supervise ``google`` you would run:
 This basic setup will supervise every 5 seconds the service with name
 ``google``, it will do an HTTP GET to ``http://www.google.com`` and will expect
 an ``200 Status code`` if not,  it will ``echo -n "google down"``
+
+Extending the basic example for receiving notifications:
+
+```yaml
+config:
+    smtp:
+        username: smtp@domain.tld
+        password: password
+        server: mail.example.com
+        port: 587
+        headers:
+            from: you@domain.tld
+            to: team@domain.tld
+            subject: "[name - status]"
+
+services:
+    google:
+        url: http://www.google.com
+        minutes: 3
+        expect:
+            status: 200
+            if_not:
+                cmd: echo -n "google down"
+                notify: yes
+```
+
+In this case, every 3 minutes the service will be checked and in case of not
+receiving a ``200 Status code``, besides executing the command: ``echo -n
+"google down"`` an email is going to be send to ``team@domain.tld``, this
+because of the ``notify: yes`` setting.
 
 ## The configuration file
 
@@ -187,6 +217,7 @@ services:
 
     redirect service:
         url: http://test.domain.tld/
+        follow: yes
         hour: 1
         expect:
             status: 302
@@ -210,6 +241,11 @@ services named:
 
 ### services - url (string)
 URL of the service to supervise
+
+### services - follow (boolean true/false)
+By default if a [302 Status code](https://en.wikipedia.org/wiki/HTTP_302) is
+received, **Epazote** will not follow it, if you would like to follow all
+redirects, this setting must be set to **true**
 
 ### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
