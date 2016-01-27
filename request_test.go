@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestHTTPGet(t *testing.T) {
@@ -169,5 +170,37 @@ func TestIsURL(t *testing.T) {
 		if actual != test.expected {
 			t.Errorf("Expected IsURL(%q) to be %v, got %v", test.param, test.expected, actual)
 		}
+	}
+}
+
+func TestHTTPGetTimeout(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		time.Sleep(2 * time.Second)
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, true, 1)
+	if err == nil {
+		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
+	}
+}
+
+func TestHTTPGetTimeoutNoFollow(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		time.Sleep(2 * time.Second)
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, false, 1)
+	if err == nil {
+		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
 	}
 }
