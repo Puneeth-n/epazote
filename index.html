@@ -81,6 +81,59 @@ is used for the configuration files, avoiding with this, the learn of a new
 language or syntax, and simplifying the setup.</p>
 
 <h2>
+<a id="basic-example" class="anchor" href="#basic-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic example</h2>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">services:</span></span>
+    <span class="pl-s"><span class="pl-ent">google:</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://www.google.com</span></span>
+        <span class="pl-c1"><span class="pl-ent">seconds:</span> 5</span>
+        <span class="pl-s"><span class="pl-ent">expect:</span></span>
+            <span class="pl-c1"><span class="pl-ent">status:</span> 200</span>
+            <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">echo -n "google down"</span></span></pre></div>
+
+<p>To supervise <code>google</code> you would run (basic.yml is a file containing the above code):</p>
+
+<pre><code>$ epazote -f /path/to/yaml/file/basic.yml -d
+</code></pre>
+
+<blockquote>
+<p>-d is for debugging, will print all output to standard output.</p>
+</blockquote>
+
+<p>This basic setup will supervise every 5 seconds the service with name
+<code>google</code>, it will do an HTTP GET to <code>http://www.google.com</code> and will expect
+an <code>200 Status code</code> if not,  it will <code>echo -n "google down"</code></p>
+
+<p>Extending the basic example for receiving notifications:</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">config:</span></span>
+    <span class="pl-s"><span class="pl-ent">smtp:</span></span>
+        <span class="pl-s"><span class="pl-ent">username:</span> <span class="pl-s">smtp@domain.tld</span></span>
+        <span class="pl-s"><span class="pl-ent">password:</span> <span class="pl-s">password</span></span>
+        <span class="pl-s"><span class="pl-ent">server:</span> <span class="pl-s">mail.example.com</span></span>
+        <span class="pl-c1"><span class="pl-ent">port:</span> 587</span>
+        <span class="pl-s"><span class="pl-ent">headers:</span></span>
+            <span class="pl-s"><span class="pl-ent">from:</span> <span class="pl-s">you@domain.tld</span></span>
+            <span class="pl-s"><span class="pl-ent">to:</span> <span class="pl-s">team@domain.tld</span></span>
+            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s"><span class="pl-pds">"</span>[name - status]<span class="pl-pds">"</span></span></span>
+
+<span class="pl-s"><span class="pl-ent">services:</span></span>
+    <span class="pl-s"><span class="pl-ent">google:</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://www.google.com</span></span>
+        <span class="pl-c1"><span class="pl-ent">minutes:</span> 3</span>
+        <span class="pl-s"><span class="pl-ent">expect:</span></span>
+            <span class="pl-c1"><span class="pl-ent">status:</span> 200</span>
+            <span class="pl-s"><span class="pl-ent">if_not:</span></span>
+                <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">echo -n "google down"</span></span>
+                <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">yes</span></span></pre></div>
+
+<p>In this case, every 3 minutes the service will be checked and in case of not
+receiving a <code>200 Status code</code>, besides executing the command: <code>echo -n
+"google down"</code> an email is going to be send to <code>team@domain.tld</code>, this
+because of the <code>notify: yes</code> setting.</p>
+
+<h2>
 <a id="the-configuration-file" class="anchor" href="#the-configuration-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The configuration file</h2>
 
 <p>The configuration file (<a href="https://en.wikipedia.org/wiki/YAML">YAML formated</a>)
@@ -199,6 +252,7 @@ service, an example could help better to understand the setup:</p>
 
     <span class="pl-s"><span class="pl-ent">redirect service:</span></span>
         <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://test.domain.tld/</span></span>
+        <span class="pl-s"><span class="pl-ent">follow:</span> <span class="pl-s">yes</span></span>
         <span class="pl-c1"><span class="pl-ent">hour:</span> 1</span>
         <span class="pl-s"><span class="pl-ent">expect:</span></span>
             <span class="pl-c1"><span class="pl-ent">status:</span> 302</span>
@@ -228,6 +282,13 @@ services named:</p>
 <a id="services---url-string" class="anchor" href="#services---url-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - url (string)</h3>
 
 <p>URL of the service to supervise</p>
+
+<h3>
+<a id="services---follow-boolean-truefalse" class="anchor" href="#services---follow-boolean-truefalse" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - follow (boolean true/false)</h3>
+
+<p>By default if a <a href="https://en.wikipedia.org/wiki/HTTP_302">302 Status code</a> is
+received, <strong>Epazote</strong> will not follow it, if you would like to follow all
+redirects, this setting must be set to <strong>true</strong></p>
 
 <h3>
 <a id="services---timeout-in-seconds-int" class="anchor" href="#services---timeout-in-seconds-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - timeout in seconds (int)</h3>
