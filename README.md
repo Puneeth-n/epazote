@@ -245,7 +245,7 @@ URL of the service to supervise
 ### services - follow (boolean true/false)
 By default if a [302 Status code](https://en.wikipedia.org/wiki/HTTP_302) is
 received, **Epazote** will not follow it, if you would like to follow all
-redirects, this setting must be set to **true**
+redirects, this setting must be set to **true**.
 
 ### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
