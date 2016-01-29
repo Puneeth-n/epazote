@@ -48,7 +48,7 @@ https://dl.bintray.com/nbari/epazote/
 infrastructure orchestration tools like [Ansible](http://www.ansible.com/) and
 [SaltStack](http://saltstack.com/), because of this [YAML](http://www.yaml.org/)
 is used for the configuration files, avoiding with this, the learn of a new
-language or syntax, and simplifying the setup.
+language or syntax and simplifying the setup.
 
 ## Basic example
 
@@ -85,7 +85,7 @@ config:
         headers:
             from: you@domain.tld
             to: team@domain.tld
-            subject: "[name - status]"
+            subject: "[name - exit- status]"
 
 services:
     google:
