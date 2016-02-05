@@ -62,6 +62,7 @@ type Service struct {
 type Expect struct {
 	Status int
 	Header map[string]string
+	header map[string]*regexp.Regexp
 	Body   string
 	body   *regexp.Regexp
 	IfNot  Action `yaml:"if_not"`
