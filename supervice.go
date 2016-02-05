@@ -192,7 +192,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		// Header
 		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
-				if res.Header.Get(k) != v {
+				if !strings.HasPrefix(res.Header.Get(k), v) {
 					self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
 					return
 				}
