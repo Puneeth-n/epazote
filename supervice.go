@@ -21,6 +21,7 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
+	// every exit 1 increment by one
 	s.status++
 	if e == 0 {
 		s.status = 0
@@ -58,8 +59,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		return
 	}
 
-	// action
-	if a.Notify != "" && s.status <= 1 {
+	// send email if action and only for the first error (avoid spam)
+	if a.Notify != "" && s.status == 1 {
 		var to []string
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
