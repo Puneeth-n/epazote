@@ -221,7 +221,7 @@ service, an example could help better to understand the setup:</p>
         <span class="pl-s"><span class="pl-ent">expect:</span></span>
             <span class="pl-c1"><span class="pl-ent">status:</span> 200</span>
             <span class="pl-s"><span class="pl-ent">header:</span></span>
-                <span class="pl-s"><span class="pl-ent">content-type:</span> <span class="pl-s">application/json; charset=UTF-8</span></span>
+                <span class="pl-s"><span class="pl-ent">content-type:</span> <span class="pl-s">application/json</span></span>
             <span class="pl-s"><span class="pl-ent">body:</span> <span class="pl-s">find this string on my site</span></span>
             <span class="pl-s"><span class="pl-ent">if_not:</span></span>
                 <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">sv restart /services/my_service_1</span></span>
@@ -332,9 +332,23 @@ timeout, defaults to 5 seconds.</p>
 <p>An Integer representing the expected <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Code</a></p>
 
 <h3>
-<a id="services---expect---header" class="anchor" href="#services---expect---header" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - header</h3>
+<a id="services---expect---header-start_with-match" class="anchor" href="#services---expect---header-start_with-match" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - header (start_with match)</h3>
 
 <p>A key-value map of expected headers, it can be only one or more.</p>
+
+<p>The headers will be considered valid if they starts with the required value,
+for example if you want to check for <code>Content-type: application/json; charset=utf-8</code>
+you can simple do something like:</p>
+
+<div class="highlight highlight-source-yaml"><pre>    <span class="pl-s"><span class="pl-ent">header:</span></span>
+        <span class="pl-s"><span class="pl-ent">Content-Type:</span> <span class="pl-s">application/json</span></span></pre></div>
+
+<p>This helps to simplify the matching and useful in cases where the headers
+changes, for example: <code>Content-Range: bytes 100-64656926/64656927</code> can be
+matched with:</p>
+
+<div class="highlight highlight-source-yaml"><pre>    <span class="pl-s"><span class="pl-ent">header:</span></span>
+        <span class="pl-s"><span class="pl-ent">Content-Range:</span> <span class="pl-s">bytes</span></span></pre></div>
 
 <h3>
 <a id="services---expect---body" class="anchor" href="#services---expect---body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - expect - body</h3>
