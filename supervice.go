@@ -21,10 +21,9 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
+	s.status++
 	if e == 0 {
 		s.status = 0
-	} else {
-		s.status++
 	}
 
 	// create status report
@@ -60,7 +59,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	}
 
 	// action
-	if a.Notify != "" {
+	if a.Notify != "" && s.status <= 1 {
 		var to []string
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
@@ -210,6 +209,5 @@ func (self *Epazote) Supervice(s Service) func() {
 			self.Report(m, &s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
-
 	}
 }
