@@ -3,7 +3,7 @@
 VERSION=1.2.0
 GO ?= go
 BIN_NAME=epazote
-GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux" -build-ldflags="-X main.version=${VERSION} -X main.githash=`git rev-parse HEAD`"
+GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux" -build-ldflags="-X main.version=${VERSION}"
 GOXC_FILE = .goxc.local.json
 
 all: clean build
