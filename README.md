@@ -186,7 +186,7 @@ services:
         expect:
             status: 200
             header:
-                content-type: application/json; charset=UTF-8
+                content-type: application/json
             body: find this string on my site
             if_not:
                 cmd: sv restart /services/my_service_1
@@ -272,8 +272,26 @@ The ``expect`` block options are:
 ### services - expect - status
 An Integer representing the expected [HTTP Status Code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
 
-### services - expect - header
+### services - expect - header (start_with match)
 A key-value map of expected headers, it can be only one or more.
+
+The headers will be considered valid if they starts with the required value,
+for example if you want to check for ``Content-type: application/json; charset=utf-8``
+you can simple do something like:
+
+```yaml
+    header:
+        Content-Type: application/json
+```
+
+This helps to simplify the matching and useful in cases where the headers
+changes, for example: ``Content-Range: bytes 100-64656926/64656927`` can be
+matched with:
+
+```yaml
+    header:
+        Content-Range: bytes
+```
 
 ### services - expect - body
 A [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used
