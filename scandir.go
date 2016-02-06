@@ -55,7 +55,7 @@ func (self *Epazote) search(root string) error {
 				}
 
 				// schedule service
-				sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
+				sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(*v))
 			}
 		}
 		return nil

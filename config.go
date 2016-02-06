@@ -39,7 +39,7 @@ type Scan struct {
 	Every `yaml:",inline"`
 }
 
-type Services map[string]Service
+type Services map[string]*Service
 
 type Test struct {
 	Test  string `json:"test,omitempty"`
@@ -50,6 +50,7 @@ type Service struct {
 	Name     string `json:"name" yaml:"-"`
 	URL      string `json:"url,omitempty"`
 	Follow   bool   `json:"-"`
+	Insecure bool   `json:"-"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
 	Every    `yaml:",inline" json:"-"`
@@ -109,7 +110,7 @@ func (self *Epazote) CheckPaths() error {
 
 // VerifyUrls, we can't supervice unreachable services
 func (self *Epazote) VerifyUrls() error {
-	ch := AsyncGet(self.Services)
+	ch := AsyncGet(&self.Services)
 	for i := 0; i < len(self.Services); i++ {
 		x := <-ch
 		if x.Err != nil {

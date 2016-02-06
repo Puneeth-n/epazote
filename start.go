@@ -41,7 +41,7 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 		}
 
 		// schedule the service
-		isk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(v))
+		isk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(*v))
 	}
 
 	if len(self.Config.Scan.Paths) > 0 {
