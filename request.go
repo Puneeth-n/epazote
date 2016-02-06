@@ -2,6 +2,7 @@ package epazote
 
 import (
 	"bytes"
+	"crypto/tls"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -24,7 +25,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 
 	for k, v := range s {
 		go func(name string, url string) {
-			res, err := HTTPGet(url, true)
+			res, err := HTTPGet(url, true, false)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
@@ -38,7 +39,7 @@ func AsyncGet(s Services) <-chan ServiceHttpResponse {
 }
 
 // HTTPGet creates a new http request
-func HTTPGet(url string, follow bool, timeout ...int) (*http.Response, error) {
+func HTTPGet(url string, follow, skipVerify bool, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
 
@@ -49,8 +50,17 @@ func HTTPGet(url string, follow bool, timeout ...int) (*http.Response, error) {
 	// set timeout
 	tout := time.Duration(t) * time.Second
 
-	client := &http.Client{
-		Timeout: tout,
+	client := &http.Client{}
+	client.Timeout = tout
+
+	// skip ssl verification
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	// allow requests with bad certificate
+	if skipVerify {
+		client.Transport = tr
 	}
 
 	// create a new request
