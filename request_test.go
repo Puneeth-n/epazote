@@ -81,10 +81,10 @@ func TestAsyngGet(t *testing.T) {
 	}))
 	defer ts.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		URL: ts.URL,
 	}
-	ch := AsyncGet(s)
+	ch := AsyncGet(&s)
 	for i := 0; i < len(s); i++ {
 		x := <-ch
 		if x.Err != nil {

@@ -61,7 +61,7 @@ func TestSuperviceTestOk(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		Test: Test{
 			Test: "test 3 -gt 2",
@@ -72,7 +72,7 @@ func TestSuperviceTestOk(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
