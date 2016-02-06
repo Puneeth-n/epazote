@@ -249,8 +249,8 @@ received, **Epazote** will not follow it, if you would like to follow all
 redirects, this setting must be set to **true**.
 
 ### services - insecure (boolean true/false)
-This option explicitly allows to perform "insecure" SSL connections. It will
-disable the certificate verification.
+This option explicitly allows **Epazote** to perform "insecure" SSL connections.
+It will disable the certificate verification.
 
 ### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
