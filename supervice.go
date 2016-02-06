@@ -21,6 +21,12 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
+	if e == 0 {
+		s.status = 0
+	} else {
+		s.status++
+	}
+
 	// create status report
 	j, err := json.MarshalIndent(struct {
 		*Service
@@ -40,7 +46,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		if e == 0 {
 			log.Printf(Green("Report: %s"), j)
 		} else {
-			log.Printf(Red("Report: %s"), j)
+			log.Printf(Red("Report: %s\nCount: %d"), j, s.status)
 		}
 	}
 
