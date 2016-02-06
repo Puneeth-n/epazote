@@ -21,6 +21,12 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
+	// every exit 1 increment by one
+	s.status++
+	if e == 0 {
+		s.status = 0
+	}
+
 	// create status report
 	j, err := json.MarshalIndent(struct {
 		*Service
@@ -40,7 +46,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		if e == 0 {
 			log.Printf(Green("Report: %s"), j)
 		} else {
-			log.Printf(Red("Report: %s"), j)
+			log.Printf(Red("Report: %s\nCount: %d"), j, s.status)
 		}
 	}
 
@@ -53,8 +59,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		return
 	}
 
-	// action
-	if a.Notify != "" {
+	// send email if action and only for the first error (avoid spam)
+	if a.Notify != "" && s.status == 1 {
 		var to []string
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
@@ -192,7 +198,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		// Header
 		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
-				if res.Header.Get(k) != v {
+				if !strings.HasPrefix(res.Header.Get(k), v) {
 					self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
 					return
 				}
@@ -204,6 +210,5 @@ func (self *Epazote) Supervice(s Service) func() {
 			self.Report(m, &s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
-
 	}
 }
