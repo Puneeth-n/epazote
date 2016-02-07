@@ -204,3 +204,33 @@ func TestHTTPGetTimeoutNoFollow(t *testing.T) {
 		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
 	}
 }
+
+func TestHTTPGetInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, false, true)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestHTTPGetInsecureVerify(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, false, false)
+	if err == nil {
+		t.Errorf("Expecting: %s", "x509: certificate signed by unknown authority")
+	}
+}
