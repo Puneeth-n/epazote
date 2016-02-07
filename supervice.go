@@ -128,7 +128,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// skip do cmd, to avoid a loop
 		var skip bool
-		if s.status > s.Stop {
+		if s.status > s.Stop && s.Stop != -1 {
 			skip = true
 		}
 
