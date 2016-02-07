@@ -47,14 +47,13 @@ func HTTPGet(url string, follow, insecure bool, timeout ...int) (*http.Response,
 		t = timeout[0]
 	}
 
-	client := &http.Client{}
-
-	// skip ssl verification
+	// if insecure = true, skip ssl verification
 	tr := &http.Transport{
 		TLSClientConfig:       &tls.Config{InsecureSkipVerify: insecure},
 		ResponseHeaderTimeout: time.Duration(t) * time.Second,
 	}
 
+	client := &http.Client{}
 	client.Transport = tr
 
 	// create a new request
