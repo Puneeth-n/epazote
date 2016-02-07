@@ -140,7 +140,7 @@ func TestSuperviceTestNotOk(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		Test: Test{
 			Test: "test 3 -gt 5",
@@ -151,7 +151,7 @@ func TestSuperviceTestNotOk(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -209,7 +209,7 @@ func TestSuperviceStatusCreated(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -221,7 +221,7 @@ func TestSuperviceStatusCreated(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -281,7 +281,7 @@ func TestSuperviceBodyMatch(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`(?i)[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -294,7 +294,7 @@ func TestSuperviceBodyMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -363,7 +363,7 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -376,7 +376,7 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -421,7 +421,7 @@ func TestSuperviceNoGet(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "http://",
 		Log:  log_s.URL,
@@ -436,7 +436,7 @@ func TestSuperviceNoGet(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -492,7 +492,7 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "http://",
 		Log:  log_s.URL,
@@ -507,7 +507,7 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -570,7 +570,7 @@ func TestSuperviceIfStatusMatch502(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -593,7 +593,7 @@ func TestSuperviceIfStatusMatch502(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -656,7 +656,7 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -678,7 +678,7 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -742,7 +742,7 @@ func TestSuperviceIfHeaderMatch(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -765,7 +765,7 @@ func TestSuperviceIfHeaderMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -827,7 +827,7 @@ func TestSuperviceStatus202(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -850,7 +850,7 @@ func TestSuperviceStatus202(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -917,7 +917,7 @@ func TestSuperviceMissingHeader(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -944,7 +944,7 @@ func TestSuperviceMissingHeader(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -1006,7 +1006,7 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1032,7 +1032,7 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
@@ -1094,7 +1094,7 @@ func TestSuperviceMatchingHeaderPrefix(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1120,13 +1120,13 @@ func TestSuperviceMatchingHeaderPrefix(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 }
 
 func TestSuperviceLogErr(t *testing.T) {
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "--",
 		Log:  "http://",
@@ -1135,7 +1135,7 @@ func TestSuperviceLogErr(t *testing.T) {
 		},
 	}
 	ez := new(Epazote)
-	ser := s["s 1"]
+	ser := *s["s 1"]
 	ez.Log(&ser, []byte{0})
 
 	if buf.Len() == 0 {
@@ -1202,7 +1202,7 @@ func TestSuperviceMatchingHeaderDebugGreen(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1229,7 +1229,7 @@ func TestSuperviceMatchingHeaderDebugGreen(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1297,7 +1297,7 @@ func TestSuperviceMatchingHeaderDebugRed(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1324,7 +1324,7 @@ func TestSuperviceMatchingHeaderDebugRed(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1391,7 +1391,7 @@ func TestSupervice302(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1408,7 +1408,7 @@ func TestSupervice302(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1473,7 +1473,7 @@ func TestSuperviceFollow(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`(?i)[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name:   "s 1",
 		URL:    check_s.URL,
 		Follow: true,
@@ -1492,7 +1492,7 @@ func TestSuperviceFollow(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(s["s 1"])()
+	ez.Supervice(*s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
