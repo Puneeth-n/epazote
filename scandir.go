@@ -54,6 +54,10 @@ func (self *Epazote) search(root string) error {
 					v.Expect.body = re
 				}
 
+				if self.debug {
+					log.Printf(Green("Found epazote.yml in path: %s updating/adding service: %q"), path, k)
+				}
+
 				// schedule service
 				sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(*v))
 			}
