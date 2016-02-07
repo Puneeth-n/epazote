@@ -51,6 +51,7 @@ type Service struct {
 	URL      string `json:"url,omitempty"`
 	Follow   bool   `json:"-"`
 	Insecure bool   `json:"-"`
+	Stop     int    `json:"-"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
 	Every    `yaml:",inline" json:"-"`
