@@ -252,6 +252,12 @@ redirects, this setting must be set to **true**.
 This option explicitly allows **Epazote** to perform "insecure" SSL connections.
 It will disable the certificate verification.
 
+### services - stop (int)
+Defines the number or times the ``cmd`` will be executed, by default the ``cmd``
+is executed only once, with the intention to avoid indefinitely loops. If value
+is set to ``-1`` the ``cmd`` never stops. defaults to 0, ``stop 2`` will execute
+"0, 1, 2" (3 times) the ``cmd``.
+
 ### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.
