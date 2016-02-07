@@ -55,7 +55,6 @@ func HTTPGet(url string, follow, insecure bool, timeout ...int) (*http.Response,
 		ResponseHeaderTimeout: time.Duration(t) * time.Second,
 	}
 
-	print(" ------- InsecureSkipVerify: ", insecure, "   ")
 	client.Transport = tr
 
 	// create a new request
