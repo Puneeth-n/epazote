@@ -24,15 +24,15 @@ func AsyncGet(s *Services) <-chan ServiceHttpResponse {
 	ch := make(chan ServiceHttpResponse, len(*s))
 
 	for k, v := range *s {
-		go func(name string, url string, verify bool) {
-			res, err := HTTPGet(url, true, v.Insecure)
+		go func(name string, url string, verify bool, h map[string]string) {
+			res, err := HTTPGet(url, true, verify, h)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
 			}
 			res.Body.Close()
 			ch <- ServiceHttpResponse{nil, name}
-		}(k, v.URL, v.Insecure)
+		}(k, v.URL, v.Insecure, v.Header)
 	}
 
 	return ch

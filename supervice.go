@@ -148,7 +148,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		}
 
 		// HTTP GET service URL
-		res, err := HTTPGet(s.URL, s.Follow, s.Insecure, s.Timeout)
+		res, err := HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
 		if err != nil {
 			self.Report(m, &s, &s.Expect.IfNot, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd, skip))
 			return

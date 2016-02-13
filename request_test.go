@@ -19,7 +19,7 @@ func TestHTTPGet(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := HTTPGet(ts.URL, false, true, 3)
+	res, err := HTTPGet(ts.URL, false, true, nil, 3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -183,7 +183,7 @@ func TestHTTPGetTimeout(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, true, true, 1)
+	_, err := HTTPGet(ts.URL, true, true, nil, 1)
 	if err == nil {
 		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
 	}
@@ -199,7 +199,7 @@ func TestHTTPGetTimeoutNoFollow(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, false, true, 1)
+	_, err := HTTPGet(ts.URL, false, true, nil, 1)
 	if err == nil {
 		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
 	}
@@ -214,7 +214,7 @@ func TestHTTPGetInsecure(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, false, true)
+	_, err := HTTPGet(ts.URL, false, true, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -229,7 +229,7 @@ func TestHTTPGetInsecureVerify(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, false, false)
+	_, err := HTTPGet(ts.URL, false, false, nil)
 	if err == nil {
 		t.Errorf("Expecting: %s", "x509: certificate signed by unknown authority")
 	}
