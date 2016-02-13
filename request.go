@@ -39,7 +39,7 @@ func AsyncGet(s *Services) <-chan ServiceHttpResponse {
 }
 
 // HTTPGet creates a new http request
-func HTTPGet(url string, follow, insecure bool, timeout ...int) (*http.Response, error) {
+func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
 
@@ -59,6 +59,13 @@ func HTTPGet(url string, follow, insecure bool, timeout ...int) (*http.Response,
 	// create a new request
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "epazote")
+
+	// set custom headers on request
+	if h != nil {
+		for k, v := range h {
+			req.Header.Set(k, v)
+		}
+	}
 
 	if follow {
 		res, err := client.Do(req)
