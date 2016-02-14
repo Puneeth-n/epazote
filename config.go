@@ -31,6 +31,7 @@ type Email struct {
 	Server   string
 	Port     int
 	Headers  map[string]string
+	enabled  bool
 }
 
 type Every struct {

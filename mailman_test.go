@@ -69,7 +69,7 @@ func TestReportNotify(t *testing.T) {
 	headers := map[string]string{
 		"from": "epazote@domain.tld",
 	}
-	c := Email{"username", "password", "server", 587, headers}
+	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(nil, &wg)
 	sender := &mailMan{&c, f}
 	ss := &Service{
@@ -116,7 +116,7 @@ func TestReportNotifyYes(t *testing.T) {
 		"to":      "test@ejemplo.org",
 		"subject": "[name: name - exit - url - because]",
 	}
-	c := Email{"username", "password", "server", 587, headers}
+	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
 	sender := &mailMan{&c, f}
 	ss := &Service{
@@ -167,7 +167,7 @@ func TestReportNotifySpam(t *testing.T) {
 		"to":      "test@ejemplo.org",
 		"subject": "[name: name - exit - url - because]",
 	}
-	c := Email{"username", "password", "server", 587, headers}
+	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
 	sender := &mailMan{&c, f}
 	ss := &Service{

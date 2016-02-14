@@ -62,6 +62,12 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 
 	// send email if action and only for the first error (avoid spam)
 	if a.Notify != "" && s.status <= 1 {
+		// check if we can send emails
+		if !self.Config.SMTP.enabled {
+			log.Print(Red("Can't send email, no SMTP settings found."))
+			return
+		}
+
 		var to []string
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")

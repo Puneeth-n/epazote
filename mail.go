@@ -150,6 +150,11 @@ func (self *Epazote) VerifyEmail() error {
 			}
 			self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
 		}
+
+		// enable SMTP
+		// This is to avoid an error if new services added via scan need to send email
+		// but no smtp is defined
+		self.Config.SMTP.enabled = true
 	}
 
 	return nil
