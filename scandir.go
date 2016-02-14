@@ -54,9 +54,14 @@ func (self *Epazote) search(root string) error {
 					v.Expect.body = re
 				}
 
-				// sync status in case of updating an exisiting service
-				if s, ok := self.Services[k]; ok {
-					v.status = s.status
+				// Add/Update existing services
+				if _, ok := self.Services[k]; !ok {
+					self.Services[k] = v
+				} else {
+					old_status := self.Services[k].status
+					print(old_status, "<------------")
+					self.Services[k] = v
+					self.Services[k].status = old_status
 				}
 
 				if self.debug {
@@ -64,7 +69,7 @@ func (self *Epazote) search(root string) error {
 				}
 
 				// schedule service
-				sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(*v))
+				sk.AddScheduler(k, GetInterval(60, v.Every), self.Supervice(self.Services[k]))
 			}
 		}
 		return nil
