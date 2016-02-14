@@ -54,6 +54,11 @@ func (self *Epazote) search(root string) error {
 					v.Expect.body = re
 				}
 
+				// sync status in case of updating an exisiting service
+				if s, ok := self.Services[k]; ok {
+					v.status = s.status
+				}
+
 				if self.debug {
 					log.Printf(Green("Found epazote.yml in path: %s updating/adding service: %q"), path, k)
 				}
