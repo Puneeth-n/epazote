@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime"
 	"os/exec"
 	"sort"
 	"strings"
@@ -60,7 +61,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	}
 
 	// send email if action and only for the first error (avoid spam)
-	if a.Notify != "" && s.status == 1 {
+	if a.Notify != "" && s.status <= 1 {
 		var to []string
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
@@ -88,11 +89,19 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		}
 
 		// set subject
+		// replace the report status keys (json) in subject if present
 		subject := self.Config.SMTP.Headers["subject"]
 		for _, k := range keys {
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
 			subject = strings.Replace(subject, k, fmt.Sprintf("%v", parsed[k]), 1)
 		}
+
+		// add emoji to subject
+		emoji := herb
+		if s.status > 0 {
+			emoji = shit
+		}
+		subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%s  %s", emoji, subject))
 
 		go self.SendEmail(m, to, subject, []byte(body))
 	}
@@ -126,7 +135,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		// Mailman instance
 		m := NewMailMan(&self.Config.SMTP)
 
-		// skip do cmd, to avoid a loop
+		// skip "do cmd", to avoid a loop
 		var skip bool
 		if s.status > s.Stop && s.Stop != -1 {
 			skip = true

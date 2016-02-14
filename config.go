@@ -9,7 +9,10 @@ import (
 	"regexp"
 )
 
-const herb = "\U0001f33f"
+const (
+	herb = "\U0001f33f"
+	shit = "\U0001F4A9"
+)
 
 type Epazote struct {
 	Config   Config
