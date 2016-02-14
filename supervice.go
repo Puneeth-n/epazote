@@ -88,7 +88,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 			body += fmt.Sprintf("%s %s%s", a.Msg, CRLF, CRLF)
 		}
 
-		// set subject
+		// set subject (because exit name output status url)
 		// replace the report status keys (json) in subject if present
 		subject := self.Config.SMTP.Headers["subject"]
 		for _, k := range keys {

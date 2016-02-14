@@ -140,7 +140,7 @@ config:
 Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
 
-### config - smtp - subject (because exit name output status url)
+### config - smtp - subject (``because, exit, name, output, status, url``)
 The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
 ``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
 would transform to ``[my service - 500]`` the ``name`` has replaced
