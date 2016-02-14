@@ -112,9 +112,14 @@ func (self *Epazote) VerifyEmail() error {
 		}
 	}
 
-	if notify {
+	if notify || self.Config.SMTP.Server != "" {
 		if self.Config.SMTP.Server == "" {
 			return fmt.Errorf(Red("SMTP server required for been available to send email notifications."))
+		}
+
+		// default to port 25
+		if self.Config.SMTP.Port == 0 {
+			self.Config.SMTP.Port = 25
 		}
 
 		// set Headers
