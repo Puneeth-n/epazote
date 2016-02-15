@@ -72,7 +72,7 @@ func TestSuperviceTestOk(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -151,7 +151,7 @@ func TestSuperviceTestNotOk(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -221,7 +221,7 @@ func TestSuperviceStatusCreated(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -294,7 +294,7 @@ func TestSuperviceBodyMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -376,7 +376,7 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -436,7 +436,7 @@ func TestSuperviceNoGet(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -507,7 +507,7 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -593,7 +593,7 @@ func TestSuperviceIfStatusMatch502(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -678,7 +678,7 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -765,7 +765,7 @@ func TestSuperviceIfHeaderMatch(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -850,7 +850,7 @@ func TestSuperviceStatus202(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -944,7 +944,7 @@ func TestSuperviceMissingHeader(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -1032,7 +1032,7 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -1120,7 +1120,7 @@ func TestSuperviceMatchingHeaderPrefix(t *testing.T) {
 		Services: s,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 }
 
@@ -1229,7 +1229,7 @@ func TestSuperviceMatchingHeaderDebugGreen(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1324,7 +1324,7 @@ func TestSuperviceMatchingHeaderDebugRed(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1408,7 +1408,7 @@ func TestSupervice302(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {
@@ -1492,7 +1492,7 @@ func TestSuperviceFollow(t *testing.T) {
 		debug:    true,
 	}
 	wg.Add(1)
-	ez.Supervice(*s["s 1"])()
+	ez.Supervice(s["s 1"])()
 	wg.Wait()
 
 	if buf.Len() == 0 {

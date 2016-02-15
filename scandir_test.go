@@ -81,7 +81,9 @@ func TestScanParseScanSearchOk(t *testing.T) {
 
 	err = ioutil.WriteFile(fmt.Sprintf("%s/epazote.yml", d), f, 0644)
 
-	s := new(Epazote)
+	s := &Epazote{
+		Services: make(map[string]*Service),
+	}
 	err = s.search(d)
 	if err != nil {
 		t.Error(err)
