@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"sort"
 	"strings"
+	"sync/atomic"
 )
 
 // Log send log via HTTP POST to defined URL
@@ -23,7 +24,7 @@ func (self *Epazote) Log(s *Service, status []byte) {
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
 	// every exit 1 increment by one
-	s.status++
+	atomic.AddInt64(&s.status, 1)
 	if e == 0 {
 		//		s.status = 0
 	}

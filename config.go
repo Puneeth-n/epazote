@@ -56,7 +56,7 @@ type Service struct {
 	Header   map[string]string `json:"-"`
 	Follow   bool              `json:"-"`
 	Insecure bool              `json:"-"`
-	Stop     int               `json:"-"`
+	Stop     int64             `json:"-"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
 	Every    `yaml:",inline" json:"-"`
@@ -64,7 +64,7 @@ type Service struct {
 	Expect   Expect            `json:"-"`
 	IfStatus map[int]Action    `yaml:"if_status" json:"-"`
 	IfHeader map[string]Action `yaml:"if_header" json:"-"`
-	status   int
+	status   int64
 }
 
 type Expect struct {
