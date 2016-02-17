@@ -26,7 +26,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	// every exit 1 increment by one
 	atomic.AddInt64(&s.status, 1)
 	if e == 0 {
-		//		s.status = 0
+		s.status = 0
 	}
 
 	// create status report
