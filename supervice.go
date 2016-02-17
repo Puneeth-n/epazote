@@ -23,10 +23,13 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
-	// every exit 1 increment by one
+	// every (exit > 0) increment by one
 	atomic.AddInt64(&s.status, 1)
 	if e == 0 {
 		s.status = 0
+		if s.action != nil {
+			a = s.action
+		}
 	}
 
 	// create status report
@@ -63,6 +66,10 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 
 	// send email if action and only for the first error (avoid spam)
 	if a.Notify != "" && s.status <= 1 {
+		// store action on status so that when the service recovers
+		// a notification can be sent to the previous recipients
+		s.action = a
+
 		// check if we can send emails
 		if !self.Config.SMTP.enabled {
 			log.Print(Red("Can't send email, no SMTP settings found."))

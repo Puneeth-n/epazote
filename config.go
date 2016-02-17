@@ -65,6 +65,7 @@ type Service struct {
 	IfStatus map[int]Action    `yaml:"if_status" json:"-"`
 	IfHeader map[string]Action `yaml:"if_header" json:"-"`
 	status   int64
+	action   *Action
 }
 
 type Expect struct {

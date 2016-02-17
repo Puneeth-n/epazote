@@ -58,10 +58,11 @@ func (self *Epazote) search(root string) error {
 				if _, ok := self.Services[k]; !ok {
 					self.Services[k] = v
 				} else {
-					old_status := self.Services[k].status
-					print(old_status, "<------------")
+					last_status := self.Services[k].status
+					last_action := self.Services[k].action
 					self.Services[k] = v
-					self.Services[k].status = old_status
+					self.Services[k].status = last_status
+					self.Services[k].action = last_action
 				}
 
 				if self.debug {
