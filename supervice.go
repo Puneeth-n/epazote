@@ -69,11 +69,10 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 			return
 		}
 
-		var to []string
+		// set To, recipients
+		to := strings.Split(a.Notify, " ")
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
-		} else {
-			to = strings.Split(a.Notify, " ")
 		}
 
 		var parsed map[string]interface{}
@@ -157,9 +156,9 @@ func (self *Epazote) Supervice(s *Service) func() {
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
 				self.Report(m, s, &s.Test.IfNot, 1, 0, fmt.Sprintf("Test cmd: %s", err), self.Do(s.Test.IfNot.Cmd, skip))
-			} else {
-				self.Report(m, s, nil, 0, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
+				return
 			}
+			self.Report(m, s, nil, 0, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
 			return
 		}
 
@@ -181,9 +180,9 @@ func (self *Epazote) Supervice(s *Service) func() {
 			r := s.Expect.body.FindString(string(body))
 			if r == "" {
 				self.Report(m, s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(s.Expect.IfNot.Cmd, skip))
-			} else {
-				self.Report(m, s, nil, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
+				return
 			}
+			self.Report(m, s, nil, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
 			return
 		}
 
