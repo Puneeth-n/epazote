@@ -49,9 +49,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	// debug
 	if self.debug {
 		if e == 0 {
-			log.Printf(Green("Report: %s, Count: %d"), j, s.status)
+			log.Printf(Green("Report: %s, status: %d"), j, s.status)
 		} else {
-			log.Printf(Red("Report: %s, Count: %d"), j, s.status)
+			log.Printf(Red("Report: %s, status: %d"), j, s.status)
 		}
 	}
 
