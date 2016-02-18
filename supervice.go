@@ -70,6 +70,10 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		// a notification can be sent to the previous recipients
 		s.action = a
 
+		if s.status == 0 {
+			s.action = nil
+		}
+
 		// check if we can send emails
 		if !self.Config.SMTP.enabled {
 			log.Print(Red("Can't send email, no SMTP settings found."))
