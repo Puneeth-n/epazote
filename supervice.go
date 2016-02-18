@@ -153,7 +153,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 		m := NewMailMan(&self.Config.SMTP)
 
 		// skip "do cmd", to avoid a loop
-		var skip bool
+		skip := false
 		if s.status > s.Stop && s.Stop != -1 {
 			skip = true
 		}

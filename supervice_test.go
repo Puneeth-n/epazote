@@ -1499,3 +1499,64 @@ func TestSuperviceFollow(t *testing.T) {
 		t.Error("Expecting log.Println error")
 	}
 }
+
+func TestSuperviceSkipCmd(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, epazote match 0BC20225-2E72-4646-9202-8467972199E1 regex")
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:   "s 1",
+		URL:    check_s.URL,
+		Follow: true,
+		Log:    log_s.URL,
+		Expect: Expect{
+			Status: 201,
+			IfNot: Action{
+				Notify: "yes",
+			},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+		debug:    true,
+	}
+	wg.Add(2)
+	ez.Supervice(s["s 1"])()
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+
+	if buf.Len() == 0 {
+		t.Error("Expecting log.Println error")
+	}
+
+	if s["s 1"].status != 2 {
+		t.Errorf("Expecting status == 2 got: %v", s["s 1"].status)
+	}
+
+	s["s 1"].status = 0
+	s["s 1"].Expect.Status = 200
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+
+	if s["s 1"].status != 0 {
+		t.Errorf("Expecting status == 0 got: %v", s["s 1"].status)
+	}
+}
