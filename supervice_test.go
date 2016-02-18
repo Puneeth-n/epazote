@@ -1560,3 +1560,50 @@ func TestSuperviceSkipCmd(t *testing.T) {
 		t.Errorf("Expecting status == 0 got: %v", s["s 1"].status)
 	}
 }
+
+func TestSuperviceCount1000(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:   "s 1",
+		URL:    check_s.URL,
+		Follow: true,
+		Log:    log_s.URL,
+		Expect: Expect{
+			Status: 201,
+			IfNot: Action{
+				Notify: "yes",
+			},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+		debug:    true,
+	}
+	wg.Add(1000)
+	for i := 0; i < 1000; i++ {
+		ez.Supervice(s["s 1"])()
+	}
+	wg.Wait()
+	if s["s 1"].status != 1000 {
+		t.Errorf("Expecting status: 1000 got: %v", s["s 1"].status)
+	}
+}
