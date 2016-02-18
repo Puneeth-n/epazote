@@ -144,7 +144,7 @@ func (self *Epazote) VerifyEmail() error {
 
 		// set subject
 		if _, ok := self.Config.SMTP.Headers["subject"]; !ok {
-			self.Config.SMTP.Headers["subject"] = "[name - exit]"
+			self.Config.SMTP.Headers["subject"] = "[name, because]"
 		}
 
 		// check To recipients
