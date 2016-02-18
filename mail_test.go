@@ -193,7 +193,7 @@ func TestVerifyEmailSubject(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if cfg.Config.SMTP.Headers["subject"] != "[name - exit]" {
+	if cfg.Config.SMTP.Headers["subject"] != "[name, because]" {
 		t.Errorf("Expecting subject: [name - exit] got: %v", cfg.Config.SMTP.Headers["subject"])
 	}
 }
