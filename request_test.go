@@ -234,3 +234,28 @@ func TestHTTPGetInsecureVerify(t *testing.T) {
 		t.Errorf("Expecting: %s", "x509: certificate signed by unknown authority")
 	}
 }
+
+func TestHTTPGetCustomHeaders(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "my-UA" {
+			t.Error("Expecting User-agent: my-UA")
+		}
+		if r.Header.Get("Accept-Encoding") != "gzip" {
+			t.Error("Expecting Accept-Encoding: gzip")
+		}
+		if r.Header.Get("Origin") != "http://localhost" {
+			t.Error("Expecting Origin: http://localhost")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	h := make(map[string]string)
+	h["User-Agent"] = "my-UA"
+	h["Origin"] = "http://localhost"
+	h["Accept-Encoding"] = "gzip"
+	_, err := HTTPGet(ts.URL, false, false, h)
+	if err != nil {
+		t.Error(err)
+	}
+}
