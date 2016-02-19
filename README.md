@@ -213,6 +213,9 @@ services:
 
     other service:
         url: https://self-signed.ssl.tld/ping
+        header:
+            Origin: http://localhost
+            Accept-Encoding: gzip
         insecure: true
         minutes: 3
 
@@ -276,7 +279,7 @@ An URL to post all events, default disabled.
 ### services - expect
 The ``expect`` block options are:
 - status (int)
-- header (string)
+- header (key, value)
 - body   (regular expression)
 - if_not (Action block)
 
