@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	herb = "\U0001f33f"
-	shit = "\U0001F4A9"
+	herb = "0001f33f"
+	shit = "0001F4A9"
 )
 
 type Epazote struct {
