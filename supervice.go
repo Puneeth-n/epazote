@@ -130,8 +130,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		if s.status > 0 {
 			emoji = emojis[1]
 		}
-
-		subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%s  %s", Icon(emoji), subject))
+		if emoji != "" {
+			subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%s  %s", Icon(emoji), subject))
+		}
 
 		go self.SendEmail(m, to, subject, []byte(body))
 	}
