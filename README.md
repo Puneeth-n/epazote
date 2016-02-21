@@ -228,6 +228,7 @@ services:
             if_not:
                 cmd: service restart abc
                 notify: yes
+                emoji:
 
     salt-master:
         test: pgrep -f salt
