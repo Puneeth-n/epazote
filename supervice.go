@@ -114,7 +114,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		}
 
 		// add emoji to subject
-		emojis := []string{herb, shit}
+		emojis := []string{herb, face}
 		if a.Emoji != "" {
 			if a.Emoji == "0" {
 				emojis[0] = ""
@@ -131,7 +131,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 			emoji = emojis[1]
 		}
 		if emoji != "" {
-			subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%s  %s", Icon(emoji), subject))
+			subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%c  %s", Icon(emoji), subject))
 		}
 
 		go self.SendEmail(m, to, subject, []byte(body))

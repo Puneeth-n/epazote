@@ -16,10 +16,10 @@ func Green(s string) string {
 }
 
 // Icon Unicode Hex to string
-func Icon(h string) string {
+func Icon(h string) rune {
 	i, e := strconv.ParseInt(h, 16, 32)
 	if e != nil {
-		return ""
+		return 0
 	}
-	return string(i)
+	return rune(i)
 }

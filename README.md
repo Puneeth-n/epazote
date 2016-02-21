@@ -228,7 +228,7 @@ services:
             if_not:
                 cmd: service restart abc
                 notify: yes
-                emoji: 2713-274c
+                emoji: 1F4A9-1F621
 
     salt-master:
         test: pgrep -f salt
@@ -374,6 +374,7 @@ An Action has tree options:
  - cmd
  - notify
  - msg
+ - emoji
 
 They can be used all together, only one or either none.
 
@@ -388,6 +389,13 @@ If the string is ``yes`` the global recipients will be used.
 
 ### services - Actions - msg (string)
 ``msg`` The message to send when the action is executed.
+
+### services -Actions - emoji (string)
+``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
+to be used in the subject, example: ``emoji: 1F4A9-1F621`` if set to ``0`` no
+emoji will be use. The idea behind using unicode/emoji is to cough attention
+faster and not just ignore the email thinking is spam.
+
 
 ## services - Test
 **Epazote** It is mainly used for HTTP services, for supervising other
