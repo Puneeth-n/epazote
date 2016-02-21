@@ -1,7 +1,12 @@
 Changelog
 =========
 
-## [1.3.0] - 2016-02-21
+## 1.4.0
+### Unreleased
+- To fix debug (print all the headers)
+- kill -USR1 try to make it more easy to read
+
+## 1.3.0
 - ``Insecure`` feature to ignore SSL / self signed certificates.
 - ``Stop`` establish a limit on how many times to retry a cmd, ``-1`` loops for ever.
 - ``Emoji`` support per action, add/remove icons on email subject.
