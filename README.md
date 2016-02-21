@@ -394,8 +394,9 @@ If the string is ``yes`` the global recipients will be used.
 ``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
 to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
 they will use the first ``1F600`` if not they will use ``1F621``, if set to
-``0`` no emoji will be used. The idea behind using unicode/emoji is to cough
-attention faster and not just ignore the email thinking is spam.
+``0`` no emoji will be used. The idea behind using
+[unicode/emoji](https://en.wikipedia.org/wiki/Emoticons_(Unicode_block))
+is to cough attention faster and not just ignore the email thinking is spam.
 
 
 ## services - Test
