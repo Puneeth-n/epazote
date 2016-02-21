@@ -20,7 +20,6 @@
 
     <section class="main-content">
       <p><a href="https://bintray.com/nbari/epazote/epazote/_latestVersion"><img src="https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg" alt="Download"></a>
-<a href="https://drone.io/github.com/nbari/epazote/latest"><img src="https://drone.io/github.com/nbari/epazote/status.png" alt="Build Status"></a>
 <a href="https://travis-ci.org/nbari/epazote"><img src="https://travis-ci.org/nbari/epazote.svg?branch=develop" alt="Build Status"></a>
 <a href="https://coveralls.io/github/nbari/epazote?branch=master"><img src="https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master" alt="Coverage Status"></a></p>
 
@@ -173,7 +172,7 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
 <code>headers</code> section can be extended with any desired key-pair values.</p>
 
 <h3>
-<a id="config---smtp---subject-because-exit-name-output-status-url" class="anchor" href="#config---smtp---subject-because-exit-name-output-status-url" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - smtp - subject (because exit name output status url)</h3>
+<a id="config---smtp---subject" class="anchor" href="#config---smtp---subject" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - smtp - subject</h3>
 
 <p>The subject can be formed by using this keywords: <code>because</code> <code>exit</code> <code>name</code>
 <code>output</code> <code>status</code> <code>url</code> on the previous example, <code>subject: [name - status]</code>
@@ -247,7 +246,11 @@ service, an example could help better to understand the setup:</p>
                 <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">svc restart /services/db</span></span>
 
     <span class="pl-s"><span class="pl-ent">other service:</span></span>
-        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">http://other-service.domain.tld/ping</span></span>
+        <span class="pl-s"><span class="pl-ent">url:</span> <span class="pl-s">https://self-signed.ssl.tld/ping</span></span>
+        <span class="pl-s"><span class="pl-ent">header:</span></span>
+            <span class="pl-s"><span class="pl-ent">Origin:</span> <span class="pl-s">http://localhost</span></span>
+            <span class="pl-s"><span class="pl-ent">Accept-Encoding:</span> <span class="pl-s">gzip</span></span>
+        <span class="pl-s"><span class="pl-ent">insecure:</span> <span class="pl-s">true</span></span>
         <span class="pl-c1"><span class="pl-ent">minutes:</span> 3</span>
 
     <span class="pl-s"><span class="pl-ent">redirect service:</span></span>
@@ -259,6 +262,7 @@ service, an example could help better to understand the setup:</p>
             <span class="pl-s"><span class="pl-ent">if_not:</span></span>
                 <span class="pl-s"><span class="pl-ent">cmd:</span> <span class="pl-s">service restart abc</span></span>
                 <span class="pl-s"><span class="pl-ent">notify:</span> <span class="pl-s">yes</span></span>
+                <span class="pl-s"><span class="pl-ent">emoji:</span> <span class="pl-s">1F600-1F621</span></span>
 
     <span class="pl-s"><span class="pl-ent">salt-master:</span></span>
         <span class="pl-s"><span class="pl-ent">test:</span> <span class="pl-s">pgrep -f salt</span></span>
@@ -291,6 +295,20 @@ received, <strong>Epazote</strong> will not follow it, if you would like to foll
 redirects, this setting must be set to <strong>true</strong>.</p>
 
 <h3>
+<a id="services---insecure-boolean-truefalse" class="anchor" href="#services---insecure-boolean-truefalse" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - insecure (boolean true/false)</h3>
+
+<p>This option explicitly allows <strong>Epazote</strong> to perform "insecure" SSL connections.
+It will disable the certificate verification.</p>
+
+<h3>
+<a id="services---stop-int" class="anchor" href="#services---stop-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - stop (int)</h3>
+
+<p>Defines the number or times the <code>cmd</code> will be executed, by default the <code>cmd</code>
+is executed only once, with the intention to avoid indefinitely loops. If value
+is set to <code>-1</code> the <code>cmd</code> never stops. defaults to 0, <code>stop 2</code> will execute
+"0, 1, 2" (3 times) the <code>cmd</code>.</p>
+
+<h3>
 <a id="services---timeout-in-seconds-int" class="anchor" href="#services---timeout-in-seconds-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - timeout in seconds (int)</h3>
 
 <p>Timeout specifies a time limit for the HTTP requests, A value of zero means no
@@ -321,7 +339,7 @@ timeout, defaults to 5 seconds.</p>
 
 <ul>
 <li>status (int)</li>
-<li>header (string)</li>
+<li>header (key, value)</li>
 <li>body   (regular expression)</li>
 <li>if_not (Action block)</li>
 </ul>
@@ -433,6 +451,7 @@ an <code>if_status</code> and <code>if_header</code> are set, same applies, firs
 <li>cmd</li>
 <li>notify</li>
 <li>msg</li>
+<li>emoji</li>
 </ul>
 
 <p>They can be used all together, only one or either none.</p>
@@ -454,6 +473,16 @@ of the recipients that will be notified when the action is executed.</p>
 <a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
 
 <p><code>msg</code> The message to send when the action is executed.</p>
+
+<h3>
+<a id="services--actions---emoji-string" class="anchor" href="#services--actions---emoji-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services -Actions - emoji (string)</h3>
+
+<p><code>emoji</code> <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> characters
+to be used in the subject, example: <code>emoji: 1F600-1F621</code>. If services are OK
+they will use the first <code>1F600</code> if not they will use <code>1F621</code>, if set to
+<code>0</code> no emoji will be used. The idea behind using
+<a href="https://en.wikipedia.org/wiki/Emoticons_(Unicode_block)">unicode/emoji</a>
+is to cough attention faster and not just ignore the email thinking is spam.</p>
 
 <h2>
 <a id="services---test" class="anchor" href="#services---test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Test</h2>
