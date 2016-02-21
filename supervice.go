@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime"
 	"os/exec"
 	"sort"
 	"strings"
+	"sync/atomic"
 )
 
 // Log send log via HTTP POST to defined URL
@@ -21,10 +23,13 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, o string) {
-	// every exit 1 increment by one
-	s.status++
+	// every (exit > 0) increment by one
+	atomic.AddInt64(&s.status, 1)
 	if e == 0 {
 		s.status = 0
+		if s.action != nil {
+			a = s.action
+		}
 	}
 
 	// create status report
@@ -44,9 +49,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	// debug
 	if self.debug {
 		if e == 0 {
-			log.Printf(Green("Report: %s"), j)
+			log.Printf(Green("Report: %s, count: %d"), j, s.status)
 		} else {
-			log.Printf(Red("Report: %s\nCount: %d"), j, s.status)
+			log.Printf(Red("Report: %s, count: %d"), j, s.status)
 		}
 	}
 
@@ -60,12 +65,25 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 	}
 
 	// send email if action and only for the first error (avoid spam)
-	if a.Notify != "" && s.status == 1 {
-		var to []string
+	if a.Notify != "" && s.status <= 1 {
+		// store action on status so that when the service recovers
+		// a notification can be sent to the previous recipients
+		s.action = a
+
+		if s.status == 0 {
+			s.action = nil
+		}
+
+		// check if we can send emails
+		if !self.Config.SMTP.enabled {
+			log.Print(Red("Can't send email, no SMTP settings found."))
+			return
+		}
+
+		// set To, recipients
+		to := strings.Split(a.Notify, " ")
 		if a.Notify == "yes" {
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
-		} else {
-			to = strings.Split(a.Notify, " ")
 		}
 
 		var parsed map[string]interface{}
@@ -87,11 +105,33 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 			body += fmt.Sprintf("%s %s%s", a.Msg, CRLF, CRLF)
 		}
 
-		// set subject
+		// set subject (because exit name output status url)
+		// replace the report status keys (json) in subject if present
 		subject := self.Config.SMTP.Headers["subject"]
 		for _, k := range keys {
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
 			subject = strings.Replace(subject, k, fmt.Sprintf("%v", parsed[k]), 1)
+		}
+
+		// add emoji to subject
+		emojis := []string{herb, shit}
+		if a.Emoji != "" {
+			if a.Emoji == "0" {
+				emojis[0] = ""
+				emojis[1] = ""
+			} else {
+				e := strings.Split(a.Emoji, "-")
+				if len(e) > 1 {
+					emojis = e
+				}
+			}
+		}
+		emoji := emojis[0]
+		if s.status > 0 {
+			emoji = emojis[1]
+		}
+		if emoji != "" {
+			subject = mime.BEncoding.Encode("UTF-8", fmt.Sprintf("%c  %s", Icon(emoji), subject))
 		}
 
 		go self.SendEmail(m, to, subject, []byte(body))
@@ -99,9 +139,12 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 }
 
 // Do, execute the command in the if_not block
-func (self *Epazote) Do(cmd *string) string {
-	if len(*cmd) > 0 {
-		args := strings.Fields(*cmd)
+func (self *Epazote) Do(cmd string, skip bool) string {
+	if skip {
+		return "Skipping cmd"
+	}
+	if cmd != "" {
+		args := strings.Fields(cmd)
 		out, err := exec.Command(args[0], args[1:]...).CombinedOutput()
 		if err != nil {
 			return err.Error()
@@ -112,7 +155,7 @@ func (self *Epazote) Do(cmd *string) string {
 }
 
 // Supervice check services
-func (self *Epazote) Supervice(s Service) func() {
+func (self *Epazote) Supervice(s *Service) func() {
 	return func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -123,6 +166,12 @@ func (self *Epazote) Supervice(s Service) func() {
 		// Mailman instance
 		m := NewMailMan(&self.Config.SMTP)
 
+		// skip "do cmd", to avoid a loop
+		skip := false
+		if s.status > s.Stop && s.Stop != -1 {
+			skip = true
+		}
+
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
@@ -131,17 +180,17 @@ func (self *Epazote) Supervice(s Service) func() {
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
-				self.Report(m, &s, &s.Test.IfNot, 1, 0, fmt.Sprintf("Test cmd: %s", err), self.Do(&s.Test.IfNot.Cmd))
-			} else {
-				self.Report(m, &s, nil, 0, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
+				self.Report(m, s, &s.Test.IfNot, 1, 0, fmt.Sprintf("Test cmd: %s", err), self.Do(s.Test.IfNot.Cmd, skip))
+				return
 			}
+			self.Report(m, s, nil, 0, 0, fmt.Sprintf("Test cmd: %s", out.String()), "")
 			return
 		}
 
 		// HTTP GET service URL
-		res, err := HTTPGet(s.URL, s.Follow, s.Timeout)
+		res, err := HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
 		if err != nil {
-			self.Report(m, &s, &s.Expect.IfNot, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(&s.Expect.IfNot.Cmd))
+			self.Report(m, s, &s.Expect.IfNot, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(s.Expect.IfNot.Cmd, skip))
 			return
 		}
 
@@ -155,10 +204,10 @@ func (self *Epazote) Supervice(s Service) func() {
 			}
 			r := s.Expect.body.FindString(string(body))
 			if r == "" {
-				self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(&s.Expect.IfNot.Cmd))
-			} else {
-				self.Report(m, &s, nil, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
+				self.Report(m, s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Body no regex match: %s", s.Expect.body.String()), self.Do(s.Expect.IfNot.Cmd, skip))
+				return
 			}
+			self.Report(m, s, nil, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
 			return
 		}
 
@@ -169,7 +218,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if s.IfStatus != nil {
 			// chefk if there is an Action for the returned StatusCode
 			if a, ok := s.IfStatus[res.StatusCode]; ok {
-				self.Report(m, &s, &a, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&a.Cmd))
+				self.Report(m, s, &a, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(a.Cmd, skip))
 				return
 			}
 		}
@@ -181,7 +230,7 @@ func (self *Epazote) Supervice(s Service) func() {
 			for k, a := range s.IfHeader {
 				if res.Header.Get(k) != "" {
 					r = true
-					self.Report(m, &s, &a, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&a.Cmd))
+					self.Report(m, s, &a, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(a.Cmd, skip))
 				}
 			}
 			if r {
@@ -191,7 +240,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// Status
 		if res.StatusCode != s.Expect.Status {
-			self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(&s.Expect.IfNot.Cmd))
+			self.Report(m, s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), self.Do(s.Expect.IfNot.Cmd, skip))
 			return
 		}
 
@@ -199,7 +248,7 @@ func (self *Epazote) Supervice(s Service) func() {
 		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
 				if !strings.HasPrefix(res.Header.Get(k), v) {
-					self.Report(m, &s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(&s.Expect.IfNot.Cmd))
+					self.Report(m, s, &s.Expect.IfNot, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(s.Expect.IfNot.Cmd, skip))
 					return
 				}
 			}
@@ -207,7 +256,7 @@ func (self *Epazote) Supervice(s Service) func() {
 
 		// fin if all is ok
 		if res.StatusCode == s.Expect.Status {
-			self.Report(m, &s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
+			self.Report(m, s, nil, 0, res.StatusCode, fmt.Sprintf("Status: %d", res.StatusCode), "")
 			return
 		}
 	}

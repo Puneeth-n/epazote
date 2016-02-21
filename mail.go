@@ -112,9 +112,14 @@ func (self *Epazote) VerifyEmail() error {
 		}
 	}
 
-	if notify {
+	if notify || self.Config.SMTP.Server != "" {
 		if self.Config.SMTP.Server == "" {
 			return fmt.Errorf(Red("SMTP server required for been available to send email notifications."))
+		}
+
+		// default to port 25
+		if self.Config.SMTP.Port == 0 {
+			self.Config.SMTP.Port = 25
 		}
 
 		// set Headers
@@ -139,7 +144,7 @@ func (self *Epazote) VerifyEmail() error {
 
 		// set subject
 		if _, ok := self.Config.SMTP.Headers["subject"]; !ok {
-			self.Config.SMTP.Headers["subject"] = "[name - exit]"
+			self.Config.SMTP.Headers["subject"] = "[name, because]"
 		}
 
 		// check To recipients
@@ -150,6 +155,11 @@ func (self *Epazote) VerifyEmail() error {
 			}
 			self.Config.SMTP.Headers["to"] = strings.Join(to, " ")
 		}
+
+		// enable SMTP
+		// This is to avoid an error if new services added via scan need to send email
+		// but no smtp is defined
+		self.Config.SMTP.enabled = true
 	}
 
 	return nil

@@ -9,7 +9,10 @@ import (
 	"regexp"
 )
 
-const herb = "\U0001f33f"
+const (
+	herb = "1f33f"
+	shit = "1f4a9"
+)
 
 type Epazote struct {
 	Config   Config
@@ -28,6 +31,7 @@ type Email struct {
 	Server   string
 	Port     int
 	Headers  map[string]string
+	enabled  bool
 }
 
 type Every struct {
@@ -39,7 +43,7 @@ type Scan struct {
 	Every `yaml:",inline"`
 }
 
-type Services map[string]Service
+type Services map[string]*Service
 
 type Test struct {
 	Test  string `json:"test,omitempty"`
@@ -47,9 +51,12 @@ type Test struct {
 }
 
 type Service struct {
-	Name     string `json:"name" yaml:"-"`
-	URL      string `json:"url,omitempty"`
-	Follow   bool   `json:"-"`
+	Name     string            `json:"name" yaml:"-"`
+	URL      string            `json:"url,omitempty"`
+	Header   map[string]string `json:"-"`
+	Follow   bool              `json:"-"`
+	Insecure bool              `json:"-"`
+	Stop     int64             `json:"-"`
 	Test     `yaml:",inline" json:",omitempty"`
 	Timeout  int `json:"-"`
 	Every    `yaml:",inline" json:"-"`
@@ -57,7 +64,8 @@ type Service struct {
 	Expect   Expect            `json:"-"`
 	IfStatus map[int]Action    `yaml:"if_status" json:"-"`
 	IfHeader map[string]Action `yaml:"if_header" json:"-"`
-	status   int
+	status   int64
+	action   *Action
 }
 
 type Expect struct {
@@ -72,6 +80,7 @@ type Action struct {
 	Cmd    string
 	Notify string
 	Msg    string
+	Emoji  string
 }
 
 func New(file string) (*Epazote, error) {
@@ -109,7 +118,7 @@ func (self *Epazote) CheckPaths() error {
 
 // VerifyUrls, we can't supervice unreachable services
 func (self *Epazote) VerifyUrls() error {
-	ch := AsyncGet(self.Services)
+	ch := AsyncGet(&self.Services)
 	for i := 0; i < len(self.Services); i++ {
 		x := <-ch
 		if x.Err != nil {
