@@ -20,26 +20,26 @@ type ServiceHttpResponse struct {
 }
 
 // AsyncGet used as a URL validation method
-func AsyncGet(s Services) <-chan ServiceHttpResponse {
-	ch := make(chan ServiceHttpResponse, len(s))
+func AsyncGet(s *Services) <-chan ServiceHttpResponse {
+	ch := make(chan ServiceHttpResponse, len(*s))
 
-	for k, v := range s {
-		go func(name string, url string) {
-			res, err := HTTPGet(url, true, false)
+	for k, v := range *s {
+		go func(name string, url string, verify bool, h map[string]string) {
+			res, err := HTTPGet(url, true, verify, h)
 			if err != nil {
 				ch <- ServiceHttpResponse{err, name}
 				return
 			}
 			res.Body.Close()
 			ch <- ServiceHttpResponse{nil, name}
-		}(k, v.URL)
+		}(k, v.URL, v.Insecure, v.Header)
 	}
 
 	return ch
 }
 
 // HTTPGet creates a new http request
-func HTTPGet(url string, follow, skipVerify bool, timeout ...int) (*http.Response, error) {
+func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
 	var t int = 5
 
@@ -47,25 +47,25 @@ func HTTPGet(url string, follow, skipVerify bool, timeout ...int) (*http.Respons
 		t = timeout[0]
 	}
 
-	// set timeout
-	tout := time.Duration(t) * time.Second
+	// if insecure = true, skip ssl verification
+	tr := &http.Transport{
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: insecure},
+		ResponseHeaderTimeout: time.Duration(t) * time.Second,
+	}
 
 	client := &http.Client{}
-	client.Timeout = tout
-
-	// skip ssl verification
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	// allow requests with bad certificate
-	if skipVerify {
-		client.Transport = tr
-	}
+	client.Transport = tr
 
 	// create a new request
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "epazote")
+
+	// set custom headers on request
+	if h != nil {
+		for k, v := range h {
+			req.Header.Set(k, v)
+		}
+	}
 
 	if follow {
 		res, err := client.Do(req)
@@ -76,9 +76,7 @@ func HTTPGet(url string, follow, skipVerify bool, timeout ...int) (*http.Respons
 	}
 
 	// not follow redirects
-	var DefaultTransport http.RoundTripper = &http.Transport{
-		ResponseHeaderTimeout: tout,
-	}
+	var DefaultTransport http.RoundTripper = tr
 
 	res, err := DefaultTransport.RoundTrip(req)
 	if err != nil {

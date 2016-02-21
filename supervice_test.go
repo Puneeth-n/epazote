@@ -61,7 +61,7 @@ func TestSuperviceTestOk(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		Test: Test{
 			Test: "test 3 -gt 2",
@@ -140,7 +140,7 @@ func TestSuperviceTestNotOk(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		Test: Test{
 			Test: "test 3 -gt 5",
@@ -209,7 +209,7 @@ func TestSuperviceStatusCreated(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -281,7 +281,7 @@ func TestSuperviceBodyMatch(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`(?i)[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -363,7 +363,7 @@ func TestSuperviceBodyNoMatch(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -421,7 +421,7 @@ func TestSuperviceNoGet(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "http://",
 		Log:  log_s.URL,
@@ -492,7 +492,7 @@ func TestSuperviceNoGetStatus0(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "http://",
 		Log:  log_s.URL,
@@ -570,7 +570,7 @@ func TestSuperviceIfStatusMatch502(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -656,7 +656,7 @@ func TestSuperviceIfStatusNoMatch(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -742,7 +742,7 @@ func TestSuperviceIfHeaderMatch(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -827,7 +827,7 @@ func TestSuperviceStatus202(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -917,7 +917,7 @@ func TestSuperviceMissingHeader(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1006,7 +1006,7 @@ func TestSuperviceMatchingHeader(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1094,7 +1094,7 @@ func TestSuperviceMatchingHeaderPrefix(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1126,7 +1126,7 @@ func TestSuperviceMatchingHeaderPrefix(t *testing.T) {
 
 func TestSuperviceLogErr(t *testing.T) {
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  "--",
 		Log:  "http://",
@@ -1135,7 +1135,7 @@ func TestSuperviceLogErr(t *testing.T) {
 		},
 	}
 	ez := new(Epazote)
-	ser := s["s 1"]
+	ser := *s["s 1"]
 	ez.Log(&ser, []byte{0})
 
 	if buf.Len() == 0 {
@@ -1202,7 +1202,7 @@ func TestSuperviceMatchingHeaderDebugGreen(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1297,7 +1297,7 @@ func TestSuperviceMatchingHeaderDebugRed(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1391,7 +1391,7 @@ func TestSupervice302(t *testing.T) {
 	}))
 	defer log_s.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name: "s 1",
 		URL:  check_s.URL,
 		Log:  log_s.URL,
@@ -1473,7 +1473,7 @@ func TestSuperviceFollow(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	re := regexp.MustCompile(`(?i)[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}`)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		Name:   "s 1",
 		URL:    check_s.URL,
 		Follow: true,
@@ -1497,5 +1497,113 @@ func TestSuperviceFollow(t *testing.T) {
 
 	if buf.Len() == 0 {
 		t.Error("Expecting log.Println error")
+	}
+}
+
+func TestSuperviceSkipCmd(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, epazote match 0BC20225-2E72-4646-9202-8467972199E1 regex")
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:   "s 1",
+		URL:    check_s.URL,
+		Follow: true,
+		Log:    log_s.URL,
+		Expect: Expect{
+			Status: 201,
+			IfNot: Action{
+				Notify: "yes",
+			},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+		debug:    true,
+	}
+	wg.Add(2)
+	ez.Supervice(s["s 1"])()
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+
+	if buf.Len() == 0 {
+		t.Error("Expecting log.Println error")
+	}
+
+	if s["s 1"].status != 2 {
+		t.Errorf("Expecting status == 2 got: %v", s["s 1"].status)
+	}
+
+	s["s 1"].status = 0
+	s["s 1"].Expect.Status = 200
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+
+	if s["s 1"].status != 0 {
+		t.Errorf("Expecting status == 0 got: %v", s["s 1"].status)
+	}
+}
+
+func TestSuperviceCount1000(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	check_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer check_s.Close()
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:   "s 1",
+		URL:    check_s.URL,
+		Follow: true,
+		Log:    log_s.URL,
+		Expect: Expect{
+			Status: 201,
+			IfNot: Action{
+				Notify: "yes",
+			},
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+		debug:    true,
+	}
+	wg.Add(1000)
+	for i := 0; i < 1000; i++ {
+		ez.Supervice(s["s 1"])()
+	}
+	wg.Wait()
+	if s["s 1"].status != 1000 {
+		t.Errorf("Expecting status: 1000 got: %v", s["s 1"].status)
 	}
 }

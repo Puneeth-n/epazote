@@ -1,5 +1,4 @@
 [![Download](https://api.bintray.com/packages/nbari/epazote/epazote/images/download.svg)](https://bintray.com/nbari/epazote/epazote/_latestVersion)
-[![Build Status](https://drone.io/github.com/nbari/epazote/status.png)](https://drone.io/github.com/nbari/epazote/latest)
 [![Build Status](https://travis-ci.org/nbari/epazote.svg?branch=develop)](https://travis-ci.org/nbari/epazote)
 [![Coverage Status](https://coveralls.io/repos/github/nbari/epazote/badge.svg?branch=master)](https://coveralls.io/github/nbari/epazote?branch=master)
 
@@ -140,7 +139,7 @@ config:
 Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
 
-### config - smtp - subject (because exit name output status url)
+### config - smtp - subject
 The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
 ``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
 would transform to ``[my service - 500]`` the ``name`` has replaced
@@ -212,7 +211,11 @@ services:
                 cmd: svc restart /services/db
 
     other service:
-        url: http://other-service.domain.tld/ping
+        url: https://self-signed.ssl.tld/ping
+        header:
+            Origin: http://localhost
+            Accept-Encoding: gzip
+        insecure: true
         minutes: 3
 
     redirect service:
@@ -224,6 +227,7 @@ services:
             if_not:
                 cmd: service restart abc
                 notify: yes
+                emoji: 1F600-1F621
 
     salt-master:
         test: pgrep -f salt
@@ -247,6 +251,16 @@ By default if a [302 Status code](https://en.wikipedia.org/wiki/HTTP_302) is
 received, **Epazote** will not follow it, if you would like to follow all
 redirects, this setting must be set to **true**.
 
+### services - insecure (boolean true/false)
+This option explicitly allows **Epazote** to perform "insecure" SSL connections.
+It will disable the certificate verification.
+
+### services - stop (int)
+Defines the number or times the ``cmd`` will be executed, by default the ``cmd``
+is executed only once, with the intention to avoid indefinitely loops. If value
+is set to ``-1`` the ``cmd`` never stops. defaults to 0, ``stop 2`` will execute
+"0, 1, 2" (3 times) the ``cmd``.
+
 ### services - timeout in seconds (int)
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.
@@ -265,7 +279,7 @@ An URL to post all events, default disabled.
 ### services - expect
 The ``expect`` block options are:
 - status (int)
-- header (string)
+- header (key, value)
 - body   (regular expression)
 - if_not (Action block)
 
@@ -359,6 +373,7 @@ An Action has tree options:
  - cmd
  - notify
  - msg
+ - emoji
 
 They can be used all together, only one or either none.
 
@@ -373,6 +388,15 @@ If the string is ``yes`` the global recipients will be used.
 
 ### services - Actions - msg (string)
 ``msg`` The message to send when the action is executed.
+
+### services -Actions - emoji (string)
+``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
+to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
+they will use the first ``1F600`` if not they will use ``1F621``, if set to
+``0`` no emoji will be used. The idea behind using
+[unicode/emoji](https://en.wikipedia.org/wiki/Emoticons_(Unicode_block))
+is to cough attention faster and not just ignore the email thinking is spam.
+
 
 ## services - Test
 **Epazote** It is mainly used for HTTP services, for supervising other

@@ -19,7 +19,7 @@ func TestHTTPGet(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := HTTPGet(ts.URL, false, 3)
+	res, err := HTTPGet(ts.URL, false, true, nil, 3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -81,10 +81,10 @@ func TestAsyngGet(t *testing.T) {
 	}))
 	defer ts.Close()
 	s := make(Services)
-	s["s 1"] = Service{
+	s["s 1"] = &Service{
 		URL: ts.URL,
 	}
-	ch := AsyncGet(s)
+	ch := AsyncGet(&s)
 	for i := 0; i < len(s); i++ {
 		x := <-ch
 		if x.Err != nil {
@@ -183,7 +183,7 @@ func TestHTTPGetTimeout(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, true, 1)
+	_, err := HTTPGet(ts.URL, true, true, nil, 1)
 	if err == nil {
 		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
 	}
@@ -199,8 +199,63 @@ func TestHTTPGetTimeoutNoFollow(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	_, err := HTTPGet(ts.URL, false, 1)
+	_, err := HTTPGet(ts.URL, false, true, nil, 1)
 	if err == nil {
 		t.Errorf("Expecting: %s", "(Client.Timeout exceeded while awaiting headers)")
+	}
+}
+
+func TestHTTPGetInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, false, true, nil)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestHTTPGetInsecureVerify(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	_, err := HTTPGet(ts.URL, false, false, nil)
+	if err == nil {
+		t.Errorf("Expecting: %s", "x509: certificate signed by unknown authority")
+	}
+}
+
+func TestHTTPGetCustomHeaders(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "my-UA" {
+			t.Error("Expecting User-agent: my-UA")
+		}
+		if r.Header.Get("Accept-Encoding") != "gzip" {
+			t.Error("Expecting Accept-Encoding: gzip")
+		}
+		if r.Header.Get("Origin") != "http://localhost" {
+			t.Error("Expecting Origin: http://localhost")
+		}
+		fmt.Fprintln(w, "Hello, epazote")
+	}))
+	defer ts.Close()
+
+	h := make(map[string]string)
+	h["User-Agent"] = "my-UA"
+	h["Origin"] = "http://localhost"
+	h["Accept-Encoding"] = "gzip"
+	_, err := HTTPGet(ts.URL, false, false, h)
+	if err != nil {
+		t.Error(err)
 	}
 }
