@@ -114,7 +114,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, e, status int, b, 
 		}
 
 		// add emoji to subject
-		emojis := []string{herb, face}
+		emojis := []string{herb, shit}
 		if a.Emoji != "" {
 			if a.Emoji == "0" {
 				emojis[0] = ""

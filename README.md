@@ -228,7 +228,7 @@ services:
             if_not:
                 cmd: service restart abc
                 notify: yes
-                emoji: 1F4A9-1F621
+                emoji: 1F600-1F621
 
     salt-master:
         test: pgrep -f salt
@@ -392,8 +392,8 @@ If the string is ``yes`` the global recipients will be used.
 
 ### services -Actions - emoji (string)
 ``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
-to be used in the subject, example: ``emoji: 1F4A9-1F621``. If services are OK
-they will use the first ``1F4A9`` if not they will use ``1F621``, if set to
+to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
+they will use the first ``1F600`` if not they will use ``1F621``, if set to
 ``0`` no emoji will be used. The idea behind using unicode/emoji is to cough
 attention faster and not just ignore the email thinking is spam.
 
