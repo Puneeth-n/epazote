@@ -49,10 +49,19 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 
 	// debug
 	if self.debug {
+		// if available print the response headers
+		var rHeader []string
+		if r != nil {
+			for k, _ := range r.Header {
+				rHeader = append(rHeader, fmt.Sprintf("%s: %s", k, r.Header.Get(k)))
+			}
+			sort.Strings(rHeader)
+		}
 		if e == 0 {
-			log.Printf(Green("Report: %s, count: %d"), j, s.status)
+			log.Printf(Green("Report: %s")+", Count: %d\n"+Yellow("Headers: \n%s\n"), j, s.status, strings.Join(rHeader, "\n"))
 		} else {
-			log.Printf(Red("Report: %s, count: %d"), j, s.status)
+			log.Printf(Red("Report: %s")+", Count: %d\n"+Yellow("Headers: \n%s\n"), j, s.status, strings.Join(rHeader, "\n"))
+
 		}
 	}
 

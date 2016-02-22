@@ -87,7 +87,7 @@ func TestReportNotify(t *testing.T) {
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
@@ -134,7 +134,7 @@ func TestReportNotifyYes(t *testing.T) {
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
@@ -185,7 +185,7 @@ func TestReportNotifySpam(t *testing.T) {
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
@@ -236,7 +236,7 @@ func TestReportEmoji(t *testing.T) {
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
@@ -293,7 +293,7 @@ func TestReportCustomEmoji(t *testing.T) {
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
