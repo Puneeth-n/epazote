@@ -10,5 +10,10 @@
             "repository": "epazote",
             "subject": "nbari"
         }
+    },
+    "BuildSettings": {
+        "LdFlagsXVars": {
+            "main.version": "__VERSION__"
+        }
     }
 }
