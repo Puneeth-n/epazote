@@ -111,8 +111,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 
 		// prepare email body
 		body := ""
-		if a.Msg != "" {
-			body += fmt.Sprintf("%s %s%s", a.Msg, CRLF, CRLF)
+		if len(a.Msg) > 1 {
+			body += fmt.Sprintf("%s %s%s", a.Msg[s.status], CRLF, CRLF)
 		}
 
 		// set subject (because exit name output status url)
@@ -125,16 +125,14 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 
 		// add emoji to subject
 		emojis := []string{herb, shit}
-		if a.Emoji != "" {
-			if a.Emoji == "0" {
-				emojis[0] = ""
-				emojis[1] = ""
-			} else {
-				e := strings.Split(a.Emoji, "-")
-				if len(e) > 1 {
-					emojis = e
-				}
-			}
+		if len(a.Emoji) > 0 && a.Emoji[0] == "0" {
+			emojis[0] = ""
+			emojis[1] = ""
+		} else if len(a.Emoji) == 1 {
+			emojis[0] = a.Emoji[0]
+		} else if len(a.Emoji) == 2 {
+			emojis[0] = a.Emoji[0]
+			emojis[1] = a.Emoji[1]
 		}
 		emoji := emojis[0]
 		if s.status > 0 {

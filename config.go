@@ -79,8 +79,8 @@ type Expect struct {
 type Action struct {
 	Cmd    string
 	Notify string
-	Msg    string
-	Emoji  string
+	Msg    []string
+	Emoji  []string
 }
 
 func New(file string) (*Epazote, error) {
