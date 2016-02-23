@@ -5,6 +5,8 @@ Changelog
 ### Unreleased
 - To fix debug (print all the headers)
 - kill -USR1 try to make it more easy to read
+- implement ``Retry`` default to 1
+- fix ``Emoji`` and ``msg`` implementation
 
 ## 1.3.0
 - ``Insecure`` feature to ignore SSL / self signed certificates.
