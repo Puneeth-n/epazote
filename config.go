@@ -53,6 +53,7 @@ type Test struct {
 type Service struct {
 	Name     string            `json:"name" yaml:"-"`
 	URL      string            `json:"url,omitempty"`
+	Retry    int               `json:"-"`
 	Header   map[string]string `json:"-"`
 	Follow   bool              `json:"-"`
 	Insecure bool              `json:"-"`
