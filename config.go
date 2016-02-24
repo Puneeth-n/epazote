@@ -51,22 +51,23 @@ type Test struct {
 }
 
 type Service struct {
-	Name     string            `json:"name" yaml:"-"`
-	URL      string            `json:"url,omitempty"`
-	Retry    int               `json:"-"`
-	Header   map[string]string `json:"-"`
-	Follow   bool              `json:"-"`
-	Insecure bool              `json:"-"`
-	Stop     int64             `json:"-"`
-	Test     `yaml:",inline" json:",omitempty"`
-	Timeout  int `json:"-"`
-	Every    `yaml:",inline" json:"-"`
-	Log      string            `json:"-"`
-	Expect   Expect            `json:"-"`
-	IfStatus map[int]Action    `yaml:"if_status" json:"-"`
-	IfHeader map[string]Action `yaml:"if_header" json:"-"`
-	status   int64
-	action   *Action
+	Name          string            `json:"name" yaml:"-"`
+	URL           string            `json:"url,omitempty"`
+	RetryCount    int               `yaml:"retry_count" json:"-"`
+	RetryInterval int               `yaml:"retry_interval" json:"-"`
+	Header        map[string]string `json:"-"`
+	Follow        bool              `json:"-"`
+	Insecure      bool              `json:"-"`
+	Stop          int64             `json:"-"`
+	Test          `yaml:",inline" json:",omitempty"`
+	Timeout       int `json:"-"`
+	Every         `yaml:",inline" json:"-"`
+	Log           string            `json:"-"`
+	Expect        Expect            `json:"-"`
+	IfStatus      map[int]Action    `yaml:"if_status" json:"-"`
+	IfHeader      map[string]Action `yaml:"if_header" json:"-"`
+	status        int64
+	action        *Action
 }
 
 type Expect struct {
