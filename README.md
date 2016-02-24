@@ -265,6 +265,12 @@ is set to ``-1`` the ``cmd`` never stops. defaults to 0, ``stop 2`` will execute
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.
 
+### services - retry_count (int)
+Specifies the number of times to retry an request, defaults to 3.
+
+### services - retry_interval (int)
+Specifies the time between attempts in milliseconds. The default value is 1000 (1 second).
+
 ### services - seconds, minutes, hours
 How often to check the service, the options are: (Only one should be used)
  - seconds N
