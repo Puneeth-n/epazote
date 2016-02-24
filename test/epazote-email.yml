@@ -33,9 +33,9 @@ services:
             if_not:
                 cmd: sv restart .
                 notify: yes
-                msg: |
-                    line 1
-                    line 2
+                msg:
+                    - line 1
+                    - line 2
 
         # if status
         if_status:
@@ -43,7 +43,8 @@ services:
                 cmd: sv restart .
             404:
                 cmd: sv restart .
-                msg: not found
+                msg:
+                    - not found
                 notify: yes
 
         # if header
@@ -53,9 +54,6 @@ services:
             x-amqp-kaputt:
                 cmd: sv restart
                 notify: you@abc.com
-                msg: |
-                    The rabbit is angry
-                    & hungry
 
     service 2:
         seconds: 30

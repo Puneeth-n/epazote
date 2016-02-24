@@ -129,7 +129,7 @@ func TestReportNotifyYes(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "yes", Msg: "testing notifications"}
+	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
@@ -180,7 +180,7 @@ func TestReportNotifySpam(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "yes", Msg: "testing notifications"}
+	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
@@ -231,7 +231,7 @@ func TestReportEmoji(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "yes", Msg: "testing notifications", Emoji: "0"}
+	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}, Emoji: []string{"0"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
@@ -288,7 +288,7 @@ func TestReportCustomEmoji(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "yes", Msg: "testing notifications", Emoji: "1F600-1F621"}
+	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}, Emoji: []string{"1F600", "1F621"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
