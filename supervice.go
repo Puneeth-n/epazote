@@ -205,8 +205,11 @@ func (self *Epazote) Supervice(s *Service) func() {
 		err := Try(func(attempt int) (bool, error) {
 			var err error
 			res, err = HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
+			if err != nil {
+				time.Sleep(time.Duration(s.RetryInterval) * time.Millisecond)
+			}
 			return attempt < s.RetryCount, err
-		}, s.RetryInterval)
+		})
 		if err != nil {
 			self.Report(m, s, &s.Expect.IfNot, res, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(s.Expect.IfNot.Cmd, skip))
 			return
