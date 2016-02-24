@@ -35,6 +35,6 @@ services:
             if_not:
                 cmd: sv restart .
                 notify: yes
-                msg: |
-                    line 1
-                    line 2
+                msg:
+                    - line 1
+                    - line 2
