@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 	"sync/atomic"
+	"time"
 )
 
 // Log send log via HTTP POST to defined URL
@@ -24,6 +25,9 @@ func (self *Epazote) Log(s *Service, status []byte) {
 
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, e, status int, b, o string) {
+	// set time
+	t := time.Now().Format(time.RFC3339)
+
 	// every (exit > 0) increment by one
 	atomic.AddInt64(&s.status, 1)
 	if e == 0 {
@@ -40,7 +44,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		Status  int    `json:"status"`
 		Output  string `json:"output,omitempty"`
 		Because string `json:"because,omitempty"`
-	}{s, e, status, o, b}, "", "  ")
+		When    string `json:"when"`
+	}{s, e, status, o, b, t}, "", "  ")
 
 	if err != nil {
 		log.Printf("Error creating report status for service %q: %s", s.Name, err)
@@ -196,6 +201,9 @@ func (self *Epazote) Supervice(s *Service) func() {
 		}
 
 		// HTTP GET service URL
+
+		// implement try here
+
 		res, err := HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
 		if err != nil {
 			self.Report(m, s, &s.Expect.IfNot, res, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(s.Expect.IfNot.Cmd, skip))

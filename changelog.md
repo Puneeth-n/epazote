@@ -7,6 +7,7 @@ Changelog
 - kill -USR1 try to make it more easy to read
 - implement ``Retry`` default to 1
 - fix ``Emoji`` and ``msg`` implementation
+- implement timestamp
 
 ## 1.3.0
 - ``Insecure`` feature to ignore SSL / self signed certificates.
