@@ -3,11 +3,11 @@ Changelog
 
 ## 1.4.0
 ### Unreleased
-- To fix debug (print all the headers)
+- debug (print all the headers)
 - kill -USR1 try to make it more easy to read
-- implement ``Retry`` default to 1
-- fix ``Emoji`` and ``msg`` implementation
-- implement timestamp
+- Implement ``Retry`` default to 3, with 1 second interval
+- Fix ``Emoji`` and ``msg`` implementation to behave like a list
+- Implement timestamp ``when`` RFC3339
 
 ## 1.3.0
 - ``Insecure`` feature to ignore SSL / self signed certificates.
