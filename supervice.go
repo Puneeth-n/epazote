@@ -201,6 +201,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 		}
 
 		// HTTP GET service URL, by defaults retries 3 times with intervals of 1 second
+		//// check the Retry ***
 		var res *http.Response
 		err := Try(func(attempt int) (bool, error) {
 			var err error
