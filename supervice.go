@@ -201,15 +201,16 @@ func (self *Epazote) Supervice(s *Service) func() {
 		}
 
 		// HTTP GET service URL, by defaults retries 3 times with intervals of 1 second
-		//// check the Retry ***
 		var res *http.Response
+		s.RetryCount = -1
 		err := Try(func(attempt int) (bool, error) {
 			var err error
 			res, err = HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
 			if err != nil {
 				time.Sleep(time.Duration(s.RetryInterval) * time.Millisecond)
 			}
-			return attempt < s.RetryCount, err
+			s.RetryCount++
+			return attempt < s.RetryLimit, err
 		})
 		if err != nil {
 			self.Report(m, s, &s.Expect.IfNot, res, 1, 0, fmt.Sprintf("GET: %s", err), self.Do(s.Expect.IfNot.Cmd, skip))

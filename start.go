@@ -32,6 +32,14 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 			v.Expect.body = re
 		}
 
+		// retry
+		if v.RetryInterval == 0 {
+			v.RetryInterval = 500
+		}
+		if v.RetryLimit == 0 {
+			v.RetryLimit = 3
+		}
+
 		if self.debug {
 			if v.URL != "" {
 				log.Printf(Green("Adding service: %s URL: %s"), v.Name, v.URL)
