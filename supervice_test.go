@@ -883,8 +883,8 @@ func TestSuperviceMissingHeader(t *testing.T) {
 		}
 		// check because
 		if b, ok := i["because"]; ok {
-			if b != "Header: test" {
-				t.Errorf("Expecting: %q, got: %q", "Header: test", b)
+			if b != "Header: test: xxx" {
+				t.Errorf("Expecting: %q, got: %q", "Header: test: xxx", b)
 			}
 		} else {
 			t.Errorf("key not found: %q", "because")
