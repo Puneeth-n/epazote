@@ -1738,10 +1738,11 @@ func TestSuperviceRetrieLimit(t *testing.T) {
 	defer log_s.Close()
 	s := make(Services)
 	s["s 1"] = &Service{
-		Name:       "s 1",
-		URL:        server.URL,
-		RetryLimit: 5,
-		Log:        log_s.URL,
+		Name:          "s 1",
+		URL:           server.URL,
+		RetryLimit:    5,
+		RetryInterval: 1,
+		Log:           log_s.URL,
 		Expect: Expect{
 			Status: 200,
 		},
