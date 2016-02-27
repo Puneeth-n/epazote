@@ -90,11 +90,19 @@ func TestTryPanics(t *testing.T) {
 		err = theErr
 		return
 	})
-	print(err)
 	if err.Error() != "panic: I don't like three" {
 		t.Errorf("Expecting: %s Got: %s", "panic: I don't like three", err.Error())
 	}
 	if callCount != 5 {
 		t.Error("Expecting callCount to be 5")
+	}
+}
+
+func TestRetryLimit(t *testing.T) {
+	err := Try(func(attempt int) (bool, error) {
+		return true, errors.New("nope")
+	})
+	if err == nil {
+		t.Error()
 	}
 }
