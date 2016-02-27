@@ -12,7 +12,7 @@ import (
 
 func (self *Epazote) Block() {
 	// stop until signal received
-	start := time.Now().UTC().Format(time.RFC3339)
+	start := time.Now().UTC()
 
 	// loop forever
 	block := make(chan os.Signal)
