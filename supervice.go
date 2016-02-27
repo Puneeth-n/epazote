@@ -26,7 +26,7 @@ func (self *Epazote) Log(s *Service, status []byte) {
 // Report create report to send via log/email
 func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, e, status int, b, o string) {
 	// set time
-	t := time.Now().Format(time.RFC3339)
+	t := time.Now().UTC().Format(time.RFC3339)
 
 	// every (exit > 0) increment by one
 	atomic.AddInt64(&s.status, 1)
