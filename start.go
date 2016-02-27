@@ -44,7 +44,7 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 			if v.URL != "" {
 				log.Printf(Green("Adding service: %s URL: %s"), v.Name, v.URL)
 			} else {
-				log.Printf(Green("Adding service: %s Test: %s"), v.Name, v.Test)
+				log.Printf(Green("Adding service: %s Test: %s"), v.Name, v.Test.Test)
 			}
 		}
 
