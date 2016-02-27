@@ -1,3 +1,5 @@
+// https://medium.com/@matryer/retrying-in-golang-quicktip-f688d00e650a#.ylrrg0mn3
+// https://github.com/matryer/try/blob/master/try_test.go
 package epazote
 
 import (
@@ -24,7 +26,7 @@ func TestTryExample(t *testing.T) {
 
 func TestTryExamplePanic(t *testing.T) {
 	SomeFunction := func() (string, error) {
-		panic("something went badly wrong")
+		panic("test panic")
 	}
 	var value string
 	err := Try(func(attempt int) (retry bool, err error) {
@@ -37,8 +39,8 @@ func TestTryExamplePanic(t *testing.T) {
 		value, err = SomeFunction()
 		return
 	})
-	if err != nil {
-		t.Error(err)
+	if err.Error() != "panic: test panic" {
+		t.Errorf("Expecting: %s, got: %s", "panic: test panic", err.Error())
 	}
 }
 

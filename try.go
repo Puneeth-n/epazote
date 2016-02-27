@@ -1,4 +1,3 @@
-// https://medium.com/@matryer/retrying-in-golang-quicktip-f688d00e650a#.ylrrg0mn3
 package epazote
 
 import (
