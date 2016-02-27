@@ -21,8 +21,8 @@ type Epazote struct {
 }
 
 type Config struct {
-	SMTP Email `yaml:"smtp"`
-	Scan Scan  `yaml:"scan"`
+	SMTP Email `yaml:"smtp,omitempty"`
+	Scan Scan  `yaml:"scan,omitempty"`
 }
 
 type Email struct {
@@ -46,27 +46,27 @@ type Scan struct {
 type Services map[string]*Service
 
 type Test struct {
-	Test  string `json:"test,omitempty"`
+	Test  string `yaml:",omitempty" json:"test,omitempty"`
 	IfNot Action `yaml:"if_not,omitempty" json:"-"`
 }
 
 type Service struct {
 	Name          string            `json:"name" yaml:"-"`
-	URL           string            `json:"url,omitempty"`
+	URL           string            `yaml:",omitempty" json:"url,omitempty"`
 	retryCount    int               `json:"-"`
 	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
 	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
-	Header        map[string]string `json:"-"`
-	Follow        bool              `json:"-"`
-	Insecure      bool              `json:"-"`
-	Stop          int64             `json:"-"`
+	Header        map[string]string `yaml:",omitempty" json:"-"`
+	Follow        bool              `yaml:",omitempty" json:"-"`
+	Insecure      bool              `yaml:",omitempty" json:"-"`
+	Stop          int64             `yaml:",omitempty" json:"-"`
+	Timeout       int               `yaml:",omitempty" json:"-"`
 	Test          `yaml:",inline" json:",omitempty"`
-	Timeout       int `json:"-"`
 	Every         `yaml:",inline" json:"-"`
-	Log           string            `json:"-"`
 	Expect        Expect            `json:"-"`
-	IfStatus      map[int]Action    `yaml:"if_status" json:"-"`
-	IfHeader      map[string]Action `yaml:"if_header" json:"-"`
+	IfStatus      map[int]Action    `yaml:"if_status,omitempty" json:"-"`
+	IfHeader      map[string]Action `yaml:"if_header,omitempty" json:"-"`
+	Log           string            `yaml:",omitempty" json:"-"`
 	status        int64
 	action        *Action
 }
