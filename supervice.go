@@ -45,7 +45,8 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		Output  string `json:"output,omitempty"`
 		Because string `json:"because,omitempty"`
 		When    string `json:"when"`
-	}{s, e, status, o, b, t}, "", "  ")
+		Retries int    `json:"retries,omitempty"`
+	}{s, e, status, o, b, t, s.retryCount}, "", "  ")
 
 	if err != nil {
 		log.Printf("Error creating report status for service %q: %s", s.Name, err)
@@ -202,14 +203,14 @@ func (self *Epazote) Supervice(s *Service) func() {
 
 		// HTTP GET service URL, by defaults retries 3 times with intervals of 1 second
 		var res *http.Response
-		s.RetryCount = -1
+		s.retryCount = -1
 		err := Try(func(attempt int) (bool, error) {
 			var err error
 			res, err = HTTPGet(s.URL, s.Follow, s.Insecure, s.Header, s.Timeout)
 			if err != nil {
 				time.Sleep(time.Duration(s.RetryInterval) * time.Millisecond)
 			}
-			s.RetryCount++
+			s.retryCount++
 			return attempt < s.RetryLimit, err
 		})
 		if err != nil {
