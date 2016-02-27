@@ -1607,3 +1607,149 @@ func TestSuperviceCount1000(t *testing.T) {
 		t.Errorf("Expecting status: 1000 got: %v", s["s 1"].status)
 	}
 }
+
+// server.CloseClientConnections not workng on golang 1.6
+func TestSuperviceRetrie(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter <= 1 {
+			server.CloseClientConnections()
+		}
+		w.Header().Set("X-Abc", "xyz")
+		fmt.Fprintln(w, "Hello, molcajete.org")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 0 {
+			t.Errorf("Expecting: 0 got: %v", i["exit"])
+		}
+		// check because
+		e := "Body regex match: molcajete"
+		if i["because"] != e {
+			t.Errorf("Expecting: %q, got: %v", e, i["because"])
+		}
+		// check retries
+		if i["retries"].(float64) != 3 {
+			t.Errorf("Expecting: 3 got: %v", i["retries"])
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	re := regexp.MustCompile(`molcajete`)
+	s["s 1"] = &Service{
+		Name:       "s 1",
+		URL:        server.URL,
+		RetryLimit: 3,
+		Log:        log_s.URL,
+		Expect: Expect{
+			Status: 200,
+			Header: map[string]string{
+				"X-Abc": "xyz",
+			},
+			Body: "molcajete",
+			body: re,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	rc := s["s 1"].retryCount
+	if rc != 3 {
+		t.Errorf("Expecting retryCount = 3 got: %d", rc)
+	}
+}
+
+// server.CloseClientConnections not workng on golang 1.6
+func TestSuperviceRetrieLimit(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter <= 10 {
+			server.CloseClientConnections()
+		}
+		fmt.Fprintln(w, "Hello")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 1 {
+			t.Errorf("Expecting: 0 got: %v", i["exit"])
+		}
+		// check retries
+		if i["retries"].(float64) != 5 {
+			t.Errorf("Expecting: 5 got: %v", i["retries"])
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:       "s 1",
+		URL:        server.URL,
+		RetryLimit: 5,
+		Log:        log_s.URL,
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	rc := s["s 1"].retryCount
+	if rc != 5 {
+		t.Errorf("Expecting retryCount = 5 got: %d", rc)
+	}
+}
