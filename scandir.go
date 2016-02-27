@@ -54,6 +54,14 @@ func (self *Epazote) search(root string) error {
 					v.Expect.body = re
 				}
 
+				// retry
+				if v.RetryInterval == 0 {
+					v.RetryInterval = 500
+				}
+				if v.RetryLimit == 0 {
+					v.RetryLimit = 3
+				}
+
 				// Add/Update existing services
 				if _, ok := self.Services[k]; !ok {
 					self.Services[k] = v
