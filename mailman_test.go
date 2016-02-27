@@ -82,7 +82,7 @@ func TestReportNotify(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "test@ejemplo.org", Msg: []string{"testing notifications"}}
+	a := &Action{Notify: "test@ejemplo.org", Msg: []string{"OK", "NO OK"}, Emoji: []string{"1f621"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
