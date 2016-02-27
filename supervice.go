@@ -270,7 +270,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 		if s.Expect.Header != nil {
 			for k, v := range s.Expect.Header {
 				if !strings.HasPrefix(res.Header.Get(k), v) {
-					self.Report(m, s, &s.Expect.IfNot, res, 1, res.StatusCode, fmt.Sprintf("Header: %s", k), self.Do(s.Expect.IfNot.Cmd, skip))
+					self.Report(m, s, &s.Expect.IfNot, res, 1, res.StatusCode, fmt.Sprintf("Header: %s: %s", k, v), self.Do(s.Expect.IfNot.Cmd, skip))
 					return
 				}
 			}
