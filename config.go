@@ -26,20 +26,20 @@ type Config struct {
 }
 
 type Email struct {
-	Username string
-	Password string
-	Server   string
-	Port     int
-	Headers  map[string]string
+	Username string            `yaml:",omitempty"`
+	Password string            `yaml:",omitempty"`
+	Server   string            `yaml:",omitempty"`
+	Port     int               `yaml:",omitempty"`
+	Headers  map[string]string `yaml:",omitempty"`
 	enabled  bool
 }
 
 type Every struct {
-	Seconds, Minutes, Hours int
+	Seconds, Minutes, Hours int `yaml:",omitempty"`
 }
 
 type Scan struct {
-	Paths []string
+	Paths []string `yaml:",omitempty"`
 	Every `yaml:",inline"`
 }
 
@@ -47,15 +47,15 @@ type Services map[string]*Service
 
 type Test struct {
 	Test  string `json:"test,omitempty"`
-	IfNot Action `yaml:"if_not" json:"-"`
+	IfNot Action `yaml:"if_not,omitempty" json:"-"`
 }
 
 type Service struct {
 	Name          string            `json:"name" yaml:"-"`
 	URL           string            `json:"url,omitempty"`
 	retryCount    int               `json:"-"`
-	RetryInterval int               `yaml:"retry_interval" json:"-"`
-	RetryLimit    int               `yaml:"retry_limit" json:"-"`
+	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
+	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
 	Header        map[string]string `json:"-"`
 	Follow        bool              `json:"-"`
 	Insecure      bool              `json:"-"`
@@ -72,18 +72,18 @@ type Service struct {
 }
 
 type Expect struct {
-	Status int
-	Header map[string]string
-	Body   string
+	Status int               `yaml:",omitempty"`
+	Header map[string]string `yaml:",omitempty"`
+	Body   string            `yaml:",omitempty"`
 	body   *regexp.Regexp
-	IfNot  Action `yaml:"if_not"`
+	IfNot  Action `yaml:"if_not,omitempty"`
 }
 
 type Action struct {
-	Cmd    string
-	Notify string
-	Msg    []string
-	Emoji  []string
+	Cmd    string   `yaml:",omitempty"`
+	Notify string   `yaml:",omitempty"`
+	Msg    []string `yaml:",omitempty"`
+	Emoji  []string `yaml:",omitempty"`
 }
 
 func New(file string) (*Epazote, error) {
