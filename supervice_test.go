@@ -1645,8 +1645,8 @@ func TestSuperviceRetrie(t *testing.T) {
 			t.Errorf("Expecting: %q, got: %v", e, i["because"])
 		}
 		// check retries
-		if i["retries"].(float64) != 3 {
-			t.Errorf("Expecting: 3 got: %v", i["retries"])
+		if i["retries"].(float64) != 2 {
+			t.Errorf("Expecting: 2 got: %v", i["retries"])
 		}
 		// check url
 		if _, ok := i["url"]; !ok {
@@ -1681,9 +1681,13 @@ func TestSuperviceRetrie(t *testing.T) {
 	wg.Add(1)
 	ez.Supervice(s["s 1"])()
 	wg.Wait()
+	// 1 try, 2 tries
 	rc := s["s 1"].retryCount
-	if rc != 3 {
-		t.Errorf("Expecting retryCount = 3 got: %d", rc)
+	if rc != 2 {
+		t.Errorf("Expecting retryCount = 2 got: %d", rc)
+	}
+	if counter != 3 {
+		t.Errorf("Expecting 3 got: %v", counter)
 	}
 }
 
@@ -1718,8 +1722,8 @@ func TestSuperviceRetrieLimit(t *testing.T) {
 			t.Errorf("Expecting: 0 got: %v", i["exit"])
 		}
 		// check retries
-		if i["retries"].(float64) != 5 {
-			t.Errorf("Expecting: 5 got: %v", i["retries"])
+		if i["retries"].(float64) != 4 {
+			t.Errorf("Expecting: 4 got: %v", i["retries"])
 		}
 		// check url
 		if _, ok := i["url"]; !ok {
@@ -1749,7 +1753,7 @@ func TestSuperviceRetrieLimit(t *testing.T) {
 	ez.Supervice(s["s 1"])()
 	wg.Wait()
 	rc := s["s 1"].retryCount
-	if rc != 5 {
-		t.Errorf("Expecting retryCount = 5 got: %d", rc)
+	if rc != 4 {
+		t.Errorf("Expecting retryCount = 4 got: %d", rc)
 	}
 }
