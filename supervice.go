@@ -117,9 +117,19 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 
 		// prepare email body
 		body := ""
+
+		// based on the exit status select a  message to send
+		// 0 - service OK
+		// 1 - service failing
+		msg := []string{"", ""}
 		if len(a.Msg) > 1 {
-			body += fmt.Sprintf("%s %s%s", a.Msg[s.status], CRLF, CRLF)
+			msg[0] = a.Msg[0]
+			msg[1] = a.Msg[1]
+		} else if len(a.Msg) == 1 {
+			msg[0] = a.Msg[0]
 		}
+
+		body += fmt.Sprintf("%s %s%s", msg[s.status], CRLF, CRLF)
 
 		// set subject (because exit name output status url)
 		// replace the report status keys (json) in subject if present
