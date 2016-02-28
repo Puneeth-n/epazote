@@ -84,6 +84,14 @@ type Action struct {
 	Notify string   `yaml:",omitempty"`
 	Msg    []string `yaml:",omitempty"`
 	Emoji  []string `yaml:",omitempty"`
+	Http   HTTP     `yaml:"http,omitempty"`
+}
+
+type HTTP struct {
+	URL    string            `yaml:",omitempty"`
+	Method string            `yaml:",omitempty"`
+	Header map[string]string `yaml:",omitempty"`
+	Data   string            `yaml:",omitempty"`
 }
 
 func New(file string) (*Epazote, error) {
