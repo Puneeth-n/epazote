@@ -3,9 +3,9 @@ Changelog
 
 ## 1.4.0
 ### Unreleased
-- Implement ``url`` in action, An url to "GET" in case service is up/down
+- Implement ``url`` in action, An URL to "GET" in case service is up/down, for example 'hipchat'.
 - debug (print all the headers)
-- kill -USR1 try to make it more easy to read
+- kill -USR1 shows cleaner info.
 - Implement ``Retry`` default to 3, with 1 second interval
 - Fix ``Emoji`` and ``msg`` implementation to behave like a list
 - Implement timestamp ``when`` RFC3339
