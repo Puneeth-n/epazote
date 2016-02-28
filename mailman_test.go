@@ -334,3 +334,6 @@ func TestReportCustomEmoji(t *testing.T) {
 		t.Error(x)
 	}
 }
+
+func TestReportMsg01(t *testing.T)   {}
+func TestReportEmoji01(t *testing.T) {}
