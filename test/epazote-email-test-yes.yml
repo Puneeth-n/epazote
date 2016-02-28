@@ -3,7 +3,7 @@ config:
         headers:
             from: from@email
             subject: >
-                [%s - %s], Service, Status
+                [name, exit]
 
 services:
     service X:

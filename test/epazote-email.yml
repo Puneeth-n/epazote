@@ -8,7 +8,7 @@ config:
             from: from@email
             to: team@email
             subject: >
-                [%s - %s], Service, Status
+                [name, because]
 
 services:
     service 1:
