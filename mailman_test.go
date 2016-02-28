@@ -288,12 +288,12 @@ func TestReportCustomEmoji(t *testing.T) {
 			Status: 200,
 		},
 	}
-	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}, Emoji: []string{"1F600", "1F621"}}
+	a := &Action{Notify: "yes", Msg: []string{"testing notifications"}, Emoji: []string{"1F621"}}
 	e := &Epazote{}
 	e.Config.SMTP = c
 
 	wg.Add(1)
-	e.Report(sender, ss, a, nil, 1, 200, "because", "output")
+	e.Report(sender, ss, a, nil, 0, 200, "because", "output")
 	wg.Wait()
 
 	if r.addr != "server:587" {
@@ -464,5 +464,4 @@ func TestReportEmoji1(t *testing.T) {
 	if x != "f09f918e20205b7320312c20626563617573655d" {
 		t.Errorf("Expecting: %s, Got: %s", "f09f918e20205b7320312c20626563617573655d", x)
 	}
-
 }
