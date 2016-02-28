@@ -3,6 +3,7 @@ Changelog
 
 ## 1.4.0
 ### Unreleased
+- Implement ``url`` in action, An url to "GET" in case service is up/down
 - debug (print all the headers)
 - kill -USR1 try to make it more easy to read
 - Implement ``Retry`` default to 3, with 1 second interval
