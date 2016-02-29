@@ -14,7 +14,7 @@ import (
 
 // Log send log via HTTP POST to defined URL
 func (self *Epazote) Log(s *Service, status []byte) {
-	err := HTTPPost(s.Log, status)
+	err := HTTPPost(s.Log, status, nil)
 	if err != nil {
 		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
 	}
@@ -156,5 +156,26 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		}
 
 		go self.SendEmail(m, to, subject, []byte(body))
+	}
+
+	// HTTP GET/POST based on exit status
+	if len(a.HTTP) > 0 && s.status <= 1 {
+		var h HTTP
+		// if only one HTTP declared, use it if when service goes down (exit = 1)
+		if len(a.HTTP) == 1 && s.status == 1 {
+			h = a.HTTP[0]
+		} else {
+			h = a.HTTP[s.status]
+		}
+		if h.URL == "" {
+			return
+		}
+		switch h.Method {
+		case "post":
+			go HTTPPost(h.URL, []byte(h.Data), h.Header)
+		default:
+			go HTTPGet(h.URL, true, true, h.Header)
+		}
+		return
 	}
 }
