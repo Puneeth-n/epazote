@@ -162,7 +162,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 	if len(a.HTTP) > 0 && s.status <= 1 {
 		var h HTTP
 		// if only one HTTP declared, use it if when service goes down (exit = 1)
-		if len(a.HTTP) == 1 && s.status == 1 {
+		if len(a.HTTP) == 1 && s.status == 0 {
+			return
+		} else if len(a.HTTP) == 1 && s.status == 1 {
 			h = a.HTTP[0]
 		} else {
 			h = a.HTTP[s.status]

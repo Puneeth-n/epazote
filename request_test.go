@@ -59,14 +59,14 @@ func TestHTTPPost(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	err := HTTPPost(ts.URL, []byte(`{"exit":0}`))
+	err := HTTPPost(ts.URL, []byte(`{"exit":0}`), nil)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestHTTPPostBadURL(t *testing.T) {
-	err := HTTPPost("abc", []byte(`{"exit":0}`))
+	err := HTTPPost("abc", []byte(`{"exit":0}`), nil)
 	if err == nil {
 		t.Error(err)
 	}
