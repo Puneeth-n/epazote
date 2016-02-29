@@ -1691,7 +1691,6 @@ func TestSuperviceRetrie(t *testing.T) {
 	}
 }
 
-// server.CloseClientConnections not workng on golang 1.6
 func TestSuperviceRetrieLimit(t *testing.T) {
 	buf.Reset()
 	var wg sync.WaitGroup
@@ -1719,7 +1718,7 @@ func TestSuperviceRetrieLimit(t *testing.T) {
 		}
 		// check exit
 		if i["exit"].(float64) != 1 {
-			t.Errorf("Expecting: 0 got: %v", i["exit"])
+			t.Errorf("Expecting: 1 got: %v", i["exit"])
 		}
 		// check retries
 		if i["retries"].(float64) != 4 {
@@ -1756,5 +1755,72 @@ func TestSuperviceRetrieLimit(t *testing.T) {
 	rc := s["s 1"].retryCount
 	if rc != 4 {
 		t.Errorf("Expecting retryCount = 4 got: %d", rc)
+	}
+}
+
+func TestSuperviceRetrieLimit0(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter > 0 {
+			server.CloseClientConnections()
+		}
+		fmt.Fprintln(w, "Hello")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 0 {
+			t.Errorf("Expecting: 0 got: %v", i["exit"])
+		}
+		// check retries
+		if _, ok := i["retries"]; ok {
+			t.Errorf("retries key found")
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:          "s 1",
+		URL:           server.URL,
+		RetryLimit:    0,
+		RetryInterval: 1,
+		Log:           log_s.URL,
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	rc := s["s 1"].retryCount
+	if rc != 0 {
+		t.Errorf("Expecting retryCount = 0 got: %d", rc)
 	}
 }

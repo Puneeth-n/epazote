@@ -84,7 +84,7 @@ type Action struct {
 	Notify string   `yaml:",omitempty"`
 	Msg    []string `yaml:",omitempty"`
 	Emoji  []string `yaml:",omitempty"`
-	Http   HTTP     `yaml:"http,omitempty"`
+	Http   []HTTP   `yaml:"http,omitempty"`
 }
 
 type HTTP struct {
