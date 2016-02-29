@@ -207,3 +207,23 @@ func TestReportHTTPPost(t *testing.T) {
 	ez.Report(nil, s, a, nil, 1, 200, "because", "output")
 	wg.Wait()
 }
+
+func TestReportHTTPNoURL(t *testing.T) {
+	buf.Reset()
+	s := &Service{
+		Name: "s 1",
+		URL:  "http://about.epazote.io",
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	a := &Action{
+		HTTP: []HTTP{
+			HTTP{
+				Method: "PUT",
+			},
+		},
+	}
+	ez := &Epazote{}
+	ez.Report(nil, s, a, nil, 1, 200, "because", "output")
+}
