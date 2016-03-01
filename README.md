@@ -401,13 +401,51 @@ msg:
 ```
 Based on the exit status either msg[0] or msg[1] is used,
 
-### services -Actions - emoji (list)
+### services - Actions - emoji (list)
 ``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
-to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
-they will use the first ``1F600`` if not they will use ``1F621``, if set to
-``0`` no emoji will be used. The idea behind using
+to be used in the subject, example:
+```yaml
+emoji:
+  - 1F600
+  - 1F621
+```
+If services are OK they will use the first ``1F600`` if not they will
+use ``1F621``, if set to ``0`` no emoji will be used. The idea behind using
 [unicode/emoji](https://en.wikipedia.org/wiki/Emoticons_(Unicode_block))
 is to cough attention faster and not just ignore the email thinking is spam.
+
+### service - Actions - http (list(key, value))
+A custom URL to GET/POST depending on the exit status, example:
+```yaml
+http:
+  - url: "https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+_name_+_because_"
+  - url: "https://api.hipchat.com/"
+    header:
+      Content-Type: application/x-www-form-urlencoded
+    data: |
+     room_id=10&from=Alerts&message=_name_+exit+code+_exit_
+    method: POST
+```
+When a service fails or returns an exit 1 the second url
+``https://api.hipchat.com/`` with method ``POST`` and the custom ``data``
+will be used, notice that all the ocurances on the data that are within an
+``_(key)_`` will be replaced with the corresponding value, in this case:
+
+     room_id=10&from=Alerts&message=_name_+exit+code+_exit_
+
+will be replaced with:
+
+     room_id=10&from=Alerts&message=SERVICE NAME+exit+code+0
+
+When recovery the first url will be used, in this case will be a GET instead of a post, so:
+
+    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+_name_+_because_
+
+becomes:
+
+    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+SERVICE NAME+STATUS 200
+
+> notice that the _name_, _exit_, _because_ has been replaced
 
 
 ## services - Test
