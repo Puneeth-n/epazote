@@ -130,12 +130,12 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 
 		body += fmt.Sprintf("%s %s%s", msg[s.status], CRLF, CRLF)
 
-		// set subject (because exit name output status url)
+		// set subject _(because exit name output status url)_
 		// replace the report status keys (json) in subject if present
 		subject := self.Config.SMTP.Headers["subject"]
 		for _, k := range report_keys {
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
-			subject = strings.Replace(subject, k, fmt.Sprintf("%v", parsed[k]), 1)
+			subject = strings.Replace(subject, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
 		}
 
 		// add emoji to subject

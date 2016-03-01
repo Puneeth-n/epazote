@@ -219,7 +219,7 @@ func TestReportEmoji(t *testing.T) {
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
-		"subject": "[name, because]",
+		"subject": "[_name_, _because_]",
 	}
 	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
@@ -276,7 +276,7 @@ func TestReportCustomEmoji(t *testing.T) {
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
-		"subject": "[name, because]",
+		"subject": "[_name_, _because_]",
 	}
 	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
@@ -341,7 +341,7 @@ func TestReportEmoji0(t *testing.T) {
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
-		"subject": "[name, because]",
+		"subject": "[_name_, _because_]",
 	}
 	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
@@ -407,7 +407,7 @@ func TestReportEmoji1(t *testing.T) {
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
-		"subject": "[name, because]",
+		"subject": "[_name_, _because_]",
 	}
 	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
@@ -472,7 +472,7 @@ func TestReportMsg0(t *testing.T) {
 	headers := map[string]string{
 		"from":    "epazote@domain.tld",
 		"to":      "test@ejemplo.org",
-		"subject": "[name, because]",
+		"subject": "[_name_, _because_]",
 	}
 	c := Email{"username", "password", "server", 587, headers, true}
 	f, r := mockSend(errors.New("I love errors"), &wg)
