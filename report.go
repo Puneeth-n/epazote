@@ -77,6 +77,21 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		return
 	}
 
+	// keys to be used in mail or in HTTP
+	var parsed map[string]interface{}
+	err = json.Unmarshal(j, &parsed)
+	if err != nil {
+		log.Printf("Error creating email report status for service %q: %s", s.Name, err)
+		return
+	}
+
+	// sort the map
+	var report_keys []string
+	for k := range parsed {
+		report_keys = append(report_keys, k)
+	}
+	sort.Strings(report_keys)
+
 	// send email if action and only for the first error (avoid spam)
 	if a.Notify != "" && s.status <= 1 {
 		// store action on status so that when the service recovers
@@ -99,19 +114,6 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 			to = strings.Split(self.Config.SMTP.Headers["to"], " ")
 		}
 
-		var parsed map[string]interface{}
-		err := json.Unmarshal(j, &parsed)
-		if err != nil {
-			log.Printf("Error creating email report status for service %q: %s", s.Name, err)
-			return
-		}
-		// sort the map
-		var keys []string
-		for k := range parsed {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-
 		// prepare email body
 		body := ""
 
@@ -131,7 +133,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		// set subject (because exit name output status url)
 		// replace the report status keys (json) in subject if present
 		subject := self.Config.SMTP.Headers["subject"]
-		for _, k := range keys {
+		for _, k := range report_keys {
 			body += fmt.Sprintf("%s: %v %s", k, parsed[k], CRLF)
 			subject = strings.Replace(subject, k, fmt.Sprintf("%v", parsed[k]), 1)
 		}
