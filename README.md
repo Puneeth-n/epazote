@@ -126,7 +126,7 @@ config:
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
-            subject: "[name - status]"
+            subject: "[_name_, _because_]"
     scan:
         paths:
             - /arena/home/sites
@@ -140,11 +140,11 @@ Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
 
 ### config - smtp - subject
-The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
-``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
-would transform to ``[my service - 500]`` the ``name`` has replaced
-by the service name, ``my service`` and ``status`` by the response status code
-``500`` in this case.
+The subject can be formed by using this keywords: ``_because_`` ``_exit_``
+``_name_`` ``_output_`` ``_status_`` ``_url_`` on the previous example,
+``subject: [_name_, _status_]`` would transform to ``[my service - 500]``
+the ``name`` has replaced by the service name, ``my service`` and
+``status`` by the response status code ``500`` in this case.
 
 ### config - scan
 
@@ -375,11 +375,12 @@ an ``if_status`` and ``if_header`` are set, same applies, first is evaluated
 ``if_status``, then ``if_header`` and last ``if_not``.
 
 ## services - Actions
-An Action has tree options:
+An Action has five options:
  - cmd
  - notify
  - msg
  - emoji
+ - http
 
 They can be used all together, only one or either none.
 
@@ -392,10 +393,15 @@ of the recipients that will be notified when the action is executed.
 
 If the string is ``yes`` the global recipients will be used.
 
-### services - Actions - msg (string)
-``msg`` The message to send when the action is executed.
+### services - Actions - msg (list)
+```yaml
+msg:
+ - send this if exit 0 (all OK)
+ - send this if exit 1 (something is wrong)
+```
+Based on the exit status either msg[0] or msg[1] is used,
 
-### services -Actions - emoji (string)
+### services -Actions - emoji (list)
 ``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
 to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
 they will use the first ``1F600`` if not they will use ``1F621``, if set to
