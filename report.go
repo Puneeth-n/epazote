@@ -176,8 +176,16 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		}
 		switch h.Method {
 		case "post":
+			// replace data with report_keys
+			for _, k := range report_keys {
+				h.Data = strings.Replace(h.Data, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
+			}
 			go HTTPPost(h.URL, []byte(h.Data), h.Header)
 		default:
+			// replace url params with report_keys
+			for _, k := range report_keys {
+				h.URL = strings.Replace(h.URL, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
+			}
 			go HTTPGet(h.URL, true, true, h.Header)
 		}
 		return

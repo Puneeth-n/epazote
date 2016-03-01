@@ -80,6 +80,9 @@ func TestReportHTTP001(t *testing.T) {
 		if r.FormValue("exit") != "0" {
 			t.Errorf("Expecting exit = 0 got: %s", r.FormValue("exit"))
 		}
+		if r.FormValue("status") != "200" {
+			t.Errorf("Expecting status = 200 got: %s", r.FormValue("status"))
+		}
 		wg.Done()
 	}))
 	defer custom_s.Close()
@@ -94,10 +97,10 @@ func TestReportHTTP001(t *testing.T) {
 	a := &Action{
 		HTTP: []HTTP{
 			HTTP{
-				URL: fmt.Sprintf("%s/?exit=0", custom_s.URL),
+				URL: fmt.Sprintf("%s/?exit=_exit_&status=_status_", custom_s.URL),
 			},
 			HTTP{
-				URL: fmt.Sprintf("%s/?exit=1", custom_s.URL),
+				URL: fmt.Sprintf("%s/?exit=_exit_", custom_s.URL),
 			},
 		},
 	}
@@ -170,12 +173,13 @@ func TestReportHTTPPost(t *testing.T) {
 			{"room_id", "10"},
 			{"from", "Alerts"},
 			{"message", "A new user signed up"},
+			{"status", "200"},
 		}
 
 		for _, v := range expected {
 			got := values[v.key]
 			if got[0] != v.val {
-				t.Errorf("Expecring %s got: %s", got[0], v.val)
+				t.Errorf("Expecting %s got: %s", got[0], v.val)
 			}
 		}
 
@@ -195,7 +199,7 @@ func TestReportHTTPPost(t *testing.T) {
 			HTTP{
 				URL:    custom_s.URL,
 				Method: "post",
-				Data:   "room_id=10&from=Alerts&message=A+new+user+signed+up",
+				Data:   "room_id=10&from=Alerts&message=A+new+user+signed+up&status=_status_",
 				Header: map[string]string{
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
