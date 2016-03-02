@@ -17,7 +17,7 @@ import (
 func (self *Epazote) Log(s *Service, status []byte) {
 	res, err := HTTPPost(s.Log, status, nil)
 	if err != nil {
-		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
+		log.Printf("Service %q - Error while posting to %q: %s", s.Name, s.Log, err)
 		return
 	}
 	if self.debug {
@@ -190,13 +190,41 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 			for _, k := range report_keys {
 				h.Data = strings.Replace(h.Data, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
 			}
-			go HTTPPost(h.URL, []byte(h.Data), h.Header)
+			go func() {
+				res, err := HTTPPost(h.URL, []byte(h.Data), h.Header)
+				if err != nil {
+					log.Printf("Service %q - Error while calling custom url %q : %s", s.Name, h.URL, err)
+					return
+				}
+				if self.debug {
+					body, err := ioutil.ReadAll(res.Body)
+					if err != nil {
+						log.Println(err)
+					}
+					log.Println(body)
+				}
+				res.Body.Close()
+			}()
 		default:
 			// replace url params with report_keys
 			for _, k := range report_keys {
 				h.URL = strings.Replace(h.URL, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
 			}
-			go HTTPGet(h.URL, true, true, h.Header)
+			go func() {
+				res, err := HTTPGet(h.URL, true, true, h.Header)
+				if err != nil {
+					log.Printf("Service %q - Error while calling custom url %q : %s", s.Name, h.URL, err)
+					return
+				}
+				if self.debug {
+					body, err := ioutil.ReadAll(res.Body)
+					if err != nil {
+						log.Println(err)
+					}
+					log.Println(body)
+				}
+				res.Body.Close()
+			}()
 		}
 		return
 	}
