@@ -198,12 +198,13 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 				}
 				if self.debug {
 					body, err := ioutil.ReadAll(res.Body)
+					res.Body.Close()
 					if err != nil {
 						log.Println(err)
+						return
 					}
 					log.Printf("Servie %q, Body: \n%s\n", s.Name, body)
 				}
-				res.Body.Close()
 			}()
 		default:
 			// replace url params with report_keys
@@ -218,12 +219,13 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 				}
 				if self.debug {
 					body, err := ioutil.ReadAll(res.Body)
+					res.Body.Close()
 					if err != nil {
 						log.Println(err)
+						return
 					}
 					log.Printf("Servie %q, Body: \n%s\n", s.Name, body)
 				}
-				res.Body.Close()
 			}()
 		}
 		return
