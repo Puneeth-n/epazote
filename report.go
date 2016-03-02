@@ -3,6 +3,7 @@ package epazote
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -14,10 +15,19 @@ import (
 
 // Log send log via HTTP POST to defined URL
 func (self *Epazote) Log(s *Service, status []byte) {
-	err := HTTPPost(s.Log, status, nil)
+	res, err := HTTPPost(s.Log, status, nil)
 	if err != nil {
 		log.Printf("Service %q - Error while posting to %q : %q", s.Name, s.Log, err)
+		return
 	}
+	if self.debug {
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(body)
+	}
+	res.Body.Close()
 }
 
 // Report create report to send via log/email
