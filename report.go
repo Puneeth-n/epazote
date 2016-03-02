@@ -25,7 +25,7 @@ func (self *Epazote) Log(s *Service, status []byte) {
 		if err != nil {
 			log.Println(err)
 		}
-		log.Printf("Body: %s", body)
+		log.Printf("Service %q, Body: \n%s\n", s.Name, body)
 	}
 	res.Body.Close()
 }
@@ -201,7 +201,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 					if err != nil {
 						log.Println(err)
 					}
-					log.Printf("Servie %q, Body: %s", s.Name, body)
+					log.Printf("Servie %q, Body: \n%s\n", s.Name, body)
 				}
 				res.Body.Close()
 			}()
@@ -221,7 +221,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 					if err != nil {
 						log.Println(err)
 					}
-					log.Printf("Servie %q, Body: %s", s.Name, body)
+					log.Printf("Servie %q, Body: \n%s\n", s.Name, body)
 				}
 				res.Body.Close()
 			}()
