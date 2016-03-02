@@ -445,7 +445,7 @@ becomes:
 
     https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+SERVICE NAME+STATUS 200
 
-> notice that the _name_, _exit_, _because_ has been replaced
+> notice that the _name_, _exit_, _because_ are been replaced with the values of name, exit, because of the service.
 
 
 ## services - Test
