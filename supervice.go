@@ -48,7 +48,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
-			args := strings.Fields(s.Test.Test)
+			args := strings.Fields(strings.TrimSpace(s.Test.Test))
 			cmd := exec.Command(args[0], args[1:]...)
 			var out bytes.Buffer
 			cmd.Stdout = &out
