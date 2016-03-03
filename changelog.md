@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 1.5.0
+- Fixed ``test`` removing extra line breaks.
+- Implemented ``read_limit``, for reading only ``N`` number of bytes instead of the full body. This helps to make a more "complete" request and avoid getting an HTTP status code [408 when testing aws ELB](http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/ts-elb-error-message.html#ts-elb-errorcodes-http408)
+
 ## 1.4.0
 - Increased debugging, response headers included.
 - Implement ``http`` in action, An URL to "GET/POST" in case service is up/down, for example 'hipchat/mailgun'.

@@ -72,11 +72,12 @@ type Service struct {
 }
 
 type Expect struct {
-	Status int               `yaml:",omitempty"`
-	Header map[string]string `yaml:",omitempty"`
-	Body   string            `yaml:",omitempty"`
-	body   *regexp.Regexp
-	IfNot  Action `yaml:"if_not,omitempty"`
+	Body      string            `yaml:",omitempty"`
+	Header    map[string]string `yaml:",omitempty"`
+	ReadLimit int               `yaml:"read_limit,omitempty"`
+	Status    int               `yaml:",omitempty"`
+	IfNot     Action            `yaml:"if_not,omitempty"`
+	body      *regexp.Regexp
 }
 
 type Action struct {
