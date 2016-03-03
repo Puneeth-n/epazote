@@ -3,7 +3,7 @@ Changelog
 
 ## 1.4.0
 ### Unreleased
-- Implement ``http`` in action, An URL to "GET/POST" in case service is up/down, for example 'hipchat'.
+- Implement ``http`` in action, An URL to "GET/POST" in case service is up/down, for example 'hipchat/mailgun'.
 - debug (print all the headers)
 - kill -USR1 shows cleaner info.
 - Implement ``Retry`` default to 3, with 1 second interval
