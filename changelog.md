@@ -2,13 +2,12 @@ Changelog
 =========
 
 ## 1.4.0
-### Unreleased
+- Increased debugging, response headers included.
 - Implement ``http`` in action, An URL to "GET/POST" in case service is up/down, for example 'hipchat/mailgun'.
-- debug (print all the headers)
 - kill -USR1 shows cleaner info.
-- Implement ``Retry`` default to 3, with 1 second interval
-- Fix ``Emoji`` and ``msg`` implementation to behave like a list
-- Implement timestamp ``when`` RFC3339
+- Implement ``Retry`` default to 3, with 0.5 second (500 milliseconds) interval.
+- Fix ``Emoji`` and ``msg`` implementation to behave like a list.
+- Implement timestamp ``when`` RFC3339.
 
 ## 1.3.0
 - ``Insecure`` feature to ignore SSL / self signed certificates.
