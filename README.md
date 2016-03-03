@@ -443,7 +443,7 @@ When recovery the first url will be used, in this case will be a GET instead of 
 
 becomes:
 
-    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+SERVICE NAME+STATUS 200
+    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+SERVICE+NAME+STATUS+200
 
 > notice that the _name_, _exit_, _because_ are been replaced with the values of name, exit, because of the service.
 
