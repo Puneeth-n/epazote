@@ -72,11 +72,16 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 			}
 			sort.Strings(rHeader)
 		}
-		if e == 0 {
-			log.Printf(Green("Report: %s")+", Count: %d\n"+Yellow("Headers: \n%s\n"), j, s.status, strings.Join(rHeader, "\n"))
-		} else {
-			log.Printf(Red("Report: %s")+", Count: %d\n"+Yellow("Headers: \n%s\n"), j, s.status, strings.Join(rHeader, "\n"))
 
+		// if Test show no headers
+		headers := ""
+		if s.URL != "" {
+			headers = Yellow(fmt.Sprintf("Headers: \n%s\n", strings.Join(rHeader, "\n")))
+		}
+		if e == 0 {
+			log.Printf(Green("Report: %s")+", Count: %d\n"+headers, j, s.status)
+		} else {
+			log.Printf(Red("Report: %s")+", Count: %d\n"+headers, j, s.status)
 		}
 	}
 
