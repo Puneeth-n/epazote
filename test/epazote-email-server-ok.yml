@@ -18,9 +18,6 @@ services:
             status: 200
             if_not:
                 notify: yes
-                msg: |
-                    line 1
-                    line 2
 
         # if status
         if_status:
@@ -29,7 +26,6 @@ services:
                 notify: m@tilde
             404:
                 cmd: sv restart .
-                msg: not found
                 notify: yes
 
         # if header
@@ -40,9 +36,6 @@ services:
             x-amqp-kaputt:
                 cmd: sv restart
                 notify: you@abc.com
-                msg: |
-                    The rabbit is angry
-                    & hungry
 
     service X:
         test: pgrep nginx

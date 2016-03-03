@@ -86,22 +86,27 @@ func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...
 }
 
 // HTTPPost post service json data
-func HTTPPost(url string, data []byte) error {
+func HTTPPost(url string, data []byte, h map[string]string) (*http.Response, error) {
 	// create a new request
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	req.Header.Set("User-Agent", "epazote")
 	req.Header.Set("Content-Type", "application/json")
 
+	// set custom headers on request
+	if h != nil {
+		for k, v := range h {
+			req.Header.Set(k, v)
+		}
+	}
+
 	client := &http.Client{}
 
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	res.Body.Close()
-
-	return nil
+	return res, nil
 }
 
 // IsURL https://github.com/asaskevich/govalidator/blob/master/validator.go#L44

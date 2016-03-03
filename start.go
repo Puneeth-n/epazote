@@ -32,11 +32,19 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 			v.Expect.body = re
 		}
 
+		// retry
+		if v.RetryInterval == 0 {
+			v.RetryInterval = 500
+		}
+		if v.RetryLimit == 0 {
+			v.RetryLimit = 3
+		}
+
 		if self.debug {
 			if v.URL != "" {
 				log.Printf(Green("Adding service: %s URL: %s"), v.Name, v.URL)
 			} else {
-				log.Printf(Green("Adding service: %s Test: %s"), v.Name, v.Test)
+				log.Printf(Green("Adding service: %s Test: %s"), v.Name, v.Test.Test)
 			}
 		}
 
@@ -47,6 +55,8 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 	if len(self.Config.Scan.Paths) > 0 {
 		for _, v := range self.Config.Scan.Paths {
 			isk.AddScheduler(v, GetInterval(300, self.Config.Scan.Every), self.Scan(v))
+			// schedule the scan but also scan at the beginning
+			go self.search(v)
 		}
 	}
 

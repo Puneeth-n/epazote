@@ -84,9 +84,13 @@ func TestScanParseScanSearchOk(t *testing.T) {
 	s := &Epazote{
 		Services: make(map[string]*Service),
 	}
+	s.debug = true
 	err = s.search(d)
 	if err != nil {
 		t.Error(err)
+	}
+	if buf.Len() == 0 {
+		t.Error("Expecting log.Println error")
 	}
 }
 

@@ -126,7 +126,7 @@ config:
         headers:
             from: epazote@domain.tld
             to: team@domain.tld ops@domain.tld etc@domain.tld
-            subject: "[name - status]"
+            subject: "[_name_, _because_]"
     scan:
         paths:
             - /arena/home/sites
@@ -140,11 +140,11 @@ Required to properly send alerts via email, all fields are required, the
 ``headers`` section can be extended with any desired key-pair values.
 
 ### config - smtp - subject
-The subject can be formed by using this keywords: ``because`` ``exit`` ``name``
-``output`` ``status`` ``url`` on the previous example, ``subject: [name - status]``
-would transform to ``[my service - 500]`` the ``name`` has replaced
-by the service name, ``my service`` and ``status`` by the response status code
-``500`` in this case.
+The subject can be formed by using this keywords: ``_because_`` ``_exit_``
+``_name_`` ``_output_`` ``_status_`` ``_url_`` on the previous example,
+``subject: [_name_, _status_]`` would transform to ``[my service - 500]``
+the ``name`` has replaced by the service name, ``my service`` and
+``status`` by the response status code ``500`` in this case.
 
 ### config - scan
 
@@ -265,6 +265,12 @@ is set to ``-1`` the ``cmd`` never stops. defaults to 0, ``stop 2`` will execute
 Timeout specifies a time limit for the HTTP requests, A value of zero means no
 timeout, defaults to 5 seconds.
 
+### services - retry_limit (int)
+Specifies the number of times to retry an request, defaults to 3.
+
+### services - retry_interval (int)
+Specifies the time between attempts in milliseconds. The default value is 500 (0.5 seconds).
+
 ### services - seconds, minutes, hours
 How often to check the service, the options are: (Only one should be used)
  - seconds N
@@ -369,11 +375,12 @@ an ``if_status`` and ``if_header`` are set, same applies, first is evaluated
 ``if_status``, then ``if_header`` and last ``if_not``.
 
 ## services - Actions
-An Action has tree options:
+An Action has five options:
  - cmd
  - notify
  - msg
  - emoji
+ - http
 
 They can be used all together, only one or either none.
 
@@ -386,16 +393,59 @@ of the recipients that will be notified when the action is executed.
 
 If the string is ``yes`` the global recipients will be used.
 
-### services - Actions - msg (string)
-``msg`` The message to send when the action is executed.
+### services - Actions - msg (list)
+```yaml
+msg:
+ - send this if exit 0 (all OK)
+ - send this if exit 1 (something is wrong)
+```
+Based on the exit status either msg[0] or msg[1] is used,
 
-### services -Actions - emoji (string)
+### services - Actions - emoji (list)
 ``emoji`` [Unicode](https://en.wikipedia.org/wiki/Unicode) characters
-to be used in the subject, example: ``emoji: 1F600-1F621``. If services are OK
-they will use the first ``1F600`` if not they will use ``1F621``, if set to
-``0`` no emoji will be used. The idea behind using
+to be used in the subject, example:
+```yaml
+emoji:
+  - 1F600
+  - 1F621
+```
+If services are OK they will use the first ``1F600`` if not they will
+use ``1F621``, if set to ``0`` no emoji will be used. The idea behind using
 [unicode/emoji](https://en.wikipedia.org/wiki/Emoticons_(Unicode_block))
 is to cough attention faster and not just ignore the email thinking is spam.
+
+### service - Actions - http (list(key, value))
+A custom URL to GET/POST depending on the exit status, example:
+```yaml
+http:
+  - url: "https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+_name_+_because_"
+  - url: "https://api.hipchat.com/"
+    header:
+      Content-Type: application/x-www-form-urlencoded
+    data: |
+     room_id=10&from=Alerts&message=_name_+exit+code+_exit_
+    method: POST
+```
+When a service fails or returns an exit 1 the second url
+``https://api.hipchat.com/`` with method ``POST`` and the custom ``data``
+will be used, notice that all the ocurances on the data that are within an
+``_(key)_`` will be replaced with the corresponding value, in this case:
+
+     room_id=10&from=Alerts&message=_name_+exit+code+_exit_
+
+will be replaced with:
+
+     room_id=10&from=Alerts&message=SERVICE NAME+exit+code+0
+
+When recovery the first url will be used, in this case will be a GET instead of a post, so:
+
+    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+_name_+_because_
+
+becomes:
+
+    https://api.hipchat.com/v1/rooms/message?auth_token=your_token&room_id=7&from=Alerts&message=service+OK+SERVICE+NAME+STATUS+200
+
+> notice that the _name_, _exit_, _because_ are been replaced with the values of name, exit, because of the service.
 
 
 ## services - Test

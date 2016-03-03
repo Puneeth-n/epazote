@@ -4,7 +4,7 @@ config:
             from: from@email
             to: ops@domain.tld
             subject: >
-                [%s - %s], Service, Status
+                [name, because]
 
 services:
     service X:
