@@ -18,17 +18,18 @@ import (
 func (self *Epazote) Log(s *Service, status []byte) {
 	res, err := HTTPPost(s.Log, status, nil)
 	if err != nil {
-		log.Printf("Service %q - Error while posting to %q: %s", s.Name, s.Log, err)
+		log.Printf("Service %q, Error while posting log to %q: %s", s.Name, s.Log, err)
 		return
 	}
+	defer res.Body.Close()
 	if self.debug {
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			log.Println(err)
+			log.Printf("Service %q, Error reading log response: %s", s.Name, err)
+			return
 		}
-		log.Printf("Service %q, Body: \n%s\n", s.Name, body)
+		log.Printf("Service %q, Log response: \n%s\n", s.Name, body)
 	}
-	res.Body.Close()
 }
 
 // Report create report to send via log/email
