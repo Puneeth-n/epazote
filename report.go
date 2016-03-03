@@ -200,9 +200,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 					log.Printf("Service %q, Action HTTP, METHOD: POST\nURL: %s\nError: %s", s.Name, h.URL, err)
 					return
 				}
+				defer res.Body.Close()
 				if self.debug {
 					body, err := ioutil.ReadAll(res.Body)
-					res.Body.Close()
 					if err != nil {
 						log.Println(err)
 						return
@@ -221,9 +221,9 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 					log.Printf("Service %q, Action HTTP, METHOD: GET\nURL: %s\nError: %s", s.Name, h.URL, err)
 					return
 				}
+				defer res.Body.Close()
 				if self.debug {
 					body, err := ioutil.ReadAll(res.Body)
-					res.Body.Close()
 					if err != nil {
 						log.Println(err)
 						return
