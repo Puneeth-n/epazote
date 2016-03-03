@@ -16,6 +16,9 @@ func (self *Epazote) Scan(dir string) func() {
 
 // search walk through defined paths
 func (self *Epazote) search(root string) error {
+	if self.debug {
+		log.Printf("Starting scan in: %s", root)
+	}
 	find := func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -52,6 +55,14 @@ func (self *Epazote) search(root string) error {
 						continue
 					}
 					v.Expect.body = re
+				}
+
+				// retry
+				if v.RetryInterval == 0 {
+					v.RetryInterval = 500
+				}
+				if v.RetryLimit == 0 {
+					v.RetryLimit = 3
 				}
 
 				// Add/Update existing services

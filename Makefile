@@ -1,9 +1,9 @@
 .PHONY: all get test clean build cover compile goxc bintray
 
-VERSION=1.3.0
+VERSION=1.4.0
 GO ?= go
 BIN_NAME=epazote
-GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux" -build-ldflags="-X main.version=${VERSION}"
+GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux"
 GOXC_FILE = .goxc.local.json
 
 all: clean build
@@ -36,6 +36,7 @@ compile: goxc
 
 goxc:
 	$(shell sed -i '' -e 's/"PackageVersion.*/"PackageVersion": "${VERSION}",/g' .goxc.json)
+	$(shell sed -i '' -e 's/"LdFlags.*"/"LdFlags": \"-X main.version=${VERSION}\"/g' .goxc.json)
 	$(shell echo '{\n "ConfigVersion": "0.9",' > $(GOXC_FILE))
 	$(shell echo ' "TaskSettings": {' >> $(GOXC_FILE))
 	$(shell echo '  "bintray": {\n   "apikey": "$(BINTRAY_APIKEY)"' >> $(GOXC_FILE))

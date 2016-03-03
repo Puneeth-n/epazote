@@ -20,6 +20,14 @@ func TestColorGreen(t *testing.T) {
 	}
 }
 
+func TestColorYellow(t *testing.T) {
+	color := Yellow("@")
+
+	if color != "\x1b[0;33m@\x1b[0;00m" {
+		t.Errorf("Expected yellow got: %s", color)
+	}
+}
+
 func TestIconOk(t *testing.T) {
 	i := Icon("1F621")
 	if i != 128545 {

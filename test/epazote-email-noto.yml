@@ -6,8 +6,7 @@ config:
         port: 587
         headers:
             from: from@email
-            subject: >
-                [%s - %s], Service, Status
+            subject: name, because
 
 services:
     service 1:

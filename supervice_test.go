@@ -883,8 +883,8 @@ func TestSuperviceMissingHeader(t *testing.T) {
 		}
 		// check because
 		if b, ok := i["because"]; ok {
-			if b != "Header: test" {
-				t.Errorf("Expecting: %q, got: %q", "Header: test", b)
+			if b != "Header: test: xxx" {
+				t.Errorf("Expecting: %q, got: %q", "Header: test: xxx", b)
 			}
 		} else {
 			t.Errorf("key not found: %q", "because")
@@ -1605,5 +1605,222 @@ func TestSuperviceCount1000(t *testing.T) {
 	wg.Wait()
 	if s["s 1"].status != 1000 {
 		t.Errorf("Expecting status: 1000 got: %v", s["s 1"].status)
+	}
+}
+
+// server.CloseClientConnections not workng on golang 1.6
+func TestSuperviceRetrie(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter <= 1 {
+			server.CloseClientConnections()
+		}
+		w.Header().Set("X-Abc", "xyz")
+		fmt.Fprintln(w, "Hello, molcajete.org")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 0 {
+			t.Errorf("Expecting: 0 got: %v", i["exit"])
+		}
+		// check because
+		e := "Body regex match: molcajete"
+		if i["because"] != e {
+			t.Errorf("Expecting: %q, got: %v", e, i["because"])
+		}
+		// check retries
+		if i["retries"].(float64) != 2 {
+			t.Errorf("Expecting: 2 got: %v", i["retries"])
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	re := regexp.MustCompile(`molcajete`)
+	s["s 1"] = &Service{
+		Name:       "s 1",
+		URL:        server.URL,
+		RetryLimit: 3,
+		Log:        log_s.URL,
+		Expect: Expect{
+			Status: 200,
+			Header: map[string]string{
+				"X-Abc": "xyz",
+			},
+			Body: "molcajete",
+			body: re,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	// 1 try, 2 tries
+	rc := s["s 1"].retryCount
+	if rc != 2 {
+		t.Errorf("Expecting retryCount = 2 got: %d", rc)
+	}
+	if counter != 3 {
+		t.Errorf("Expecting 3 got: %v", counter)
+	}
+}
+
+func TestSuperviceRetrieLimit(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter <= 10 {
+			server.CloseClientConnections()
+		}
+		fmt.Fprintln(w, "Hello")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 1 {
+			t.Errorf("Expecting: 1 got: %v", i["exit"])
+		}
+		// check retries
+		if i["retries"].(float64) != 4 {
+			t.Errorf("Expecting: 4 got: %v", i["retries"])
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 0 {
+			t.Errorf("Expecting status: %d got: %v", 0, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:          "s 1",
+		URL:           server.URL,
+		RetryLimit:    5,
+		RetryInterval: 1,
+		Log:           log_s.URL,
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	rc := s["s 1"].retryCount
+	if rc != 4 {
+		t.Errorf("Expecting retryCount = 4 got: %d", rc)
+	}
+}
+
+func TestSuperviceRetrieLimit0(t *testing.T) {
+	buf.Reset()
+	var wg sync.WaitGroup
+	var server *httptest.Server
+	var counter int
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if counter > 0 {
+			server.CloseClientConnections()
+		}
+		fmt.Fprintln(w, "Hello")
+		counter++
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+
+	log_s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-agent") != "epazote" {
+			t.Error("Expecting User-agent: epazote")
+		}
+		decoder := json.NewDecoder(r.Body)
+		var i map[string]interface{}
+		err := decoder.Decode(&i)
+		if err != nil {
+			t.Error(err)
+		}
+		// check exit
+		if i["exit"].(float64) != 0 {
+			t.Errorf("Expecting: 0 got: %v", i["exit"])
+		}
+		// check retries
+		if _, ok := i["retries"]; ok {
+			t.Errorf("retries key found")
+		}
+		// check url
+		if _, ok := i["url"]; !ok {
+			t.Error("URL key not found")
+		}
+		// check output
+		if i["status"].(float64) != 200 {
+			t.Errorf("Expecting status: %d got: %v", 200, i["status"])
+		}
+		wg.Done()
+	}))
+	defer log_s.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:          "s 1",
+		URL:           server.URL,
+		RetryLimit:    0,
+		RetryInterval: 1,
+		Log:           log_s.URL,
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	wg.Add(1)
+	ez.Supervice(s["s 1"])()
+	wg.Wait()
+	rc := s["s 1"].retryCount
+	if rc != 0 {
+		t.Errorf("Expecting retryCount = 0 got: %d", rc)
 	}
 }
