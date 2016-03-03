@@ -10,15 +10,15 @@ import (
 // Scan return func() to work with the scheduler
 func (self *Epazote) Scan(dir string) func() {
 	return func() {
-		if self.debug {
-			log.Printf("Starting scan in: %s", dir)
-		}
 		self.search(dir)
 	}
 }
 
 // search walk through defined paths
 func (self *Epazote) search(root string) error {
+	if self.debug {
+		log.Printf("Starting scan in: %s", root)
+	}
 	find := func(path string, f os.FileInfo, err error) error {
 		if err != nil {
 			return err
