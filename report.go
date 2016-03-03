@@ -7,6 +7,7 @@ import (
 	"log"
 	"mime"
 	"net/http"
+	"net/url"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -173,11 +174,14 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 	// HTTP GET/POST based on exit status
 	if len(a.HTTP) > 0 && s.status <= 1 {
 		var h HTTP
-		// if only one HTTP declared, use it if when service goes down (exit = 1)
-		if len(a.HTTP) == 1 && s.status == 0 {
-			return
-		} else if len(a.HTTP) == 1 && s.status == 1 {
-			h = a.HTTP[0]
+		// if only one HTTP action declared, use it when service goes down (exit = 1)
+		if len(a.HTTP) == 1 {
+			if s.status == 0 {
+				return
+			}
+			if s.status == 1 {
+				h = a.HTTP[0]
+			}
 		} else {
 			h = a.HTTP[s.status]
 		}
@@ -188,7 +192,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 		case "POST":
 			// replace data with report_keys
 			for _, k := range report_keys {
-				h.Data = strings.Replace(h.Data, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
+				h.Data = strings.Replace(h.Data, fmt.Sprintf("_%s_", k), url.QueryEscape(fmt.Sprintf("%v", parsed[k])), 1)
 			}
 			go func() {
 				res, err := HTTPPost(h.URL, []byte(h.Data), h.Header)
@@ -203,13 +207,13 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 						log.Println(err)
 						return
 					}
-					log.Printf("Servie %q, URL-POST: %q, Body: \n%s\n", s.Name, h.URL, body)
+					log.Printf("Servie %q, Action HTTP, METHOD: POST\nURL: %s\nData: %s\nResponse: \n%s\n", s.Name, h.URL, h.Data, body)
 				}
 			}()
 		default:
 			// replace url params with report_keys
 			for _, k := range report_keys {
-				h.URL = strings.Replace(h.URL, fmt.Sprintf("_%s_", k), fmt.Sprintf("%v", parsed[k]), 1)
+				h.URL = strings.Replace(h.URL, fmt.Sprintf("_%s_", k), url.QueryEscape(fmt.Sprintf("%v", parsed[k])), 1)
 			}
 			go func() {
 				res, err := HTTPGet(h.URL, true, true, h.Header)
@@ -224,7 +228,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 						log.Println(err)
 						return
 					}
-					log.Printf("Servie %q, URL-GET: %q, Body: \n%s\n", s.Name, h.URL, body)
+					log.Printf("Servie %q, Action HTTP, METHOD: GET\nURL: %s\nResponse: \n%s\n", s.Name, h.URL, body)
 				}
 			}()
 		}
