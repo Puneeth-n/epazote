@@ -10,6 +10,9 @@ import (
 // Scan return func() to work with the scheduler
 func (self *Epazote) Scan(dir string) func() {
 	return func() {
+		if self.debug {
+			log.Printf("Starting scan in: %s", dir)
+		}
 		self.search(dir)
 	}
 }
