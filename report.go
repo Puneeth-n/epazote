@@ -197,7 +197,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 			go func() {
 				res, err := HTTPPost(h.URL, []byte(h.Data), h.Header)
 				if err != nil {
-					log.Printf("Service %q - Error while posting to url %q : %s", s.Name, h.URL, err)
+					log.Printf("Service %q, Action HTTP, METHOD: POST\nURL: %s\nError: %s", s.Name, h.URL, err)
 					return
 				}
 				if self.debug {
@@ -218,7 +218,7 @@ func (self *Epazote) Report(m MailMan, s *Service, a *Action, r *http.Response, 
 			go func() {
 				res, err := HTTPGet(h.URL, true, true, h.Header)
 				if err != nil {
-					log.Printf("Service %q - Error while getting url %q : %s", s.Name, h.URL, err)
+					log.Printf("Service %q, Action HTTP, METHOD: GET\nURL: %s\nError: %s", s.Name, h.URL, err)
 					return
 				}
 				if self.debug {
