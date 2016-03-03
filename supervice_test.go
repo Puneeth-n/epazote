@@ -1665,6 +1665,7 @@ func TestSuperviceRetrie(t *testing.T) {
 		Name:       "s 1",
 		URL:        server.URL,
 		RetryLimit: 3,
+		ReadLimit:  17,
 		Log:        log_s.URL,
 		Expect: Expect{
 			Status: 200,
@@ -1808,6 +1809,7 @@ func TestSuperviceRetrieLimit0(t *testing.T) {
 		URL:           server.URL,
 		RetryLimit:    0,
 		RetryInterval: 1,
+		ReadLimit:     1024,
 		Log:           log_s.URL,
 		Expect: Expect{
 			Status: 200,
