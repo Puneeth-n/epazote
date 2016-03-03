@@ -56,7 +56,7 @@ type Service struct {
 	retryCount    int
 	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
 	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
-	ReadLimit     int64             `yaml:"read_limit,omitempty"`
+	ReadLimit     int64             `yaml:"read_limit,omitempty" json:"-"`
 	Header        map[string]string `yaml:",omitempty" json:"-"`
 	Follow        bool              `yaml:",omitempty" json:"-"`
 	Insecure      bool              `yaml:",omitempty" json:"-"`

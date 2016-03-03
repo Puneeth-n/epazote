@@ -49,7 +49,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
-			args := strings.Fields(strings.TrimSpace(s.Test.Test))
+			args := strings.Fields(s.Test.Test)
 			cmd := exec.Command(args[0], args[1:]...)
 			var out bytes.Buffer
 			cmd.Stdout = &out
@@ -107,7 +107,7 @@ func (self *Epazote) Supervice(s *Service) func() {
 				return
 			}
 			if self.debug {
-				log.Printf("Service %q, read_limit: %d, response: \n%s", s.Name, s.ReadLimit, chunkedBody)
+				log.Printf("Service %q, read_limit: %d, Body: \n%s", s.Name, s.ReadLimit, chunkedBody)
 			}
 		} else {
 			// close body since will not be used anymore
