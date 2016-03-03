@@ -56,6 +56,7 @@ type Service struct {
 	retryCount    int
 	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
 	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
+	ReadLimit     int64             `yaml:"read_limit,omitempty"`
 	Header        map[string]string `yaml:",omitempty" json:"-"`
 	Follow        bool              `yaml:",omitempty" json:"-"`
 	Insecure      bool              `yaml:",omitempty" json:"-"`
@@ -72,12 +73,11 @@ type Service struct {
 }
 
 type Expect struct {
-	Body      string            `yaml:",omitempty"`
-	Header    map[string]string `yaml:",omitempty"`
-	ReadLimit int               `yaml:"read_limit,omitempty"`
-	Status    int               `yaml:",omitempty"`
-	IfNot     Action            `yaml:"if_not,omitempty"`
-	body      *regexp.Regexp
+	Body   string `yaml:",omitempty"`
+	body   *regexp.Regexp
+	Header map[string]string `yaml:",omitempty"`
+	Status int               `yaml:",omitempty"`
+	IfNot  Action            `yaml:"if_not,omitempty"`
 }
 
 type Action struct {

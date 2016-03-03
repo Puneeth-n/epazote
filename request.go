@@ -126,6 +126,3 @@ func IsURL(str string) bool {
 	}
 	return rxURL.MatchString(str)
 }
-
-//// don't read full body
-//html := io.LimitReader(resp.Body, 0)
