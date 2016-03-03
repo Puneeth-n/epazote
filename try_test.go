@@ -103,6 +103,6 @@ func TestRetryLimit(t *testing.T) {
 		return true, errors.New("nope")
 	})
 	if err == nil {
-		t.Error()
+		t.Error("Expecting an error")
 	}
 }
