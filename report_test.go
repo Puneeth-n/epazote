@@ -64,6 +64,7 @@ func TestReportHTTP0(t *testing.T) {
 		},
 	}
 	ez := &Epazote{}
+	ez.debug = true
 	ez.Report(nil, s, a, nil, 0, 200, "because", "output")
 }
 
@@ -105,6 +106,7 @@ func TestReportHTTP001(t *testing.T) {
 		},
 	}
 	ez := &Epazote{}
+	ez.debug = true
 	wg.Add(1)
 	ez.Report(nil, s, a, nil, 0, 200, "because", "output")
 	wg.Wait()
@@ -145,6 +147,7 @@ func TestReportHTTP011(t *testing.T) {
 		},
 	}
 	ez := &Epazote{}
+	ez.debug = true
 	wg.Add(1)
 	ez.Report(nil, s, a, nil, 1, 200, "because", "output")
 	wg.Wait()
@@ -207,6 +210,7 @@ func TestReportHTTPPost(t *testing.T) {
 		},
 	}
 	ez := &Epazote{}
+	ez.debug = true
 	wg.Add(1)
 	ez.Report(nil, s, a, nil, 1, 200, "because", "output")
 	wg.Wait()
