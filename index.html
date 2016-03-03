@@ -158,7 +158,7 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
         <span class="pl-s"><span class="pl-ent">headers:</span></span>
             <span class="pl-s"><span class="pl-ent">from:</span> <span class="pl-s">epazote@domain.tld</span></span>
             <span class="pl-s"><span class="pl-ent">to:</span> <span class="pl-s">team@domain.tld ops@domain.tld etc@domain.tld</span></span>
-            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s"><span class="pl-pds">"</span>[name - status]<span class="pl-pds">"</span></span></span>
+            <span class="pl-s"><span class="pl-ent">subject:</span> <span class="pl-s"><span class="pl-pds">"</span>[_name_, _because_]<span class="pl-pds">"</span></span></span>
     <span class="pl-s"><span class="pl-ent">scan:</span></span>
         <span class="pl-s"><span class="pl-ent">paths:</span></span>
             <span class="pl-s">- <span class="pl-s">/arena/home/sites</span></span>
@@ -174,11 +174,11 @@ consists of two parts, a <strong>config</strong> and a <strong>services</strong>
 <h3>
 <a id="config---smtp---subject" class="anchor" href="#config---smtp---subject" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - smtp - subject</h3>
 
-<p>The subject can be formed by using this keywords: <code>because</code> <code>exit</code> <code>name</code>
-<code>output</code> <code>status</code> <code>url</code> on the previous example, <code>subject: [name - status]</code>
-would transform to <code>[my service - 500]</code> the <code>name</code> has replaced
-by the service name, <code>my service</code> and <code>status</code> by the response status code
-<code>500</code> in this case.</p>
+<p>The subject can be formed by using this keywords: <code>_because_</code> <code>_exit_</code>
+<code>_name_</code> <code>_output_</code> <code>_status_</code> <code>_url_</code> on the previous example,
+<code>subject: [_name_, _status_]</code> would transform to <code>[my service - 500]</code>
+the <code>name</code> has replaced by the service name, <code>my service</code> and
+<code>status</code> by the response status code <code>500</code> in this case.</p>
 
 <h3>
 <a id="config---scan" class="anchor" href="#config---scan" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>config - scan</h3>
@@ -315,6 +315,16 @@ is set to <code>-1</code> the <code>cmd</code> never stops. defaults to 0, <code
 timeout, defaults to 5 seconds.</p>
 
 <h3>
+<a id="services---retry_limit-int" class="anchor" href="#services---retry_limit-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - retry_limit (int)</h3>
+
+<p>Specifies the number of times to retry an request, defaults to 3.</p>
+
+<h3>
+<a id="services---retry_interval-int" class="anchor" href="#services---retry_interval-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - retry_interval (int)</h3>
+
+<p>Specifies the time between attempts in milliseconds. The default value is 500 (0.5 seconds).</p>
+
+<h3>
 <a id="services---seconds-minutes-hours" class="anchor" href="#services---seconds-minutes-hours" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - seconds, minutes, hours</h3>
 
 <p>How often to check the service, the options are: (Only one should be used)</p>
@@ -445,13 +455,14 @@ an <code>if_status</code> and <code>if_header</code> are set, same applies, firs
 <h2>
 <a id="services---actions" class="anchor" href="#services---actions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions</h2>
 
-<p>An Action has tree options:</p>
+<p>An Action has five options:</p>
 
 <ul>
 <li>cmd</li>
 <li>notify</li>
 <li>msg</li>
 <li>emoji</li>
+<li>http</li>
 </ul>
 
 <p>They can be used all together, only one or either none.</p>
@@ -470,19 +481,69 @@ of the recipients that will be notified when the action is executed.</p>
 <p>If the string is <code>yes</code> the global recipients will be used.</p>
 
 <h3>
-<a id="services---actions---msg-string" class="anchor" href="#services---actions---msg-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - msg (string)</h3>
+<a id="services---actions---msg-list" class="anchor" href="#services---actions---msg-list" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - msg (list)</h3>
 
-<p><code>msg</code> The message to send when the action is executed.</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">msg:</span></span>
+ <span class="pl-s">- <span class="pl-s">send this if exit 0 (all OK)</span></span>
+ <span class="pl-s">- <span class="pl-s">send this if exit 1 (something is wrong)</span></span></pre></div>
+
+<p>Based on the exit status either msg[0] or msg[1] is used,</p>
 
 <h3>
-<a id="services--actions---emoji-string" class="anchor" href="#services--actions---emoji-string" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services -Actions - emoji (string)</h3>
+<a id="services---actions---emoji-list" class="anchor" href="#services---actions---emoji-list" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Actions - emoji (list)</h3>
 
 <p><code>emoji</code> <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> characters
-to be used in the subject, example: <code>emoji: 1F600-1F621</code>. If services are OK
-they will use the first <code>1F600</code> if not they will use <code>1F621</code>, if set to
-<code>0</code> no emoji will be used. The idea behind using
+to be used in the subject, example:</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">emoji:</span></span>
+  <span class="pl-s">- <span class="pl-s">1F600</span></span>
+  <span class="pl-s">- <span class="pl-s">1F621</span></span></pre></div>
+
+<p>If services are OK they will use the first <code>1F600</code> if not they will
+use <code>1F621</code>, if set to <code>0</code> no emoji will be used. The idea behind using
 <a href="https://en.wikipedia.org/wiki/Emoticons_(Unicode_block)">unicode/emoji</a>
 is to cough attention faster and not just ignore the email thinking is spam.</p>
+
+<h3>
+<a id="service---actions---http-listkey-value" class="anchor" href="#service---actions---http-listkey-value" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>service - Actions - http (list(key, value))</h3>
+
+<p>A custom URL to GET/POST depending on the exit status, example:</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">http:</span></span>
+  <span class="pl-s">- <span class="pl-ent">url:</span> <span class="pl-s"><span class="pl-pds">"</span>https://api.hipchat.com/v1/rooms/message?auth_token=your_token&amp;room_id=7&amp;from=Alerts&amp;message=service+OK+_name_+_because_<span class="pl-pds">"</span></span></span>
+  <span class="pl-s">- <span class="pl-ent">url:</span> <span class="pl-s"><span class="pl-pds">"</span>https://api.hipchat.com/<span class="pl-pds">"</span></span></span>
+    <span class="pl-s"><span class="pl-ent">header:</span></span>
+      <span class="pl-s"><span class="pl-ent">Content-Type:</span> <span class="pl-s">application/x-www-form-urlencoded</span></span>
+<span class="pl-s">    <span class="pl-ent">data:</span> |</span>
+<span class="pl-s">     room_id=10&amp;from=Alerts&amp;message=_name_+exit+code+_exit_</span>
+<span class="pl-s"></span>    <span class="pl-s"><span class="pl-ent">method:</span> <span class="pl-s">POST</span></span></pre></div>
+
+<p>When a service fails or returns an exit 1 the second url
+<code>https://api.hipchat.com/</code> with method <code>POST</code> and the custom <code>data</code>
+will be used, notice that all the ocurances on the data that are within an
+<code>_(key)_</code> will be replaced with the corresponding value, in this case:</p>
+
+<pre><code> room_id=10&amp;from=Alerts&amp;message=_name_+exit+code+_exit_
+</code></pre>
+
+<p>will be replaced with:</p>
+
+<pre><code> room_id=10&amp;from=Alerts&amp;message=SERVICE NAME+exit+code+0
+</code></pre>
+
+<p>When recovery the first url will be used, in this case will be a GET instead of a post, so:</p>
+
+<pre><code>https://api.hipchat.com/v1/rooms/message?auth_token=your_token&amp;room_id=7&amp;from=Alerts&amp;message=service+OK+_name_+_because_
+</code></pre>
+
+<p>becomes:</p>
+
+<pre><code>https://api.hipchat.com/v1/rooms/message?auth_token=your_token&amp;room_id=7&amp;from=Alerts&amp;message=service+OK+SERVICE+NAME+STATUS+200
+</code></pre>
+
+<blockquote>
+<p>notice that the <em>name</em>, <em>exit</em>, <em>because</em> are been replaced with the values of name, exit, because of the service.</p>
+</blockquote>
 
 <h2>
 <a id="services---test" class="anchor" href="#services---test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - Test</h2>
