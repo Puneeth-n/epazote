@@ -51,9 +51,9 @@ type Test struct {
 }
 
 type Service struct {
-	Name          string            `json:"name" yaml:"-"`
-	URL           string            `yaml:",omitempty" json:"url,omitempty"`
-	retryCount    int               `json:"-"`
+	Name          string `json:"name" yaml:"-"`
+	URL           string `yaml:",omitempty" json:"url,omitempty"`
+	retryCount    int
 	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
 	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
 	Header        map[string]string `yaml:",omitempty" json:"-"`
