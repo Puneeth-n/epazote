@@ -47,17 +47,16 @@ func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...
 	if len(timeout) > 0 {
 		t = timeout[0]
 	}
-	Timeout := time.Duration(t) * time.Second
 
 	// if insecure = true, skip ssl verification
 	tr := &http.Transport{
 		Dial: (&net.Dialer{
-			Timeout:   Timeout,
-			KeepAlive: Timeout,
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout:   Timeout,
+		TLSHandshakeTimeout:   10 * time.Second,
 		TLSClientConfig:       &tls.Config{InsecureSkipVerify: insecure},
-		ResponseHeaderTimeout: Timeout,
+		ResponseHeaderTimeout: time.Duration(t) * time.Second,
 	}
 
 	client := &http.Client{}
