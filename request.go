@@ -42,7 +42,7 @@ func AsyncGet(s *Services) <-chan ServiceHttpResponse {
 // HTTPGet creates a new http request
 func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...int) (*http.Response, error) {
 	// timeout in seconds defaults to 5
-	var t int = 7
+	var t int = 5
 
 	if len(timeout) > 0 {
 		t = timeout[0]
