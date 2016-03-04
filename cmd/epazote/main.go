@@ -16,15 +16,17 @@ func main() {
 	var c = flag.Bool("c", false, "Continue on errors.")
 	var d = flag.Bool("d", false, "Debug mode.")
 	var v = flag.Bool("v", false, fmt.Sprintf("Print version: %s", version))
+	var vv = flag.Bool("vv", false, fmt.Sprintf("Print verssion+githash: %s+%s", version, githash))
 
 	flag.Parse()
 
 	if *v {
-		if githash != "" {
-			fmt.Printf("%s+%s\n", version, githash)
-		} else {
-			fmt.Println(version)
-		}
+		fmt.Println(version)
+		os.Exit(0)
+	}
+
+	if *vv {
+		fmt.Printf("%s+%s\n", version, githash)
 		os.Exit(0)
 	}
 
