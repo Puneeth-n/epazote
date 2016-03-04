@@ -51,25 +51,25 @@ type Test struct {
 }
 
 type Service struct {
-	Name          string `json:"name" yaml:"-"`
-	URL           string `yaml:",omitempty" json:"url,omitempty"`
-	retryCount    int
+	Name          string            `json:"name" yaml:"-"`
+	URL           string            `yaml:",omitempty" json:"url,omitempty"`
 	RetryInterval int               `yaml:"retry_interval,omitempty" json:"-"`
 	RetryLimit    int               `yaml:"retry_limit,omitempty" json:"-"`
-	ReadLimit     int64             `yaml:"read_limit,omitempty" json:"-"`
+	ReadLimit     int64             `yaml:"read_limit,omitempty" json:"read_limit,omitempty"`
 	Header        map[string]string `yaml:",omitempty" json:"-"`
 	Follow        bool              `yaml:",omitempty" json:"-"`
 	Insecure      bool              `yaml:",omitempty" json:"-"`
 	Stop          int64             `yaml:",omitempty" json:"-"`
 	Timeout       int               `yaml:",omitempty" json:"-"`
-	Test          `yaml:",inline" json:",omitempty"`
-	Every         `yaml:",inline" json:"-"`
-	Expect        Expect            `json:"-"`
 	IfStatus      map[int]Action    `yaml:"if_status,omitempty" json:"-"`
 	IfHeader      map[string]Action `yaml:"if_header,omitempty" json:"-"`
 	Log           string            `yaml:",omitempty" json:"-"`
+	Test          `yaml:",inline" json:",omitempty"`
+	Every         `yaml:",inline" json:"-"`
+	Expect        Expect `json:"-"`
 	status        int64
 	action        *Action
+	retryCount    int
 }
 
 type Expect struct {
