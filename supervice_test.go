@@ -1857,7 +1857,6 @@ func TestSuperviceReadLimit(t *testing.T) {
 	data := buf.String()
 	re := regexp.MustCompile("(?m)[\r\n]+^01234$")
 	match := re.FindString(data)
-	print(match)
 	if match == "" {
 		t.Error("Expecting: 01234")
 	}
