@@ -1665,6 +1665,7 @@ func TestSuperviceRetrie(t *testing.T) {
 		Name:       "s 1",
 		URL:        server.URL,
 		RetryLimit: 3,
+		ReadLimit:  17,
 		Log:        log_s.URL,
 		Expect: Expect{
 			Status: 200,
@@ -1808,6 +1809,7 @@ func TestSuperviceRetrieLimit0(t *testing.T) {
 		URL:           server.URL,
 		RetryLimit:    0,
 		RetryInterval: 1,
+		ReadLimit:     1024,
 		Log:           log_s.URL,
 		Expect: Expect{
 			Status: 200,
@@ -1822,5 +1824,40 @@ func TestSuperviceRetrieLimit0(t *testing.T) {
 	rc := s["s 1"].retryCount
 	if rc != 0 {
 		t.Errorf("Expecting retryCount = 0 got: %d", rc)
+	}
+}
+
+func TestSuperviceReadLimit(t *testing.T) {
+	buf.Reset()
+	var server *httptest.Server
+	var h http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "0123456789")
+	}
+	server = httptest.NewServer(h)
+	defer server.Close()
+	s := make(Services)
+	s["s 1"] = &Service{
+		Name:      "s 1",
+		URL:       server.URL,
+		ReadLimit: 5,
+		Expect: Expect{
+			Status: 200,
+		},
+	}
+	ez := &Epazote{
+		Services: s,
+	}
+	ez.debug = true
+	ez.Supervice(s["s 1"])()
+	rc := s["s 1"].retryCount
+	if rc != 0 {
+		t.Errorf("Expecting retryCount = 0 got: %d", rc)
+	}
+
+	data := buf.String()
+	re := regexp.MustCompile("(?m)[\r\n]+^01234$")
+	match := re.FindString(data)
+	if match == "" {
+		t.Error("Expecting: 01234")
 	}
 }
