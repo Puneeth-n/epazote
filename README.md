@@ -271,6 +271,11 @@ Specifies the number of times to retry an request, defaults to 3.
 ### services - retry_interval (int)
 Specifies the time between attempts in milliseconds. The default value is 500 (0.5 seconds).
 
+### services - read_limit (int)
+Read only ``N`` number of bytes instead of the full
+body. This helps to make a more "complete" request and
+avoid getting an HTTP status code [408 when testing aws ELB](http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/ts-el b-error-message.html#ts-elb-errorcodes-http408).
+
 ### services - seconds, minutes, hours
 How often to check the service, the options are: (Only one should be used)
  - seconds N
