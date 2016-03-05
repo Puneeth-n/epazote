@@ -3,6 +3,7 @@ package epazote
 import (
 	"bytes"
 	"crypto/tls"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -49,6 +50,11 @@ func HTTPGet(url string, follow, insecure bool, h map[string]string, timeout ...
 
 	// if insecure = true, skip ssl verification
 	tr := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout:   10 * time.Second,
 		TLSClientConfig:       &tls.Config{InsecureSkipVerify: insecure},
 		ResponseHeaderTimeout: time.Duration(t) * time.Second,
 	}
@@ -126,6 +132,3 @@ func IsURL(str string) bool {
 	}
 	return rxURL.MatchString(str)
 }
-
-//// don't read full body
-//html := io.LimitReader(resp.Body, 0)

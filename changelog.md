@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 1.5.0
+- ``test`` using ``sh -c 'cmd'`` to allow piped commands.
+- Implemented ``read_limit``, for reading only ``N`` number of bytes instead of the full body. This helps to make a more "complete" request and avoid getting an HTTP status code [408 when testing aws ELB](http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/ts-elb-error-message.html#ts-elb-errorcodes-http408).
+- Implemented ``Timeout``, ``KeepAlive`` and ``TLSHandshakeTimeout`` default values in ``HTTPGet``.
+- ``-v`` prints version + git commit hash.
+
 ## 1.4.0
 - Increased debugging, response headers included.
 - Implement ``http`` in action, An URL to "GET/POST" in case service is up/down, for example 'hipchat/mailgun'.

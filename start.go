@@ -40,6 +40,10 @@ func (self *Epazote) Start(isk IScheduler, debug bool) {
 			v.RetryLimit = 3
 		}
 
+		if v.Test.Test != "" {
+			v.Test.Test = strings.TrimSpace(v.Test.Test)
+		}
+
 		if self.debug {
 			if v.URL != "" {
 				log.Printf(Green("Adding service: %s URL: %s"), v.Name, v.URL)

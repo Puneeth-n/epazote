@@ -3,6 +3,7 @@ package epazote
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -48,8 +49,10 @@ func (self *Epazote) Supervice(s *Service) func() {
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
-			args := strings.Fields(s.Test.Test)
-			cmd := exec.Command(args[0], args[1:]...)
+			if self.debug {
+				log.Printf("Service: %q, Test cmd args: %q", s.Name, s.Test.Test)
+			}
+			cmd := exec.Command("sh", "-c", s.Test.Test)
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
@@ -79,10 +82,16 @@ func (self *Epazote) Supervice(s *Service) func() {
 
 		// Read Body first and close if not used
 		if s.Expect.Body != "" {
-			body, err := ioutil.ReadAll(res.Body)
+			var body []byte
+			var err error
+			if s.ReadLimit > 0 {
+				body, err = ioutil.ReadAll(io.LimitReader(res.Body, s.ReadLimit))
+			} else {
+				body, err = ioutil.ReadAll(res.Body)
+			}
 			res.Body.Close()
 			if err != nil {
-				log.Printf("Could not read Body for service %q: %s", Red(s.Name), err)
+				log.Printf("Could not read Body for service %q, Error: %s", Red(s.Name), err)
 				return
 			}
 			r := s.Expect.body.FindString(string(body))
@@ -92,10 +101,20 @@ func (self *Epazote) Supervice(s *Service) func() {
 			}
 			self.Report(m, s, nil, res, 0, res.StatusCode, fmt.Sprintf("Body regex match: %s", r), "")
 			return
+		} else if s.ReadLimit > 0 {
+			chunkedBody, err := ioutil.ReadAll(io.LimitReader(res.Body, s.ReadLimit))
+			res.Body.Close()
+			if err != nil {
+				log.Printf("Could not read Body for service %q, read_limit %d, Error: %s", Red(s.Name), s.ReadLimit, err)
+				return
+			}
+			if self.debug {
+				log.Printf("Service %q, read_limit: %d, Body: \n%s", s.Name, s.ReadLimit, chunkedBody)
+			}
+		} else {
+			// close body since will not be used anymore
+			res.Body.Close()
 		}
-
-		// close body since will not be used anymore
-		res.Body.Close()
 
 		// if_status
 		if s.IfStatus != nil {
