@@ -325,6 +325,13 @@ timeout, defaults to 5 seconds.</p>
 <p>Specifies the time between attempts in milliseconds. The default value is 500 (0.5 seconds).</p>
 
 <h3>
+<a id="services---read_limit-int" class="anchor" href="#services---read_limit-int" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - read_limit (int)</h3>
+
+<p>Read only <code>N</code> number of bytes instead of the full
+body. This helps to make a more "complete" request and
+avoid getting an HTTP status code <a href="http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/ts-el%20b-error-message.html#ts-elb-errorcodes-http408">408 when testing aws ELB</a>.</p>
+
+<h3>
 <a id="services---seconds-minutes-hours" class="anchor" href="#services---seconds-minutes-hours" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>services - seconds, minutes, hours</h3>
 
 <p>How often to check the service, the options are: (Only one should be used)</p>
