@@ -12,6 +12,6 @@
         }
     },
     "BuildSettings": {
-        "LdFlags": "-X main.version=1.5.0 -X main.githash=59c8b4949f08b62df87269ce25ea482b53debdd5"
+        "LdFlags": "-X main.version=1.5.0 -X main.githash=24fb6eb6d3760481720be8bec6e9d3c042a36e30"
     }
 }
