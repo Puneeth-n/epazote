@@ -1,6 +1,6 @@
 .PHONY: all get test clean build cover compile goxc bintray
 
-VERSION=1.5.1
+VERSION=1.5.2
 GO ?= go
 BIN_NAME=epazote
 GO_XC = ${GOPATH}/bin/goxc -os="freebsd openbsd netbsd solaris dragonfly darwin linux"
