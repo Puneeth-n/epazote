@@ -5,10 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"regexp"
 	"sync"
 	"testing"
 )
+
+func TestSHELL(t *testing.T) {
+	shell := os.Getenv("SHELL")
+	if shell == "" {
+		t.Errorf("Expecting $SHELL")
+	}
+	fmt.Println(shell)
+}
 
 func TestSuperviceTestOk(t *testing.T) {
 	var wg sync.WaitGroup
