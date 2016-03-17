@@ -1,5 +1,9 @@
 Changelog
 =========
+
+## 1.5.2
+- fallback to ``sh`` if no ``$SHELL`` found.
+
 ## 1.5.1
 - use ``$SHELL -c`` instead of ``sh -c`` in to allow piped commands.
 - ``-v`` print git commit hash only if available.
