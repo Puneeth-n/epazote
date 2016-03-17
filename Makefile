@@ -35,14 +35,31 @@ cover:
 
 compile: goxc
 
+define GOXCJSON
+{
+    "ConfigVersion": "0.9",
+    "AppName": "epazote",
+    "ArtifactsDest": "build",
+    "PackageVersion": "${VERSION}",
+    "TaskSettings": {
+        "bintray": {
+            "downloadspage": "bintray.md",
+            "package": "epazote",
+            "repository": "epazote",
+            "subject": "nbari"
+        }
+    },
+    "BuildSettings": {
+        "LdFlags": "-X main.version=${VERSION} gg-X main.githash=${GITHASH}"
+    }
+}
+endef
+
+export GOXCJSON
+
 goxc:
-	$(shell sed -i '' -e 's/"PackageVersion.*/"PackageVersion": "${VERSION}",/g' .goxc.json)
-	$(shell sed -i '' -e 's/"LdFlags.*"/"LdFlags": \"-X main.version=${VERSION} -X main.githash='${GITHASH}'\"/g' .goxc.json)
-	$(shell echo '{\n "ConfigVersion": "0.9",' > $(GOXC_FILE))
-	$(shell echo ' "TaskSettings": {' >> $(GOXC_FILE))
-	$(shell echo '  "bintray": {\n   "apikey": "$(BINTRAY_APIKEY)"' >> $(GOXC_FILE))
-	$(shell echo '  }\n } \n}' >> $(GOXC_FILE))
-	${GO_XC}
+	@echo "$$GOXCJSON" > .goxc.json
+	# ${GO_XC}
 
 bintray:
 	${GO_XC} bintray
