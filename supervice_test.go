@@ -408,7 +408,7 @@ func TestSuperviceNoGet(t *testing.T) {
 		// check output
 		e = "exit status 1"
 		if i["output"] != e {
-			t.Errorf("Expecting %q, got %q", e, i["oputput"])
+			t.Errorf("Expecting %q, got %v", e, i["oputput"])
 		}
 		// check url
 		if _, ok := i["url"]; !ok {
