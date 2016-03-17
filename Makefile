@@ -55,7 +55,7 @@ goxc:
 	$(shell echo ' "TaskSettings": {' >> $(GOXC_FILE_LOCAL))
 	$(shell echo '  "bintray": {\n   "apikey": "$(BINTRAY_APIKEY)"' >> $(GOXC_FILE_LOCAL))
 	$(shell echo '  }\n } \n}' >> $(GOXC_FILE_LOCAL))
-#	${GO_XC}
+	${GO_XC}
 
 bintray:
 	${GO_XC} bintray
