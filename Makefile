@@ -37,7 +37,7 @@ cover:
 compile: goxc
 
 goxc:
-	$(shell echo '{\n "ConfigVersion": "0.9",' > $(GOXC_FILE))
+	$(shell echo '{\n  "ConfigVersion": "0.9",' > $(GOXC_FILE))
 	$(shell echo '  "AppName": "epazote",' >> $(GOXC_FILE))
 	$(shell echo '  "ArtifactsDest": "build",' >> $(GOXC_FILE))
 	$(shell echo '  "PackageVersion": "${VERSION}",' >> $(GOXC_FILE))
