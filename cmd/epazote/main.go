@@ -15,12 +15,16 @@ func main() {
 	var f = flag.String("f", "epazote.yml", "Epazote configuration file.")
 	var c = flag.Bool("c", false, "Continue on errors.")
 	var d = flag.Bool("d", false, "Debug mode.")
-	var v = flag.Bool("v", false, fmt.Sprintf("Print version: %s+%s", version, githash))
+	var v = flag.Bool("v", false, fmt.Sprintf("Print version: %s", version))
 
 	flag.Parse()
 
 	if *v {
-		fmt.Printf("%s+%s\n", version, githash)
+		if githash != "" {
+			fmt.Printf("%s+%s\n", version, githash)
+		} else {
+			fmt.Printf("%s\n", version)
+		}
 		os.Exit(0)
 	}
 
