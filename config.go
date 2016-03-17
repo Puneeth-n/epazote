@@ -18,7 +18,6 @@ type Epazote struct {
 	Config   Config
 	Services Services
 	debug    bool
-	shell    string
 }
 
 type Config struct {

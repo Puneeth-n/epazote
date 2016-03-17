@@ -13,16 +13,8 @@ type IScheduler interface {
 
 // Start Add services to scheduler
 func (self *Epazote) Start(isk IScheduler, debug bool) {
-	// use $SHELL otherwise sh
-	self.shell = "sh"
-	if shell := os.Getenv("SHELL"); shell != "" {
-		self.shell = shell
-	}
-
-	// enable DEBUG
 	if debug {
 		self.debug = true
-		log.Printf("Using $SHELL: %s", self.shell)
 	}
 
 	for k, v := range self.Services {

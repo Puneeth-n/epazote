@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -18,7 +19,11 @@ func (self *Epazote) Do(cmd string, skip bool) string {
 		return "Skipping cmd"
 	}
 	if cmd != "" {
-		out, err := exec.Command(self.shell, "-c", cmd).CombinedOutput()
+		var shell = "sh"
+		if sh := os.Getenv("SHELL"); sh != "" {
+			shell = sh
+		}
+		out, err := exec.Command(shell, "-c", cmd).CombinedOutput()
 		if err != nil {
 			return err.Error()
 		}
@@ -48,10 +53,14 @@ func (self *Epazote) Supervice(s *Service) func() {
 		// Run Test if no URL
 		// execute the Test cmd if exit > 0 execute the if_not cmd
 		if s.URL == "" {
-			if self.debug {
-				log.Printf("Service: %q, Test cmd args: %q", s.Name, s.Test.Test)
+			var shell = "sh"
+			if sh := os.Getenv("SHELL"); sh != "" {
+				shell = sh
 			}
-			cmd := exec.Command(self.shell, "-c", s.Test.Test)
+			if self.debug {
+				log.Printf("Service: %q, SHELL: %q, Test cmd args: %s", shell, s.Name, s.Test.Test)
+			}
+			cmd := exec.Command(shell, "-c", s.Test.Test)
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			if err := cmd.Run(); err != nil {
