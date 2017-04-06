@@ -14,7 +14,7 @@ pipeline {
             
           },
           "phase 1.2": {
-            sh '$PWD'
+            sh 'echo "foo bar"'
             
           }
         )
